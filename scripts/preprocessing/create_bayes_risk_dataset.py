@@ -5,7 +5,7 @@ We need to define how many hypotheses and references we want. Furthermore we nee
 
 import argparse
 
-import torch
+import numpy as np
 import pandas as pd
 from tqdm import tqdm
 
@@ -99,49 +99,30 @@ def main():
 
 
     #
-    # def map_utility(x):
-    #     source = x["source"]
-    #
-    #     hyp_list = x["hypotheses"]
-    #     references = x["refs"]
-    #
-    #
-    #
-    #     scores = utility.call_batched(source, hyp_list, references)
-    #     return scores
+    def map_utility(x):
+        source = x["source"]
+
+        hyp_list = x["hypotheses"]
+        references = x["refs"]
 
 
 
-    #hyp_dataset["utilities"] = hyp_dataset.map(map_utility, axis=1)
+        scores = utility.call_batched(source, hyp_list, references)
 
-    all_scores = {
-        "utilities": []
-    }
-
-    with torch.no_grad():
-        pbar = tqdm(total=len(hyp_dataset))
-
-        for i, data in hyp_dataset.iterrows():
-
-            source = data["source"]
-
-            references = data["refs"]
+        # Next we calculate the average
 
 
+        utilities_count = np.array(x["utilities_count"])
 
-            hyp_list = data["hypotheses"]
+        average = [np.sum(utilities_count * np.array(score)) / np.sum(utilities_count) for score in scores]
 
-            scores = utility.call_batched(source, hyp_list, references)
-
-            all_scores["utilities"].append(scores)
-
-            pbar.update(1)
+        return average
 
 
-        pbar.close()
+    tqdm.pandas()
+    hyp_dataset["utilities"] = hyp_dataset.progress_apply(map_utility, axis=1)
 
-    hyp_dataset["utilities"] = pd.DataFrame.from_dict(all_scores)["utilities"]
-
+    print(hyp_dataset)
 
 
     hyp_dataset = hyp_dataset.drop("refs", axis=1)
@@ -153,30 +134,6 @@ def main():
 
 
 
-    # with torch.no_grad():
-    #     pbar = tqdm(total=len(hyp_dataset))
-    #     i = 0
-    #     for (_, hyp_data), (_, ref_data) in zip(hyp_dataset, ref_dataset):
-    #         i += 1
-    #         source = hyp_data["source"]
-    #
-    #         references = ref_data["samples"]
-    #
-    #
-    #
-    #         hyp_list = hyp_data["samples"]
-    #
-    #         scores = utility.call_batched(source, hyp_list, references)
-    #
-    #         dataset_creator.add_row(source, hyp_data["target"], hyp_data["samples"], scores, ref_data["count"],
-    #                                 hyp_data["count"],
-    #                                 )
-    #
-    #         pbar.update(1)
-    #
-    #     pbar.close()
-
-    # dataset_creator.save()
 
 
 if __name__ == '__main__':

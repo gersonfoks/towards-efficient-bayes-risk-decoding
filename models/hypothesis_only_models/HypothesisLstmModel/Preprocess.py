@@ -16,7 +16,7 @@ class HypothesisLstmPreprocess:
     def __call__(self, data):
         df_exploded = self.explode_dataset(data)
 
-        df_exploded["score"] = df_exploded.apply(calc_score, axis=1)
+        df_exploded["score"] = df_exploded["utilities"]
 
         # Create a unigram count vector for each hypotheses and put it into a lookup table
 
