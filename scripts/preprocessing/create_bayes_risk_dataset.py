@@ -98,27 +98,60 @@ def main():
     hyp_dataset = hyp_dataset.drop("samples", axis=1)
 
 
+    #
+    # def map_utility(x):
+    #     source = x["source"]
+    #
+    #     hyp_list = x["hypotheses"]
+    #     references = x["refs"]
+    #
+    #
+    #
+    #     scores = utility.call_batched(source, hyp_list, references)
+    #     return scores
 
-    def map_utility(x):
-        source = x["source"]
-
-        hyp_list = x["hypotheses"]
-        references = x["refs"]
 
 
+    #hyp_dataset["utilities"] = hyp_dataset.map(map_utility, axis=1)
 
-        scores = utility.call_batched(source, hyp_list, references)
-        return scores
+    all_scores = {
+        "utilities": []
+    }
 
-    tqdm.pandas()
+    with torch.no_grad():
+        pbar = tqdm(total=len(hyp_dataset))
 
-    hyp_dataset["utilities"] = hyp_dataset.progress_apply(map_utility, axis=1)
+        for i, data in hyp_dataset.iterrows():
+
+            source = data["source"]
+
+            references = data["refs"]
+
+
+
+            hyp_list = data["hypotheses"]
+
+            scores = utility.call_batched(source, hyp_list, references)
+
+            all_scores["utilities"].append(scores)
+
+            pbar.update(1)
+
+
+        pbar.close()
+
+    hyp_dataset["utilities"] = pd.DataFrame.from_dict(all_scores)["utilities"]
+
+
 
     hyp_dataset = hyp_dataset.drop("refs", axis=1)
 
 
     save_path = dataset_loader.get_dataset_path()
     hyp_dataset.to_parquet(save_path)
+
+
+
 
     # with torch.no_grad():
     #     pbar = tqdm(total=len(hyp_dataset))
