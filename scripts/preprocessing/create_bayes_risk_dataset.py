@@ -6,11 +6,12 @@ We need to define how many hypotheses and references we want. Furthermore we nee
 import argparse
 
 import torch
-
+import pandas as pd
 from tqdm import tqdm
 
 from custom_datasets.BayesRiskDataset.BayesRiskDatasetCreator import BayesRiskDatasetCreator
 from custom_datasets.SampleDataset.SampleDatasetLoader import SampleDatasetLoader
+from utilities.PathManager import get_path_manager
 from utilities.misc import load_nmt_model
 
 from utilities.utilities import NGramF
@@ -78,37 +79,71 @@ def main():
     ref_dataset = ref_dataset_loader.load()
     hyp_dataset = hyp_dataset_loader.load()
 
-    # We get an empty dataset
-    dataset_creator = BayesRiskDatasetCreator(args.split, args.n_hypotheses, args.n_references,
+    #Create a dataset loader (used to get the correct path)
+    dataset_loader = BayesRiskDatasetCreator(args.split, args.n_hypotheses, args.n_references,
                                               args.sampling_method, args.utility, develop=args.develop,
                                               base=args.save_dir, )
 
     utility = load_utility(args.utility)
 
-    with torch.no_grad():
-        pbar = tqdm(total=len(hyp_dataset))
-        i = 0
-        for (_, hyp_data), (_, ref_data) in zip(hyp_dataset, ref_dataset):
-            i += 1
-            source = hyp_data["source"]
 
-            references = ref_data["samples"]
+    hyp_dataset = pd.DataFrame.from_dict(hyp_dataset.data)
+    ref_dataset = pd.DataFrame.from_dict(ref_dataset.data)
 
 
+    hyp_dataset["refs"] = ref_dataset["samples"]
+    hyp_dataset["hypotheses"] = hyp_dataset["samples"]
+    hyp_dataset["utilities_count"] = ref_dataset["count"]
 
-            hyp_list = hyp_data["samples"]
-          
-            scores = utility.call_batched(source, hyp_list, references)
+    hyp_dataset = hyp_dataset.drop("samples", axis=1)
 
-            dataset_creator.add_row(source, hyp_data["target"], hyp_data["samples"], scores, ref_data["count"],
-                                    hyp_data["count"],
-                                    )
 
-            pbar.update(1)
 
-        pbar.close()
+    def map_utility(x):
+        source = x["source"]
 
-    dataset_creator.save()
+        hyp_list = x["hypotheses"]
+        references = x["refs"]
+
+
+
+        scores = utility.call_batched(source, hyp_list, references)
+        return scores
+
+    tqdm.pandas()
+
+    hyp_dataset["utilities"] = hyp_dataset.progress_apply(map_utility, axis=1)
+
+    hyp_dataset = hyp_dataset.drop("refs", axis=1)
+
+
+    save_path = dataset_loader.get_dataset_path()
+    hyp_dataset.to_parquet(save_path)
+
+    # with torch.no_grad():
+    #     pbar = tqdm(total=len(hyp_dataset))
+    #     i = 0
+    #     for (_, hyp_data), (_, ref_data) in zip(hyp_dataset, ref_dataset):
+    #         i += 1
+    #         source = hyp_data["source"]
+    #
+    #         references = ref_data["samples"]
+    #
+    #
+    #
+    #         hyp_list = hyp_data["samples"]
+    #
+    #         scores = utility.call_batched(source, hyp_list, references)
+    #
+    #         dataset_creator.add_row(source, hyp_data["target"], hyp_data["samples"], scores, ref_data["count"],
+    #                                 hyp_data["count"],
+    #                                 )
+    #
+    #         pbar.update(1)
+    #
+    #     pbar.close()
+
+    # dataset_creator.save()
 
 
 if __name__ == '__main__':
