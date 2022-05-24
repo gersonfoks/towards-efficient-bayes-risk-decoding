@@ -38,7 +38,7 @@ def get_feed_forward_layers(layer_dims, activation_function, activation_function
 
 class EmbbedingForPackedSequenceLayer(torch.nn.Module):
     """
-    Lstm embedding layer that handels packed sequences
+    Lstm embedding layer that handles packed sequences
     """
 
 
@@ -55,9 +55,26 @@ class EmbbedingForPackedSequenceLayer(torch.nn.Module):
     def element_wise_apply(self, fn, packed_sequence):
         # from: https://discuss.pytorch.org/t/how-to-use-pack-sequence-if-we-are-going-to-use-word-embedding-and-bilstm/28184/3
         """applies a pointwise function fn to each element in packed_sequence"""
-        # embeddings = fn(packed_sequence.data)
-        # print(embeddings)
-        # print(embeddings.shape)
+
         return torch.nn.utils.rnn.PackedSequence(fn(packed_sequence.data), packed_sequence.batch_sizes,
                                                  sorted_indices=packed_sequence.sorted_indices,
                                                  unsorted_indices=packed_sequence.unsorted_indices)
+
+
+
+class LastStateEmbedding(nn.Module):
+
+    def __init__(self, nmt_model, padding_id=58100):
+        super().__init__()
+        self.nmt_model = nmt_model
+        self.padding_id = padding_id
+
+
+    def forward(self, input_ids=None, attention_mask=None,  decoder_input_ids=None, labels=None):
+
+        with torch.no_grad():
+            nmt_out = self.nmt_model.forward(input_ids=input_ids, attention_mask=attention_mask, labels=labels,
+                                             decoder_input_ids=decoder_input_ids, output_hidden_states=True,
+                                             output_attentions=True)
+        attention_mask_decoder = (self.padding_id != labels).long()
+        return nmt_out["decoder_hidden_states"][-1], attention_mask_decoder

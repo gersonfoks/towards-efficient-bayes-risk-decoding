@@ -7,7 +7,7 @@ def calc_score(x):
     score = float(np.sum(utils * utilities_count) / np.sum(utilities_count))
     return score
 
-class HypothesisLstmPreprocess:
+class LastHiddenLstmPreprocess:
     '''
     Splits the dataset hypotheses column and takes the average of the unigram f1 scores
     '''

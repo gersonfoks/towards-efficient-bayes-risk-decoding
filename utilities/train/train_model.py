@@ -7,6 +7,7 @@ from torch.utils.data import DataLoader
 from models.hypothesis_only_models.HypothesisLstmModel.Collator import HypothesisLstmModelCollator
 from models.hypothesis_only_models.HypothesisLstmModel.Preprocess import HypothesisLstmPreprocess
 from models.hypothesis_only_models.HypothesisLstmModel.manager import HypothesisLstmModelManager
+from models.hypothesis_only_models.LastHiddenLstmModel.Trainer import TrainLastHiddenLSTMModel
 from utilities.PathManager import get_path_manager
 from utilities.dataset.loading import load_dataset_for_training
 from pytorch_lightning import loggers as pl_loggers
@@ -25,7 +26,9 @@ def train_model_from_config(config, smoke_test=False):
     if model_type == "hypothesis_lstm_model":
         train_lstm_model(config, smoke_test)
     elif model_type == "hypothesis_decoder_model":
-        pass
+        print("hypothesis_decoder_model")
+        train_model = TrainLastHiddenLSTMModel(config, smoke_test)
+        train_model()
     else:
         raise ValueError("model type: {} not found".format(model_type))
 
