@@ -94,10 +94,10 @@ def main():
 
             references = ref_data["samples"]
 
-            print(references)
+
 
             hyp_list = hyp_data["samples"]
-            print(hyp_list)
+          
             scores = utility.call_batched(source, hyp_list, references)
 
             dataset_creator.add_row(source, hyp_data["target"], hyp_data["samples"], scores, ref_data["count"],
