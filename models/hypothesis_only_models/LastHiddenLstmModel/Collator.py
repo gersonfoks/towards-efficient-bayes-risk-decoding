@@ -15,7 +15,7 @@ class LastHiddenLstmCollator:
 
         self.device = device
         self.data_collator = DataCollatorForSeq2Seq(model=self.nmt_model, tokenizer=self.tokenizer,
-                                               padding=True, return_tensors="pt", max_length=max_seq_length)
+                                               padding=True, return_tensors="pt",)
 
     def __call__(self, batch):
         hypotheses = [b["hypotheses"] for b in batch]
@@ -37,7 +37,7 @@ class LastHiddenLstmCollator:
         model_inputs["labels"] = labels["input_ids"]
 
         x = [{"labels": l, "input_ids": i, "attention_mask": a} for (l, i, a) in
-             zip(model_inputs["input_ids"], model_inputs["input_ids"], model_inputs["attention_mask"])]
+             zip(model_inputs["labels"], model_inputs["input_ids"], model_inputs["attention_mask"])]
 
         # Next we create the inputs for the NMT model
         x_new = self.data_collator(x).to("cuda")

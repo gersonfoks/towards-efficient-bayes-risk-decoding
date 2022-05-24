@@ -24,7 +24,7 @@ class HypothesisLstmModelManager(ModelManager):
 
         embedding_layer = EmbbedingForPackedSequenceLayer(self.tokenizer.vocab_size, embedding_size)
 
-        lstm_layer = torch.nn.LSTM(embedding_size, embedding_size)
+        lstm_layer = torch.nn.LSTM(embedding_size, embedding_size,)
 
         final_layers = get_feed_forward_layers(config["feed_forward_layers"]["dims"],
                                                config["feed_forward_layers"]["activation_function"],

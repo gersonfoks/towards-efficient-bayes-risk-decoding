@@ -25,7 +25,7 @@ class LastHiddenLstmManager(ModelManager):
 
         embedding_layer = LastStateEmbedding(self.nmt_model)
 
-        lstm_layer = torch.nn.LSTM(embedding_size, embedding_size, batch_first=True)
+        lstm_layer = torch.nn.LSTM(embedding_size, embedding_size, batch_first=True, bidirectional=True)
 
         final_layers = get_feed_forward_layers(config["feed_forward_layers"]["dims"],
                                                config["feed_forward_layers"]["activation_function"],

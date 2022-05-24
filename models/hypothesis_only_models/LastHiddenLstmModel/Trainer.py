@@ -50,6 +50,8 @@ class TrainLastHiddenLSTMModel:
         tb_logger = pl_loggers.TensorBoardLogger(save_dir=config["log_dir"])
 
         max_epochs = 1 if smoke_test else config["max_epochs"]
+
+
         trainer = pl.Trainer(
             max_epochs=max_epochs,
             gpus=1,
@@ -58,8 +60,9 @@ class TrainLastHiddenLSTMModel:
             callbacks=[LearningRateMonitor(logging_interval="step")],
             logger=tb_logger,
             accumulate_grad_batches=config["accumulate_grad_batches"],
-            track_grad_norm=True,
             gradient_clip_val=2.0
+
+
         )
 
 

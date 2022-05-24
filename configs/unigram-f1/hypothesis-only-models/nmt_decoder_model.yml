@@ -2,12 +2,12 @@
 dataset:
   dir: 'predictive/tatoeba-de-en/data/raw/'
   sampling_method: 'ancestral'
-  n_hypotheses: 10
-  n_references: 100
+  n_hypotheses: 100
+  n_references: 1000
   repeated_indices: False
   utility: unigram-f1
-batch_size: 8
-accumulate_grad_batches: 8 # Effective batch size of 128
+batch_size: 32
+accumulate_grad_batches: 4 # Effective batch size of 128
 
 max_epochs: 30
 
@@ -20,10 +20,10 @@ log_dir: './logs/nmt_decoder_model'
 model:
   type: hypothesis_decoder_model
   lr: 0.0005 #1.4815897489348615e-05
-  weight_decay: 0.0 #1.0e-06
+  weight_decay: 1.0e-06
   loss_function: 'MSE'
 
-  dropout: 0.0 #0.5 #0.6712665889822903
+  dropout: 0.25 #0.5 #0.6712665889822903
   nmt_model:
     model:
       name: 'Helsinki-NLP/opus-mt-de-en'
@@ -32,6 +32,7 @@ model:
   embedding: last_hidden
   feed_forward_layers:
     dims:
+      - 1024
       - 512
       - 256
       - 128
@@ -41,7 +42,7 @@ model:
   optimizer:
     type: adam_with_steps
     step_size: 1
-    gamma: 0.9
+    gamma: 0.5
 #    type: adam_with_schedule
 #    warmup_steps: 5000
 #    start_decay: 10000

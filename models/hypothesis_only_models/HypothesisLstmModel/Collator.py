@@ -26,7 +26,7 @@ class HypothesisLstmModelCollator:
 
 
         # Next we create a packed sequence:
-        packed_hypotheses = pack_sequence([torch.tensor(h) for h in tokenized_hypotheses], enforce_sorted=False).to(self.device)
+        packed_hypotheses = pack_sequence([torch.tensor(h) for h in tokenized_hypotheses], enforce_sorted=False,).to(self.device)
 
         features = {
             "tokenized_hypotheses": packed_hypotheses

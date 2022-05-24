@@ -33,18 +33,16 @@ class LastHiddenLstmModel(pl.LightningModule):
 
                                                                               )
 
-
         ## We need to pack the embeddings
         lengths = features["sequence_lengths"].int().to("cpu")
 
         packed_embeddings = pack_padded_sequence(embeddings, lengths, enforce_sorted=False, batch_first=True)
 
-        output, (h_n, c_n) = self.lstm_layer(embeddings)
+        output, (h_n, c_n) = self.lstm_layer(packed_embeddings)
 
-        c_n = c_n.reshape(-1, 512)
+        h_n = h_n.permute(1,0, 2).reshape(-1, 1024)
 
-
-        predicted_scores = self.final_layers(c_n)
+        predicted_scores = self.final_layers(h_n)
 
         return predicted_scores
 
@@ -97,6 +95,7 @@ class LastHiddenLstmModel(pl.LightningModule):
 
     def configure_optimizers(self):
 
-        return self.initialize_optimizer( list(self.lstm_layer.parameters()) + list(self.final_layers.parameters())) #self.final_layers.parameters())
-            #list(self.lstm_layer.parameters()) + list(
-             #   ))
+        return self.initialize_optimizer(self.parameters())  # self.final_layers.parameters())
+
+    def parameters(self, recursive=True):
+        return iter(list(self.lstm_layer.parameters()) + list(self.final_layers.parameters()))
