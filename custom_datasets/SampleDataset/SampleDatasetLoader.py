@@ -3,8 +3,11 @@ import ast
 
 
 from custom_datasets.SampleDataset.SampleDataset import SampleDataset
-from misc.PathManager import get_path_manager
+
 import pandas as pd
+
+from utilities.PathManager import get_path_manager
+
 
 class SampleDatasetLoader:
     def __init__(self, split, n_samples, sampling_method, develop=False, base='/NMT/tatoeba-de-en'):

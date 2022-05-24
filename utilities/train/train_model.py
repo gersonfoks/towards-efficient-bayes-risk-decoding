@@ -43,6 +43,7 @@ def train_lstm_model(config, smoke_test):
 
     train_dataset, validation_dataset = load_dataset_for_training(config["dataset"], smoke_test)
 
+
     # Next do the preprocessing
     #
     preprocess = HypothesisLstmPreprocess()
@@ -50,7 +51,7 @@ def train_lstm_model(config, smoke_test):
     train_dataset_preprocessed = preprocess(train_dataset)
     validation_dataset_preprocessed = preprocess(validation_dataset)
 
-    print(train_dataset_preprocessed.to_pandas().head())
+    print(train_dataset_preprocessed.to_pandas().head(20))
 
     # Get the collate functions
 
@@ -74,7 +75,8 @@ def train_lstm_model(config, smoke_test):
         val_check_interval=0.5,
         callbacks=[LearningRateMonitor(logging_interval="step")],
         logger=tb_logger,
-        accumulate_grad_batches=config["accumulate_grad_batches"]
+        accumulate_grad_batches=config["accumulate_grad_batches"],
+        gradient_clip_val=2.0
     )
 
     # create the dataloaders
