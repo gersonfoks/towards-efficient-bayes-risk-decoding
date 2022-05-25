@@ -60,9 +60,9 @@ class TrainLastHiddenLSTMModel:
             callbacks=[LearningRateMonitor(logging_interval="step")],
             logger=tb_logger,
             accumulate_grad_batches=config["accumulate_grad_batches"],
-            gradient_clip_val=2.0
-
-
+            gradient_clip_val=2.0,
+            log_every_n_steps=250, # Makes interpreting the training easier (as we see a running average)
+            flush_logs_every_n_steps=500
         )
 
 

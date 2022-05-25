@@ -66,7 +66,7 @@ class LastHiddenLstmModel(pl.LightningModule):
         loss = batch_out["loss"]
 
         for log_var in self.log_vars:
-            self.log("train_{}".format(log_var), batch_out[log_var], batch_size=batch_size)
+            self.log("train_{}".format(log_var), batch_out[log_var], batch_size=batch_size, on_step=True, on_epoch=False)
 
         return loss
 
@@ -80,7 +80,7 @@ class LastHiddenLstmModel(pl.LightningModule):
         batch_size = len(scores)
 
         for log_var in self.log_vars:
-            self.log("val_{}".format(log_var), batch_out[log_var], batch_size=batch_size)
+            self.log("val_{}".format(log_var), batch_out[log_var], batch_size=batch_size,)
 
     @torch.no_grad()
     def predict(self, sources, hypotheses, references):

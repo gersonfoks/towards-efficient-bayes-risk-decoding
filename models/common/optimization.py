@@ -70,3 +70,24 @@ def get_optimizer_function(config):
             return lr_config
 
         return initializer
+
+    if config["optimizer"]["type"] == "adam_reduce_every_n_steps":
+        def initializer(x):
+            optimizer = torch.optim.Adam(x, lr=config["lr"], weight_decay=config["weight_decay"])
+            step_size = config["optimizer"]["step_size"]
+            gamma = config["optimizer"]["gamma"]
+            # When to start the decay
+
+            lr_config = {
+                "optimizer": optimizer,
+                "lr_scheduler": {
+
+                    "scheduler": StepLR(optimizer, step_size=step_size, gamma=gamma),
+                    "interval": "step",
+                }
+
+            }
+
+            return lr_config
+
+        return initializer
