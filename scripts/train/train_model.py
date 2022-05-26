@@ -16,7 +16,7 @@ def main():
         description='Train a model according with parameters specified in the config file ')
     parser.add_argument('--config', type=str,
 
-                        default='./configs/unigram-f1/hypothesis-only-models/nmt_decoder_model_2.yml',
+                        default='./configs/unigram-f1/hypothesis-only-models/prob_entropy_model.yml',
                         help='config to load model from')
 
 
