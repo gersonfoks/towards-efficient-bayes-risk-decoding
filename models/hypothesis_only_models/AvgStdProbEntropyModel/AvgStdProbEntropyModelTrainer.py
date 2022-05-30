@@ -4,18 +4,20 @@ from datasets import Dataset
 from pytorch_lightning.callbacks import LearningRateMonitor
 from torch.utils.data import DataLoader
 
-from models.hypothesis_only_models.LastHiddenLstmModel.manager import LastHiddenLstmManager
-from models.hypothesis_only_models.ProbEntropyModel.ProbEntropyModelCollator import ProbEntropyModelCollator
 
-from models.hypothesis_only_models.ProbEntropyModel.PropEntropyModelManager import PropEntropyLstmModelManager
-from models.hypothesis_only_models.ProbEntropyModel.PropEntropyModelPreprocess import PropEntropyLstmModelPreprocess
+from models.hypothesis_only_models.AvgStdProbEntropyModel.AvgStdProbEntropyModelCollator import \
+    AvgStdProbEntropyModelCollator
+from models.hypothesis_only_models.AvgStdProbEntropyModel.AvgStdProbEntropyModelManager import \
+    AvgStdProbEntropyModelManager
+from models.hypothesis_only_models.AvgStdProbEntropyModel.AvgStdProbEntropyModelPreprocess import \
+    AvgStdProbEntropyModelPreprocess
 from utilities.PathManager import get_path_manager
 from utilities.dataset.loading import load_dataset_for_training
 import pytorch_lightning as pl
 from pytorch_lightning import loggers as pl_loggers
 
 
-class PropEntropyModelTrainer:
+class AvgStdPropEntropyModelTrainer:
 
     def __init__(self, config, smoke_test):
         self.config = config
@@ -26,7 +28,7 @@ class PropEntropyModelTrainer:
         smoke_test = self.smoke_test
         # First get the model:
 
-        model_manager = PropEntropyLstmModelManager(config["model"])
+        model_manager = AvgStdProbEntropyModelManager(config["model"])
         model = model_manager.create_model()
 
         # Next load the datasets
@@ -53,7 +55,7 @@ class PropEntropyModelTrainer:
 
             # Next do the preprocessing
             #
-            preprocess = PropEntropyLstmModelPreprocess(model_manager.nmt_model, model_manager.tokenizer)
+            preprocess = AvgStdProbEntropyModelPreprocess(model_manager.nmt_model, model_manager.tokenizer)
 
             train_dataset_preprocessed = preprocess(train_dataset)
             validation_dataset_preprocessed = preprocess(validation_dataset)
@@ -65,7 +67,7 @@ class PropEntropyModelTrainer:
 
         # Get the collate functions
 
-        collate_fn = ProbEntropyModelCollator()
+        collate_fn = AvgStdProbEntropyModelCollator()
 
         train_dataloader = DataLoader(train_dataset_preprocessed,
                                       collate_fn=collate_fn,
@@ -100,7 +102,7 @@ class PropEntropyModelTrainer:
         model_path = path_manager.get_abs_path(config["save_model_path"])
         model_manager.save_model(model_path)
 
-        model, manager = PropEntropyLstmModelManager.load_model(model_path)
+        model, manager = AvgStdProbEntropyModelManager.load_model(model_path)
 
         # create the dataloaders
         trainer.validate(model, val_dataloader, )
