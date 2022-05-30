@@ -58,9 +58,9 @@ def main():
     parser.add_argument('--sampling-method', type=str, default="ancestral", help='sampling method for the hypothesis')
 
     parser.add_argument('--n-references', type=int, default=1000, help='Number of references for each hypothesis')
-    parser.add_argument('--n-references-estimate', type=int, default=10, help='Number of references for each hypothesis in the estimate')
+    parser.add_argument('--n-references-estimate', type=int, default=1, help='Number of references for each hypothesis in the estimate')
 
-    parser.add_argument('--split', type=str, default="train_predictive",
+    parser.add_argument('--split', type=str, default="validation_predictive",
                         help="Which split to generate samples for (train_predictive, validation_predictive or test")
 
     args = parser.parse_args()
@@ -72,11 +72,11 @@ def main():
     sampling_method = args.sampling_method
 
     dataset_dir = 'predictive/tatoeba-de-en/data/raw/'
-    dataset_loader = BayesRiskDatasetLoader("train_predictive", n_hypotheses, n_references,
+    dataset_loader = BayesRiskDatasetLoader(args.split, n_hypotheses, n_references,
                                                   sampling_method, utility, develop=False,
                                                   base=dataset_dir)
 
-    dataset = dataset_loader.load(type="pandas").data.loc[:100]
+    dataset = dataset_loader.load(type="pandas").data
 
     # Reference dataset
     base_dir = 'NMT/tatoeba-de-en/data/'
@@ -84,7 +84,7 @@ def main():
                                              base=base_dir, )
 
     ref_dataset = ref_dataset_loader.load()
-    ref_dataset = pd.DataFrame.from_dict(ref_dataset.data).loc[:100]
+    ref_dataset = pd.DataFrame.from_dict(ref_dataset.data)
 
 
     dataset["refs"] = ref_dataset["samples"]
