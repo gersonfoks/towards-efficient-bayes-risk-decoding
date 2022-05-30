@@ -4,11 +4,13 @@ This file contains all the functions that can be used to train a model
 from pytorch_lightning.callbacks import LearningRateMonitor
 from torch.utils.data import DataLoader
 
+from models.hypothesis_only_models.HiddenStateModel.Trainer import HiddenStateModelTrainer
 from models.hypothesis_only_models.HypothesisLstmModel.Collator import HypothesisLstmModelCollator
 from models.hypothesis_only_models.HypothesisLstmModel.Preprocess import HypothesisLstmPreprocess
 from models.hypothesis_only_models.HypothesisLstmModel.manager import HypothesisLstmModelManager
 from models.hypothesis_only_models.LastHiddenLstmModel.Trainer import TrainLastHiddenLSTMModel
 from models.hypothesis_only_models.ProbEntropyModel.PropEntropyModelTrainer import TrainPropEntropyModel
+from models.source_hyp_models.EncDecLastHiddenModel.Trainer import EncDecLastHidenModelTrainer
 from utilities.PathManager import get_path_manager
 from utilities.dataset.loading import load_dataset_for_training
 from pytorch_lightning import loggers as pl_loggers
@@ -33,6 +35,14 @@ def train_model_from_config(config, smoke_test=False):
     elif model_type == "prop_entropy_model":
         print("prop entropy model")
         train_model = TrainPropEntropyModel(config, smoke_test)
+        train_model()
+    elif model_type == "enc_dec_last_hidden_model":
+        print("enc dec last hidden state model")
+        train_model = EncDecLastHidenModelTrainer(config, smoke_test)
+        train_model()
+    elif model_type == "hidden_state_model":
+        print("hidden state model")
+        train_model = HiddenStateModelTrainer(config, smoke_test)
         train_model()
     else:
         raise ValueError("model type: {} not found".format(model_type))

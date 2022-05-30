@@ -3,17 +3,13 @@ import torch
 from torch.nn import MSELoss
 
 
+class HiddenStateModel(pl.LightningModule):
 
-class PropEntropyLstmModel(pl.LightningModule):
-
-    def __init__(self,  prob_lstm_layer, entropy_lstm_layer, final_layers, initialize_optimizer, device="cuda", ):
+    def __init__(self, hidden_state_embedding, final_layers, initialize_optimizer, device="cuda", ):
         super().__init__()
         self.device_name = device
 
-
-
-        self.prob_lstm_layer = prob_lstm_layer
-        self.entropy_lstm_layer = entropy_lstm_layer
+        self.hidden_state_embedding = hidden_state_embedding
 
         self.final_layers = final_layers
 
@@ -27,18 +23,14 @@ class PropEntropyLstmModel(pl.LightningModule):
 
     def forward(self, sources, hypotheses, features):
 
-        _, (probs_h_n, _) = self.prob_lstm_layer(features["log_prob"])
-        _, (entropy_h_n, _) = self.entropy_lstm_layer(features["entropy"])
+        embedding = self.hidden_state_embedding.forward(features["input_ids"],
+                                                        features["attention_mask"],
+                                                        features["decoder_input_ids"],
+                                                        features["labels"],
 
+                                                        )
 
-        probs_h_n = probs_h_n.permute(1,0, 2).reshape(-1, 256)
-        entropy_h_n = entropy_h_n.permute(1,0, 2).reshape(-1, 256)
-
-
-        features = torch.concat([probs_h_n, entropy_h_n], dim=-1)
-
-
-        predicted_scores = self.final_layers(features)
+        predicted_scores = self.final_layers(embedding)
 
         return predicted_scores
 
@@ -62,7 +54,8 @@ class PropEntropyLstmModel(pl.LightningModule):
         loss = batch_out["loss"]
 
         for log_var in self.log_vars:
-            self.log("train_{}".format(log_var), batch_out[log_var], batch_size=batch_size, on_step=True, on_epoch=False)
+            self.log("train_{}".format(log_var), batch_out[log_var], batch_size=batch_size, on_step=True,
+                     on_epoch=False)
 
         return loss
 
@@ -76,23 +69,11 @@ class PropEntropyLstmModel(pl.LightningModule):
         batch_size = len(scores)
 
         for log_var in self.log_vars:
-            self.log("val_{}".format(log_var), batch_out[log_var], batch_size=batch_size,)
-
-    @torch.no_grad()
-    def predict(self, sources, hypotheses, references):
-        '''
-        Predicts the bayes risk for the source targets pairs
-        :param sources:
-        :param targets:
-        :return:
-        '''
-
-        pass
+            self.log("val_{}".format(log_var), batch_out[log_var], batch_size=batch_size, )
 
     def configure_optimizers(self):
 
         return self.initialize_optimizer(self.parameters())  # self.final_layers.parameters())
 
     def parameters(self, recursive=True):
-        return iter(list(self.prob_lstm_layer.parameters()) + list(self.entropy_lstm_layer.parameters()) + list(
-            self.final_layers.parameters()))
+        return iter(list(self.hidden_state_embedding.parameters()) + list(self.final_layers.parameters()))
