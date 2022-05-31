@@ -2,7 +2,7 @@ import torch
 
 from models.common.layers import EmbbedingForPackedSequenceLayer, get_feed_forward_layers, LastStateEmbedding
 from models.common.optimization import get_optimizer_function
-from models.hypothesis_only_models.HypothesisLstmModel.HypothesisLstmModel import HypothesisLstmModel
+from models.hypothesis_only_models.HypothesisLstmModel.model import HypothesisLstmModel
 from models.hypothesis_only_models.LastHiddenLstmModel.LastHiddenLstmModel import LastHiddenLstmModel
 from models.manager import ModelManager
 from utilities.misc import load_nmt_model

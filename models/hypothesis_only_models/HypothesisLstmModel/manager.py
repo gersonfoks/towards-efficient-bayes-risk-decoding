@@ -2,7 +2,7 @@ import torch
 
 from models.common.layers import EmbbedingForPackedSequenceLayer, get_feed_forward_layers
 from models.common.optimization import get_optimizer_function
-from models.hypothesis_only_models.HypothesisLstmModel.HypothesisLstmModel import HypothesisLstmModel
+from models.hypothesis_only_models.HypothesisLstmModel.model import HypothesisLstmModel
 from models.manager import ModelManager
 from utilities.misc import load_nmt_model
 from pathlib import Path
@@ -10,6 +10,7 @@ from pathlib import Path
 class HypothesisLstmModelManager(ModelManager):
 
     def __init__(self, config):
+        super().__init__(config)
         self.config = config
 
 
@@ -24,7 +25,7 @@ class HypothesisLstmModelManager(ModelManager):
 
         embedding_layer = EmbbedingForPackedSequenceLayer(self.tokenizer.vocab_size, embedding_size)
 
-        lstm_layer = torch.nn.LSTM(embedding_size, embedding_size,)
+        lstm_layer = torch.nn.LSTM(embedding_size, embedding_size, bidirectional=True)
 
         final_layers = get_feed_forward_layers(config["feed_forward_layers"]["dims"],
                                                config["feed_forward_layers"]["activation_function"],

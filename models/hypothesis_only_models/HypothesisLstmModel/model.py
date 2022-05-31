@@ -29,6 +29,8 @@ class HypothesisLstmModel(pl.LightningModule):
 
         output, (h_n, c_n) = self.lstm_layer(embeddings)
 
+        h_n = h_n.permute(1,0, 2).reshape(-1, 1024)
+
         predicted_scores = self.final_layers(h_n)
 
         return predicted_scores
