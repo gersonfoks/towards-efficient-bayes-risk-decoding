@@ -69,7 +69,7 @@ class LastHiddenStateLstmModelHyperParamSearch:
             "optimizer": {
                 "type": "adam_with_steps",
                 "step_size": 1,
-                "gamma": trial.suggest_float("learning_rate_decay", 0.1, 1.0, )
+                "gamma": trial.suggest_float("learning_rate_decay", 0.01, 0.9, )
             },
 
             "nmt_model": {
