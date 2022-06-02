@@ -4,7 +4,7 @@ This file contains all the functions that can be used to train a model
 from pytorch_lightning.callbacks import LearningRateMonitor
 from torch.utils.data import DataLoader
 
-from models.hypothesis_only_models.AvgStdProbEntropyModel.AvgStdProbEntropyModelTrainer import \
+from models.hypothesis_only_models.AvgStdProbEntropyModel.Trainer import \
     AvgStdPropEntropyModelTrainer
 from models.hypothesis_only_models.HiddenStateModel.Trainer import HiddenStateModelTrainer
 from models.hypothesis_only_models.HypothesisLstmModel.Collator import HypothesisLstmModelCollator

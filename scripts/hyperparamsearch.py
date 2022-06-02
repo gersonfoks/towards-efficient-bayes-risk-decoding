@@ -1,6 +1,7 @@
 ### A simple script which we can use to train a model
 import argparse
 
+from models.hypothesis_only_models.AvgStdProbEntropyModel.hyperparamsearch import AvgStdProbEntropyModelHyperparamsearch
 from models.hypothesis_only_models.HiddenStateModel.hyperparamsearch import HiddenStateModelHyperParamSearch
 from models.hypothesis_only_models.HypothesisLstmModel.hyperparamsearch import HypothesisLstmHyperParamSearch
 from models.hypothesis_only_models.LastHiddenLstmModel.hyperparamsearch import LastHiddenStateLstmModelHyperParamSearch
@@ -11,6 +12,7 @@ models = {
     "hidden_state_model": HiddenStateModelHyperParamSearch,
     "last_hidden_state_model": LastHiddenStateLstmModelHyperParamSearch,
     "prob_entropy_model": ProbEntropyModelHyperparamsearch,
+    "avg_std_prob_entropy_model": AvgStdProbEntropyModelHyperparamsearch,
 }
 
 

@@ -8,6 +8,7 @@ from pytorch_lightning.callbacks import LearningRateMonitor, EarlyStopping
 from torch.utils.data import DataLoader
 from transformers import EarlyStoppingCallback
 
+from models.hypothesis_only_models.AvgStdProbEntropyModel.info import AvgStdProbEntropyModelInfo
 from models.hypothesis_only_models.HiddenStateModel.info import HiddenStateModelInfo
 from models.hypothesis_only_models.HypothesisLstmModel.Collator import HypothesisLstmModelCollator
 from models.hypothesis_only_models.HypothesisLstmModel.Preprocess import HypothesisLstmPreprocess
@@ -20,17 +21,21 @@ from pytorch_lightning import loggers as pl_loggers
 import pytorch_lightning as pl
 
 
-class ProbEntropyModelHyperparamsearch:
+class AvgStdProbEntropyModelHyperparamsearch:
 
     def __init__(self, config, smoke_test):
         self.config = config
         self.smoke_test = smoke_test
 
-        self.model_info = ProbEntropyModelInfo
+        self.model_info = AvgStdProbEntropyModelInfo
 
-        self.study_name = "prob_entropy_model_study"
+        self.study_name = "avg_std_prob_entropy_model_study"
 
 
+        self.log_dir = './logs/avg_std_prob_entropy_model_hyperparamsearch'
+
+        self.batch_size = 128
+        self.accumulate_grad_batches = 1
 
     def __call__(self, ):
         pruner: optuna.pruners.BasePruner = (
@@ -58,21 +63,18 @@ class ProbEntropyModelHyperparamsearch:
         # Next we create a config:
 
         model_config = {
-            "type": "prop_entropy_model",
+            "type": "avg_std_prop_entropy_model",
             "lr": trial.suggest_float("learning_rate", 1.0e-5, 0.1, log=True),
             "weight_decay": trial.suggest_float("weight_decay", 1.0e-7, 0.1, log=True),
             "dropout": trial.suggest_float("dropout", 0.0, 0.9, ),
 
             "feed_forward_layers": {
-                "dims": [1024, 512, 256, 128, 1],
+                "dims": [4, 32, 16, 1,],
                 "activation_function": "relu",
                 "activation_function_last_layer": "sigmoid",
 
             },
 
-            "lstms": {
-                "hidden_dim": 256
-            },
             "optimizer": {
                 "type": "adam_with_steps",
                 "step_size": 1,
@@ -100,9 +102,7 @@ class ProbEntropyModelHyperparamsearch:
 
         }
 
-        batch_size = 128
-        accumulate_grad_batches = 1
-        log_dir = './logs/prob_entropy_model_hyperparamsearch'
+
 
         model_manager = self.model_info.manager(model_config)
 
@@ -147,13 +147,13 @@ class ProbEntropyModelHyperparamsearch:
 
         train_dataloader = DataLoader(train_dataset_preprocessed,
                                       collate_fn=collate_fn,
-                                      batch_size=batch_size, shuffle=True, )
+                                      batch_size=self.batch_size, shuffle=True, )
         val_dataloader = DataLoader(validation_dataset_preprocessed,
                                     collate_fn=collate_fn,
-                                    batch_size=batch_size, shuffle=False, )
+                                    batch_size=self.batch_size, shuffle=False, )
 
         # Start the training
-        tb_logger = pl_loggers.TensorBoardLogger(save_dir=log_dir)
+        tb_logger = pl_loggers.TensorBoardLogger(save_dir=self.log_dir)
 
         max_epochs = 1 if self.smoke_test else 30
         trainer = pl.Trainer(
@@ -164,7 +164,7 @@ class ProbEntropyModelHyperparamsearch:
                 LearningRateMonitor(logging_interval="epoch"),
                        PyTorchLightningPruningCallback(trial, monitor="val_loss")],
             logger=tb_logger,
-            accumulate_grad_batches=accumulate_grad_batches,
+            accumulate_grad_batches=self.accumulate_grad_batches,
             gradient_clip_val=2.0
         )
 

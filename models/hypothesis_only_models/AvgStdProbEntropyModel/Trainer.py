@@ -5,11 +5,11 @@ from pytorch_lightning.callbacks import LearningRateMonitor
 from torch.utils.data import DataLoader
 
 
-from models.hypothesis_only_models.AvgStdProbEntropyModel.AvgStdProbEntropyModelCollator import \
+from models.hypothesis_only_models.AvgStdProbEntropyModel.Collator import \
     AvgStdProbEntropyModelCollator
-from models.hypothesis_only_models.AvgStdProbEntropyModel.AvgStdProbEntropyModelManager import \
+from models.hypothesis_only_models.AvgStdProbEntropyModel.Manager import \
     AvgStdProbEntropyModelManager
-from models.hypothesis_only_models.AvgStdProbEntropyModel.AvgStdProbEntropyModelPreprocess import \
+from models.hypothesis_only_models.AvgStdProbEntropyModel.Preprocess import \
     AvgStdProbEntropyModelPreprocess
 from utilities.PathManager import get_path_manager
 from utilities.dataset.loading import load_dataset_for_training
