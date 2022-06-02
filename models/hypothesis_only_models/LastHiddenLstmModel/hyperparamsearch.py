@@ -2,8 +2,9 @@ from argparse import Namespace
 
 import optuna
 from optuna.integration import PyTorchLightningPruningCallback
-from pytorch_lightning.callbacks import LearningRateMonitor
+from pytorch_lightning.callbacks import LearningRateMonitor, EarlyStopping
 from torch.utils.data import DataLoader
+from transformers import EarlyStoppingCallback
 
 from models.hypothesis_only_models.HiddenStateModel.info import HiddenStateModelInfo
 from models.hypothesis_only_models.HypothesisLstmModel.Collator import HypothesisLstmModelCollator
@@ -31,7 +32,7 @@ class LastHiddenStateLstmModelHyperParamSearch:
             optuna.pruners.MedianPruner(n_warmup_steps=5)
         )
 
-        study = optuna.create_study(direction="minimize", pruner=pruner)
+        study = optuna.create_study(study_name="last_hidden_lstm_model_study", direction="minimize", pruner=pruner)
         study.optimize(self.objective, n_trials=25, )
 
         print("Number of finished trials: {}".format(len(study.trials)))
@@ -44,6 +45,7 @@ class LastHiddenStateLstmModelHyperParamSearch:
         print("  Params: ")
         for key, value in trial.params.items():
             print("    {}: {}".format(key, value))
+        optuna.visualization.plot_param_importances(study)
 
     def objective(self, trial: optuna.trial.Trial) -> float:
         # Here we have our hyperparameters
@@ -69,7 +71,7 @@ class LastHiddenStateLstmModelHyperParamSearch:
             "optimizer": {
                 "type": "adam_with_steps",
                 "step_size": 1,
-                "gamma": trial.suggest_float("learning_rate_decay", 0.01, 0.9, )
+                "gamma": trial.suggest_float("learning_rate_decay", 0.001, 0.9, log=True )
             },
 
             "nmt_model": {
@@ -128,11 +130,12 @@ class LastHiddenStateLstmModelHyperParamSearch:
             max_epochs=max_epochs,
             gpus=1,
             progress_bar_refresh_rate=1,
-            callbacks=[LearningRateMonitor(logging_interval="epoch"),
+            callbacks=[ EarlyStopping(monitor="val_loss", divergence_threshold=0.2),
+                LearningRateMonitor(logging_interval="epoch"),
                        PyTorchLightningPruningCallback(trial, monitor="val_loss")],
             logger=tb_logger,
             accumulate_grad_batches=accumulate_grad_batches,
-            gradient_clip_val=2.0
+            gradient_clip_val=5.0
         )
 
         # create the dataloaders
