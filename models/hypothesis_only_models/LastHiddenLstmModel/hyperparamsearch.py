@@ -135,7 +135,7 @@ class LastHiddenStateLstmModelHyperParamSearch:
                        PyTorchLightningPruningCallback(trial, monitor="val_loss")],
             logger=tb_logger,
             accumulate_grad_batches=accumulate_grad_batches,
-            gradient_clip_val=5.0
+            gradient_clip_val=2.0
         )
 
         # create the dataloaders
