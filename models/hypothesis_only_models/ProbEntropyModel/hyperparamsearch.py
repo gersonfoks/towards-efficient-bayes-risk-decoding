@@ -1,6 +1,8 @@
 from argparse import Namespace
+from os.path import exists
 
 import optuna
+from datasets import Dataset
 from optuna.integration import PyTorchLightningPruningCallback
 from pytorch_lightning.callbacks import LearningRateMonitor, EarlyStopping
 from torch.utils.data import DataLoader
@@ -11,28 +13,31 @@ from models.hypothesis_only_models.HypothesisLstmModel.Collator import Hypothesi
 from models.hypothesis_only_models.HypothesisLstmModel.Preprocess import HypothesisLstmPreprocess
 from models.hypothesis_only_models.HypothesisLstmModel.manager import HypothesisLstmModelManager
 from models.hypothesis_only_models.LastHiddenLstmModel.info import LastHiddenStateLstmModelInfo
+from models.hypothesis_only_models.ProbEntropyModel.info import ProbEntropyModelInfo
+from utilities.PathManager import get_path_manager
 from utilities.dataset.loading import load_dataset_for_training
 from pytorch_lightning import loggers as pl_loggers
 import pytorch_lightning as pl
 
 
-class LastHiddenStateLstmModelHyperParamSearch:
+class ProbEntropyModelHyperparamsearch:
 
     def __init__(self, config, smoke_test):
         self.config = config
         self.smoke_test = smoke_test
 
-        self.manager = LastHiddenStateLstmModelInfo.manager
-        self.preprocess = LastHiddenStateLstmModelInfo.preprocess
-        self.collate = LastHiddenStateLstmModelInfo.collate
-        self.model = LastHiddenStateLstmModelInfo.model
+        self.model_info = ProbEntropyModelInfo
+
+        self.study_name = "prob_entropy_model_study"
+
+
 
     def __call__(self, ):
         pruner: optuna.pruners.BasePruner = (
             optuna.pruners.MedianPruner(n_warmup_steps=5)
         )
 
-        study = optuna.create_study(study_name="last_hidden_lstm_model_study", direction="minimize", pruner=pruner)
+        study = optuna.create_study(study_name=self.study_name, direction="minimize", pruner=pruner)
         study.optimize(self.objective, n_trials=25, )
 
         print("Number of finished trials: {}".format(len(study.trials)))
@@ -53,7 +58,7 @@ class LastHiddenStateLstmModelHyperParamSearch:
         # Next we create a config:
 
         model_config = {
-            "type": "hidden_state_model",
+            "type": "prop_entropy_model",
             "lr": trial.suggest_float("learning_rate", 1.0e-5, 0.1, log=True),
             "weight_decay": trial.suggest_float("weight_decay", 1.0e-7, 0.1, log=True),
             "dropout": trial.suggest_float("dropout", 0.0, 0.9, ),
@@ -65,13 +70,13 @@ class LastHiddenStateLstmModelHyperParamSearch:
 
             },
 
-            "embedding": {
-                "size": 512
+            "lstms": {
+                "hidden_dim": 256
             },
             "optimizer": {
                 "type": "adam_with_steps",
                 "step_size": 1,
-                "gamma": trial.suggest_float("learning_rate_decay", 0.25, 1.0,  )
+                "gamma": trial.suggest_float("learning_rate_decay", 0.25, 1.0, )
             },
 
             "nmt_model": {
@@ -86,6 +91,7 @@ class LastHiddenStateLstmModelHyperParamSearch:
 
         dataset_config = {
             "dir": 'predictive/tatoeba-de-en/data/raw/',
+            "preproces_dir": 'predictive/tatoeba-de-en/data/preprocessed/',
             "sampling_method": 'ancestral',
             "n_hypotheses": 10,
             "n_references": 100,
@@ -94,26 +100,50 @@ class LastHiddenStateLstmModelHyperParamSearch:
 
         }
 
-        batch_size = 32
-        accumulate_grad_batches = 4
-        log_dir = './logs/last_hidden_state_model_hyperparam_search'
+        batch_size = 128
+        accumulate_grad_batches = 1
+        log_dir = './logs/prob_entropy_model_hyperparamsearch'
 
-        model_manager = self.manager(model_config)
+        model_manager = self.model_info.manager(model_config)
 
         model = model_manager.create_model()
 
-        train_dataset, validation_dataset = load_dataset_for_training(dataset_config, self.smoke_test)
 
-        # Next do the preprocessing
-        #
-        preprocess = self.preprocess()
+        path_manager = get_path_manager()
 
-        train_dataset_preprocessed = preprocess(train_dataset)
-        validation_dataset_preprocessed = preprocess(validation_dataset)
+
+        name = "{}unigram_f1_{}_{}".format(dataset_config["preproces_dir"], dataset_config["n_hypotheses"],
+                                           dataset_config["n_references"])
+        if self.smoke_test:
+            name += "_smoke_test_"
+
+        preprocessed_train_dataset_ref = path_manager.get_abs_path(name + "train.parquet")
+        preprocessed_val_dataset_ref = path_manager.get_abs_path(name + "val.parquet")
+        if exists(preprocessed_train_dataset_ref) and exists(preprocessed_val_dataset_ref):
+            print("Loading preprocessed data")
+            train_dataset_preprocessed = Dataset.from_parquet(preprocessed_train_dataset_ref)
+            validation_dataset_preprocessed = Dataset.from_parquet(preprocessed_val_dataset_ref)
+
+
+
+        else:
+            train_dataset, validation_dataset = load_dataset_for_training(dataset_config, self.smoke_test)
+
+            # Next do the preprocessing
+            #
+            preprocess = self.model_info.preprocess(model_manager.nmt_model, model_manager.tokenizer)
+
+            train_dataset_preprocessed = preprocess(train_dataset)
+            validation_dataset_preprocessed = preprocess(validation_dataset)
+
+            train_dataset_preprocessed.to_parquet(preprocessed_train_dataset_ref)
+            validation_dataset_preprocessed.to_parquet(preprocessed_val_dataset_ref)
+
+
 
         # Get the collate functions
 
-        collate_fn = self.collate(model_manager.nmt_model, model_manager.tokenizer)
+        collate_fn = self.model_info.collate()
 
         train_dataloader = DataLoader(train_dataset_preprocessed,
                                       collate_fn=collate_fn,

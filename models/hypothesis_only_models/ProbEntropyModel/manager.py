@@ -4,14 +4,15 @@ from models.common.layers import EmbbedingForPackedSequenceLayer, get_feed_forwa
 from models.common.optimization import get_optimizer_function
 from models.hypothesis_only_models.HypothesisLstmModel.model import HypothesisLstmModel
 from models.hypothesis_only_models.LastHiddenLstmModel.LastHiddenLstmModel import LastHiddenLstmModel
-from models.hypothesis_only_models.ProbEntropyModel.ProbEntropyLstmModel import PropEntropyLstmModel
+from models.hypothesis_only_models.ProbEntropyModel.model import ProbEntropyModel
 from models.manager import ModelManager
 from utilities.misc import load_nmt_model
 from pathlib import Path
 
-class PropEntropyLstmModelManager(ModelManager):
+class ProbEntropyModelManager(ModelManager):
 
     def __init__(self, config):
+        super().__init__(config)
         self.config = config
 
 
@@ -37,7 +38,7 @@ class PropEntropyLstmModelManager(ModelManager):
                                                )
 
         initialize_optimizer = get_optimizer_function(config)
-        self.model = PropEntropyLstmModel(probability_lstm_layer, entropy_lstm_layer, final_layers, initialize_optimizer)
+        self.model = ProbEntropyModel(probability_lstm_layer, entropy_lstm_layer, final_layers, initialize_optimizer)
         return self.model
 
 
@@ -62,7 +63,7 @@ class PropEntropyLstmModelManager(ModelManager):
 
         pl_path = model_path + 'pl_model.pt'
         checkpoint = torch.load(pl_path)
-        manager = PropEntropyLstmModelManager(checkpoint["config"])
+        manager = ProbEntropyModelManager(checkpoint["config"])
         model = manager.create_model()
 
         model.load_state_dict(checkpoint["state_dict"])

@@ -4,7 +4,7 @@ from torch.nn import MSELoss
 
 
 
-class PropEntropyLstmModel(pl.LightningModule):
+class ProbEntropyModel(pl.LightningModule):
 
     def __init__(self,  prob_lstm_layer, entropy_lstm_layer, final_layers, initialize_optimizer, device="cuda", ):
         super().__init__()
@@ -31,8 +31,8 @@ class PropEntropyLstmModel(pl.LightningModule):
         _, (entropy_h_n, _) = self.entropy_lstm_layer(features["entropy"])
 
 
-        probs_h_n = probs_h_n.permute(1,0, 2).reshape(-1, 256)
-        entropy_h_n = entropy_h_n.permute(1,0, 2).reshape(-1, 256)
+        probs_h_n = probs_h_n.permute(1,0, 2).reshape(-1, 512)
+        entropy_h_n = entropy_h_n.permute(1,0, 2).reshape(-1, 512)
 
 
         features = torch.concat([probs_h_n, entropy_h_n], dim=-1)

@@ -12,7 +12,7 @@ from models.hypothesis_only_models.HypothesisLstmModel.Preprocess import Hypothe
 from models.hypothesis_only_models.HypothesisLstmModel.manager import HypothesisLstmModelManager
 from models.hypothesis_only_models.HypothesisLstmModel.trainer import HypothesisLstmModelTrainer
 from models.hypothesis_only_models.LastHiddenLstmModel.Trainer import TrainLastHiddenLSTMModel
-from models.hypothesis_only_models.ProbEntropyModel.PropEntropyModelTrainer import PropEntropyModelTrainer
+from models.hypothesis_only_models.ProbEntropyModel.trainer import ProbEntropyModelTrainer
 
 from models.source_hyp_models.EncDecLastHiddenModel.Trainer import EncDecLastHidenModelTrainer
 
@@ -35,7 +35,7 @@ def train_model_from_config(config, smoke_test=False):
         train_model()
     elif model_type == "prop_entropy_model":
         print("prop entropy model")
-        train_model = PropEntropyModelTrainer(config, smoke_test)
+        train_model = ProbEntropyModelTrainer(config, smoke_test)
         train_model()
     elif model_type == "enc_dec_last_hidden_model":
         print("enc dec last hidden state model")

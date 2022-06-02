@@ -11,7 +11,7 @@ def calc_score(x):
     return score
 
 
-class PropEntropyLstmModelPreprocess:
+class ProbEntropyModelPreprocess:
     '''
     Splits the dataset hypotheses column and takes the average of the unigram f1 scores
     '''
