@@ -4,7 +4,8 @@ import transformers
 from transformers import MarianTokenizer, MarianMTModel
 
 # Temp hack
-home = 'C:/Users/gerso/'
+from utilities.PathManager import get_path_manager
+
 
 
 def load_nmt_model(config, pretrained=False):
@@ -14,6 +15,10 @@ def load_nmt_model(config, pretrained=False):
     :param pretrained: if we load a pretrained model or not
     :return:
     '''
+
+    path_manager = get_path_manager()
+
+
     model_name = config["model"]["name"]
 
     tokenizer = MarianTokenizer.from_pretrained(model_name)
@@ -28,7 +33,8 @@ def load_nmt_model(config, pretrained=False):
     model = None
     if pretrained:
 
-        config_path = os.path.join(home, 'FBR', config["model"]["checkpoint"])
+        
+        config_path = path_manager.get_abs_path(config["model"]["checkpoint"])
 
         model = Base.from_pretrained(config_path)
     else:
