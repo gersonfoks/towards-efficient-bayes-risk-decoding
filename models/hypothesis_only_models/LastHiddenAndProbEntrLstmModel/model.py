@@ -6,13 +6,15 @@ from torch.nn.utils.rnn import pack_padded_sequence
 
 class LastHiddenAndProbEntrLstmModel(pl.LightningModule):
 
-    def __init__(self, last_hidden_state_embedding, lstm_layer, final_layers, initialize_optimizer, device="cuda", ):
+    def __init__(self, last_hidden_state_embedding, last_hidden_lstm, prob_entropy_lstm_layer, final_layers, initialize_optimizer, device="cuda", ):
         super().__init__()
         self.device_name = device
 
         self.last_hidden_state_embedding = last_hidden_state_embedding
 
-        self.lstm_layer = lstm_layer
+        self.last_hidden_lstm = last_hidden_lstm
+
+        self.prob_entropy_lstm_layer = prob_entropy_lstm_layer
 
         self.final_layers = final_layers
 
@@ -38,11 +40,18 @@ class LastHiddenAndProbEntrLstmModel(pl.LightningModule):
 
         packed_embeddings = pack_padded_sequence(embeddings, lengths, enforce_sorted=False, batch_first=True)
 
-        output, (h_n, c_n) = self.lstm_layer(packed_embeddings)
+        output, (h_n, c_n) = self.last_hidden_lstm(packed_embeddings)
+
+        _, (probs_entropy_h_n, _) = self.prob_entropy_lstm_layer(features["log_prob_entropy"])
+
+        probs_entropy_h_n = probs_entropy_h_n.permute(1, 0, 2).reshape(-1, 256)
 
         h_n = h_n.permute(1,0, 2).reshape(-1, 1024)
 
-        predicted_scores = self.final_layers(h_n)
+
+        features = torch.concat([h_n, probs_entropy_h_n], dim=-1)
+
+        predicted_scores = self.final_layers(features)
 
         return predicted_scores
 
@@ -98,4 +107,4 @@ class LastHiddenAndProbEntrLstmModel(pl.LightningModule):
         return self.initialize_optimizer(self.parameters())  # self.final_layers.parameters())
 
     def parameters(self, recursive=True):
-        return iter(list(self.lstm_layer.parameters()) + list(self.final_layers.parameters()))
+        return iter(list(self.last_hidden_lstm.parameters()) + list(self.prob_entropy_lstm_layer.parameters()) + list(self.final_layers.parameters()))

@@ -4,15 +4,18 @@ from torch.nn import MSELoss
 from torch.nn.utils.rnn import pack_padded_sequence
 
 
-class LastHiddenLstmModel(pl.LightningModule):
+class FullDecHiddenLstmModel(pl.LightningModule):
 
-    def __init__(self, last_hidden_state_embedding, lstm_layer, final_layers, initialize_optimizer, device="cuda", ):
+    def __init__(self, hidden_state_embedding, hidden_state_lstms, prob_entropy_lstm_layer, final_layers, initialize_optimizer,
+                 device="cuda", ):
         super().__init__()
         self.device_name = device
 
-        self.last_hidden_state_embedding = last_hidden_state_embedding
+        self.hidden_state_embedding = hidden_state_embedding
 
-        self.lstm_layer = lstm_layer
+        self.hidden_state_lstms = hidden_state_lstms
+
+        self.prob_entropy_lstm_layer = prob_entropy_lstm_layer
 
         self.final_layers = final_layers
 
@@ -25,24 +28,31 @@ class LastHiddenLstmModel(pl.LightningModule):
         self.initialize_optimizer = initialize_optimizer
 
     def forward(self, sources, hypotheses, features):
-
-        embeddings, attention_mask = self.last_hidden_state_embedding.forward(features["input_ids"],
-                                                                              features["attention_mask"],
-                                                                              features["decoder_input_ids"],
-                                                                              features["labels"],
-
-                                                                              )
-
+        embeddings, _ = self.hidden_state_embedding.forward(features["input_ids"],
+                                                                         features["attention_mask"],
+                                                                         features["decoder_input_ids"],
+                                                                         features["labels"],
+                                                                         )
         ## We need to pack the embeddings
         lengths = features["sequence_lengths"].int().to("cpu")
 
-        packed_embeddings = pack_padded_sequence(embeddings, lengths, enforce_sorted=False, batch_first=True)
+        hidden_states = []
 
-        output, (h_n, c_n) = self.lstm_layer(packed_embeddings)
+        for embedding, lstm in zip(embeddings, self.hidden_state_lstms):
+            packed_embeddings = pack_padded_sequence(embedding, lengths, enforce_sorted=False, batch_first=True)
 
-        h_n = h_n.permute(1,0, 2).reshape(-1, 1024)
+            _, (l_h_n, _) = lstm(packed_embeddings)
+            l_h_n = l_h_n.permute(1, 0, 2).reshape(-1, 256)
+            hidden_states.append(l_h_n)
 
-        predicted_scores = self.final_layers(h_n)
+        _, (probs_entropy_h_n, _) = self.prob_entropy_lstm_layer(features["log_prob_entropy"])
+
+        probs_entropy_h_n = probs_entropy_h_n.permute(1, 0, 2).reshape(-1, 256)
+
+        hidden_states.append(probs_entropy_h_n)
+        features = torch.concat(hidden_states, dim=-1)
+
+        predicted_scores = self.final_layers(features)
 
         return predicted_scores
 
@@ -66,7 +76,8 @@ class LastHiddenLstmModel(pl.LightningModule):
         loss = batch_out["loss"]
 
         for log_var in self.log_vars:
-            self.log("train_{}".format(log_var), batch_out[log_var], batch_size=batch_size, on_step=True, on_epoch=False)
+            self.log("train_{}".format(log_var), batch_out[log_var], batch_size=batch_size, on_step=True,
+                     on_epoch=False)
 
         return loss
 
@@ -80,7 +91,7 @@ class LastHiddenLstmModel(pl.LightningModule):
         batch_size = len(scores)
 
         for log_var in self.log_vars:
-            self.log("val_{}".format(log_var), batch_out[log_var], batch_size=batch_size,)
+            self.log("val_{}".format(log_var), batch_out[log_var], batch_size=batch_size, )
 
     @torch.no_grad()
     def predict(self, sources, hypotheses, references):
@@ -98,4 +109,7 @@ class LastHiddenLstmModel(pl.LightningModule):
         return self.initialize_optimizer(self.parameters())  # self.final_layers.parameters())
 
     def parameters(self, recursive=True):
-        return iter(list(self.lstm_layer.parameters()) + list(self.final_layers.parameters()))
+        lstm_layer_list = []
+        for lstm in self.hidden_state_lstms:
+            lstm_layer_list += list(lstm.parameters())
+        return iter(lstm_layer_list + list(self.prob_entropy_lstm_layer.parameters()) + list(self.final_layers.parameters()))

@@ -9,6 +9,7 @@ __pycache__/
 comet_model
 lightning_logs
 logs
+study
 # C extensions
 *.so
 

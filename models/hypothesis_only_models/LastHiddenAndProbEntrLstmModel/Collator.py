@@ -3,7 +3,7 @@ from torch.nn.utils.rnn import pack_sequence
 from transformers import DataCollatorForSeq2Seq
 
 
-class LastHiddenLstmCollator:
+class LastHiddenProbEntrLstmCollator:
     '''
     Tokenizes the hypotheses and put them into a packed sequence (as we work with lstms)
     '''
@@ -42,8 +42,14 @@ class LastHiddenLstmCollator:
         # Next we create the inputs for the NMT model
         x_new = self.data_collator(x).to("cuda")
 
+        log_prob_entropy = pack_sequence(
+            [torch.concat([torch.tensor(b["log_prob"]).unsqueeze(-1), torch.tensor(b["entropy"]).unsqueeze(-1)], dim=-1)
+             for b in batch], enforce_sorted=False)
+
         features = {
             "sequence_lengths": sequence_lengths,
-            **x_new
+            "log_prob_entropy": log_prob_entropy,
+            **x_new,
+
         }
         return sources, hypotheses, features, score
