@@ -92,8 +92,8 @@ class FullDecModelTrainer:
         )
 
 
-        # create the dataloaders
-        #trainer.fit(model, train_dataloader, val_dataloaders=val_dataloader, )
+
+        trainer.fit(model, train_dataloader, val_dataloaders=val_dataloader, )
 
         path_manager = get_path_manager()
 

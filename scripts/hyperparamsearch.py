@@ -2,6 +2,7 @@
 import argparse
 
 from models.hypothesis_only_models.AvgStdProbEntropyModel.hyperparamsearch import AvgStdProbEntropyModelHyperparamsearch
+from models.hypothesis_only_models.FullDecHiddenLstmModel.hyperparamsearch import FullDecHyperparamSearch
 from models.hypothesis_only_models.HiddenStateModel.hyperparamsearch import HiddenStateModelHyperParamSearch
 from models.hypothesis_only_models.HypothesisLstmModel.hyperparamsearch import HypothesisLstmHyperParamSearch
 from models.hypothesis_only_models.LastHiddenLstmModel.hyperparamsearch import LastHiddenStateLstmModelHyperParamSearch
@@ -15,6 +16,7 @@ models = {
     "prob_entropy_model": ProbEntropyModelHyperparamsearch,
     "avg_std_prob_entropy_model": AvgStdProbEntropyModelHyperparamsearch,
     "enc_dec_last_hidden_model": EncDecLastHiddenModelHyperparamsearch,
+    "full_dec_model": FullDecHyperparamSearch,
 }
 
 

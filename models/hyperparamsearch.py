@@ -12,7 +12,7 @@ import pytorch_lightning as pl
 
 class HyperparamSearch:
 
-    def __init__(self, config, smoke_test):
+    def __init__(self, config, smoke_test, on_hpc=False):
         self.config = config
         self.smoke_test = smoke_test
 
@@ -22,19 +22,24 @@ class HyperparamSearch:
 
         self.log_dir = None
 
+        self.model_type = None
+
         self.n_warmup_steps = 5
         self.n_trials = 25
 
         self.batch_size = 128
         self.accumulate_grad_batches = 1
+        self.on_hpc = on_hpc
 
-        self.model_type = None
+
 
     def __call__(self, ):
         pruner: optuna.pruners.BasePruner = (
             optuna.pruners.MedianPruner(n_warmup_steps=self.n_warmup_steps)
         )
 
+        if self.smoke_test:
+            self.n_trials = 5
         study = optuna.create_study(study_name=self.study_name, direction="minimize", pruner=pruner)
         study.optimize(self.objective, n_trials=self.n_trials, )
 
@@ -51,9 +56,8 @@ class HyperparamSearch:
 
         print("saving study")
         joblib.dump(study, "./study/{}.pkl".format(self.study_name))
-        print("plot param importance")
-        fig = optuna.visualization.plot_param_importances(study)
-        fig.show()
+
+
 
     def get_model_config(self, trial):
         return {
