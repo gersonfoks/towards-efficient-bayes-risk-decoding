@@ -4,7 +4,7 @@ from datasets import Dataset
 from pytorch_lightning.callbacks import LearningRateMonitor
 from torch.utils.data import DataLoader
 
-from models.ProbEntropyModelV2.info import ProbEntropyModelInfoV2
+from models.hypothesis_only_models.ProbEntropyModelV2.info import ProbEntropyModelInfoV2
 
 from utilities.PathManager import get_path_manager
 from utilities.dataset.loading import load_dataset_for_training

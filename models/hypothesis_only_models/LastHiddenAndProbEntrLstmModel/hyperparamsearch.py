@@ -4,19 +4,14 @@ import optuna
 from optuna.integration import PyTorchLightningPruningCallback
 from pytorch_lightning.callbacks import LearningRateMonitor, EarlyStopping
 from torch.utils.data import DataLoader
-from transformers import EarlyStoppingCallback
 
-from models.hypothesis_only_models.HiddenStateModel.info import HiddenStateModelInfo
-from models.hypothesis_only_models.HypothesisLstmModel.Collator import HypothesisLstmModelCollator
-from models.hypothesis_only_models.HypothesisLstmModel.Preprocess import HypothesisLstmPreprocess
-from models.hypothesis_only_models.HypothesisLstmModel.manager import HypothesisLstmModelManager
 from models.hypothesis_only_models.LastHiddenLstmModel.info import LastHiddenStateLstmModelInfo
 from utilities.dataset.loading import load_dataset_for_training
 from pytorch_lightning import loggers as pl_loggers
 import pytorch_lightning as pl
 
 
-class LastHiddenStateLstmModelHyperParamSearch:
+class LastHiddenProbEntrLstmHyperparameter:
 
     def __init__(self, config, smoke_test):
         self.config = config

@@ -2,15 +2,15 @@
 
 # This class contains all the information for the training and hyperparam search
 # It aids reusability.
-from models.hypothesis_only_models import LastHiddenLstmModel
-from models.hypothesis_only_models.LastHiddenLstmModel.Collator import LastHiddenLstmCollator
-from models.hypothesis_only_models.LastHiddenLstmModel.Preprocess import LastHiddenLstmPreprocess
-from models.hypothesis_only_models.LastHiddenLstmModel.manager import LastHiddenLstmManager
+from models.source_hyp_models import EncDecLastHiddenModel
+from models.source_hyp_models.EncDecLastHiddenModel.Collator import EncDecLastHiddenCollator
+from models.source_hyp_models.EncDecLastHiddenModel.Preprocess import EncDecLastHiddenModelPreprocess
+from models.source_hyp_models.EncDecLastHiddenModel.manager import EncDecLastHiddenModelManager
 
 
-class LastHiddenStateLstmModelInfo:
+class EncDecLastHiddenModelInfo:
 
-    manager = LastHiddenLstmManager
-    model = LastHiddenLstmModel
-    preprocess = LastHiddenLstmPreprocess
-    collate = LastHiddenLstmCollator
+    manager = EncDecLastHiddenModelManager
+    model = EncDecLastHiddenModel
+    preprocess = EncDecLastHiddenModelPreprocess
+    collate = EncDecLastHiddenCollator

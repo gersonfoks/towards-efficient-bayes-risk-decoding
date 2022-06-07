@@ -13,13 +13,13 @@ accumulate_grad_batches: 1 # Effective batch size of 128
 max_epochs: 30
 
 
-save_model_path: 'predictive/tatoeba-de-en/models/prob_entropy_model/'
+save_model_path: 'predictive/tatoeba-de-en/models/prob_entropy_model_v2/'
 
 
-log_dir: './logs/prob_entropy_model'
+log_dir: './logs/prob_entropy_model_v2'
 
 model:
-  type: prop_entropy_model
+  type: prop_entropy_model_v2
   lr: 0.0005 #1.4815897489348615e-05
   weight_decay: 1.0e-06
   loss_function: 'MSE'
@@ -33,7 +33,6 @@ model:
     hidden_dim: 128
   feed_forward_layers:
     dims:
-      - 512
       - 256
       - 128
       - 1

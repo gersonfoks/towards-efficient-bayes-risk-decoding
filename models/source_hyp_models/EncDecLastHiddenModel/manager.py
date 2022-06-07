@@ -5,7 +5,7 @@ from models.common.layers import EmbbedingForPackedSequenceLayer, get_feed_forwa
 from models.common.optimization import get_optimizer_function
 
 from models.manager import ModelManager
-from models.source_hyp_models.EncDecLastHiddenModel.EncDecLastHiddenModel import EncDecLastHiddenModel
+from models.source_hyp_models.EncDecLastHiddenModel.model import EncDecLastHiddenModel
 from utilities.misc import load_nmt_model
 from pathlib import Path
 

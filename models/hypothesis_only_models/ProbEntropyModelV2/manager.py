@@ -1,11 +1,8 @@
 import torch
 
-from models.ProbEntropyModelV2.model import ProbEntropyModelV2
-from models.common.layers import EmbbedingForPackedSequenceLayer, get_feed_forward_layers, LastStateEmbedding
+from models.hypothesis_only_models.ProbEntropyModelV2.model import ProbEntropyModelV2
+from models.common.layers import get_feed_forward_layers
 from models.common.optimization import get_optimizer_function
-from models.hypothesis_only_models.HypothesisLstmModel.model import HypothesisLstmModel
-from models.hypothesis_only_models.LastHiddenLstmModel.LastHiddenLstmModel import LastHiddenLstmModel
-from models.hypothesis_only_models.ProbEntropyModel.model import ProbEntropyModel
 from models.manager import ModelManager
 from utilities.misc import load_nmt_model
 from pathlib import Path
