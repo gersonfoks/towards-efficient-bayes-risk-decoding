@@ -160,7 +160,7 @@ class ProbEntropyModelHyperparamsearch:
             max_epochs=max_epochs,
             gpus=1,
             progress_bar_refresh_rate=1,
-            callbacks=[ EarlyStopping(monitor="val_loss", divergence_threshold=0.2),
+            callbacks=[ EarlyStopping(monitor="val_loss", divergence_threshold=0.2, patience=5),
                 LearningRateMonitor(logging_interval="epoch"),
                        PyTorchLightningPruningCallback(trial, monitor="val_loss")],
             logger=tb_logger,

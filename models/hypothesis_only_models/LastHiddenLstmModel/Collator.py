@@ -12,7 +12,8 @@ class LastHiddenLstmCollator:
         self.nmt_model = nmt_model
         self.tokenizer = tokenizer
         self.max_seq_length = max_seq_length
-
+        print("Vocab size: ")
+        print(self.tokenizer.vocab_size)
         self.device = device
         self.data_collator = DataCollatorForSeq2Seq(model=self.nmt_model, tokenizer=self.tokenizer,
                                                padding=True, return_tensors="pt",)
@@ -29,7 +30,7 @@ class LastHiddenLstmCollator:
         with self.tokenizer.as_target_tokenizer():
             labels = self.tokenizer(hypotheses, truncation=True, max_length=self.max_seq_length)
             sequence_lengths = torch.tensor([len(x) for x in labels["input_ids"]])
-
+            print(self.tokenizer.vocab_size)
         model_inputs = self.tokenizer(sources, truncation=True,  max_length=self.max_seq_length)
         # Setup the tokenizer for targets
 

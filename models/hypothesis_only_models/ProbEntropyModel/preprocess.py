@@ -21,6 +21,7 @@ class ProbEntropyModelPreprocess:
         self.nmt_model.eval()
         self.nmt_model =self.nmt_model.to("cuda")
         self.tokenizer = tokenizer
+
         self.max_seq_length = max_seq_length
 
         self.data_collator = DataCollatorForSeq2Seq(model=nmt_model, tokenizer=tokenizer,

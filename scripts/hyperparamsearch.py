@@ -20,7 +20,7 @@ def main():
     # Training settings
     parser = argparse.ArgumentParser(
         description='Train a model according with parameters specified in the config file ')
-    parser.add_argument('--model_name', type=str, default='prob_entropy_model',
+    parser.add_argument('--model_name', type=str, default='avg_std_prob_entropy_model',
                         help='the model to perform hyperparam search for')
 
     parser.add_argument('--smoke-test', dest='smoke_test', action="store_true",
