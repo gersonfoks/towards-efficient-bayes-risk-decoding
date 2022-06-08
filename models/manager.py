@@ -10,7 +10,9 @@ class ModelManager:
 
 
     def __init__(self, config):
+        self.model = None
         self.config = config
+
 
     def create_model(self):
         raise NotImplementedError()

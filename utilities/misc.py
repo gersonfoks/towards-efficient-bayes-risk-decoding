@@ -33,7 +33,7 @@ def load_nmt_model(config, pretrained=False):
     model = None
     if pretrained:
 
-        
+
         config_path = path_manager.get_abs_path(config["model"]["checkpoint"])
 
         model = Base.from_pretrained(config_path)

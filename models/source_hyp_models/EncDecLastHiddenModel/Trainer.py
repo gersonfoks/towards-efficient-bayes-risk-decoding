@@ -1,4 +1,4 @@
-from pytorch_lightning.callbacks import LearningRateMonitor
+from pytorch_lightning.callbacks import LearningRateMonitor, EarlyStopping
 from torch.utils.data import DataLoader
 
 from models.hypothesis_only_models.LastHiddenLstmModel.Collator import LastHiddenLstmCollator
@@ -8,6 +8,7 @@ from models.source_hyp_models.EncDecLastHiddenModel.Collator import EncDecLastHi
 from models.source_hyp_models.EncDecLastHiddenModel.Preprocess import EncDecLastHiddenModelPreprocess
 from models.source_hyp_models.EncDecLastHiddenModel.manager import EncDecLastHiddenModelManager
 from utilities.PathManager import get_path_manager
+from utilities.callbacks import CustomSaveCallback
 from utilities.dataset.loading import load_dataset_for_training
 import pytorch_lightning as pl
 from pytorch_lightning import loggers as pl_loggers
@@ -52,15 +53,16 @@ class EncDecLastHidenModelTrainer:
         # Start the training
         tb_logger = pl_loggers.TensorBoardLogger(save_dir=config["log_dir"])
 
-        max_epochs = 1 if smoke_test else config["max_epochs"]
+        max_epochs = 5 if smoke_test else config["max_epochs"]
 
+        custom_save_model_callback = CustomSaveCallback(model_manager, config["save_model_path"])
 
         trainer = pl.Trainer(
             max_epochs=max_epochs,
             gpus=1,
             progress_bar_refresh_rate=1,
-            val_check_interval=0.5,
-            callbacks=[LearningRateMonitor(logging_interval="step")],
+            val_check_interval=1.0,
+            callbacks=[LearningRateMonitor(logging_interval="step"), EarlyStopping(monitor="val_loss", divergence_threshold=0.2, patience=5 ), custom_save_model_callback],
             logger=tb_logger,
             accumulate_grad_batches=config["accumulate_grad_batches"],
             gradient_clip_val=2.0,

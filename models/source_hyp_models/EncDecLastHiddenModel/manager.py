@@ -7,7 +7,6 @@ from models.common.optimization import get_optimizer_function
 from models.manager import ModelManager
 from models.source_hyp_models.EncDecLastHiddenModel.model import EncDecLastHiddenModel
 from utilities.misc import load_nmt_model
-from pathlib import Path
 
 
 class EncDecLastHiddenModelManager(ModelManager):
@@ -35,13 +34,3 @@ class EncDecLastHiddenModelManager(ModelManager):
         self.model = EncDecLastHiddenModel(embedding_layer, enc_lstm_layer, dec_lstm_layer, final_layers, initialize_optimizer)
         return self.model
 
-    def save_model(self, save_model_path):
-        Path(save_model_path).mkdir(parents=True, exist_ok=True)
-        pl_path = save_model_path + 'pl_model.pt'
-
-        state = {
-            "config": self.config,
-            "state_dict": self.model.state_dict()
-        }
-
-        torch.save(state, pl_path)
