@@ -10,6 +10,7 @@ from models.hypothesis_only_models.LastHiddenLstmModel.manager import LastHidden
 
 class LastHiddenStateLstmModelInfo:
 
+    model_type = "hidden_state_model"
     manager = LastHiddenLstmManager
     model = LastHiddenLstmModel
     preprocess = LastHiddenLstmPreprocess
