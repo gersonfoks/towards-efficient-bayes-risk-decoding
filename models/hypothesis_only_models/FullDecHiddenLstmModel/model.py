@@ -15,6 +15,13 @@ class FullDecHiddenLstmModel(pl.LightningModule):
 
         self.hidden_state_lstms = hidden_state_lstms
 
+        # Register the parameters
+        parameter_list = []
+        for lstm in self.hidden_state_lstms:
+            parameter_list += list(lstm.parameters())
+
+        self.registered_lstms = torch.nn.ParameterList(parameter_list)
+
         self.prob_entropy_lstm_layer = prob_entropy_lstm_layer
 
         self.final_layers = final_layers

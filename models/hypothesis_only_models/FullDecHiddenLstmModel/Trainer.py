@@ -75,14 +75,13 @@ class FullDecModelTrainer:
         # Start the training
         tb_logger = pl_loggers.TensorBoardLogger(save_dir=config["log_dir"])
 
-        max_epochs = 1 if smoke_test else config["max_epochs"]
+        max_epochs = 10 if smoke_test else config["max_epochs"]
 
 
         trainer = pl.Trainer(
             max_epochs=max_epochs,
             gpus=1,
             progress_bar_refresh_rate=1,
-            val_check_interval=0.5,
             callbacks=[LearningRateMonitor(logging_interval="step")],
             logger=tb_logger,
             accumulate_grad_batches=config["accumulate_grad_batches"],
@@ -98,9 +97,9 @@ class FullDecModelTrainer:
         path_manager = get_path_manager()
 
         model_path = path_manager.get_abs_path(config["save_model_path"])
-        #model_manager.save_model(model_path)
-        print("Loading the model")
+        model_manager.save_model(model_path)
+
         model, manager = self.info.manager.load_model(model_path)
-        print(model)
+
         # create the dataloaders
         trainer.validate(model, val_dataloader, )
