@@ -29,7 +29,7 @@ class CustomSaveCallback(Callback):
                 self.save_current_epoch(epoch_number)
 
             else:
-                
+
                 sorted_scores = sorted(self.scores_model_pairs, key=lambda x: x[0])
 
                 top_epochs = [s[1] for s in sorted_scores[:self.keep_top]]
