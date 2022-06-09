@@ -21,9 +21,9 @@ log_dir: './logs/full_dec_model'
 model:
   type: full_dec_model
   lr: 0.0005 #1.4815897489348615e-05
-  weight_decay: 1.0e-06
+  weight_decay: 5.0e-07
   loss_function: 'MSE'
-  dropout: 0.25 #0.5 #0.6712665889822903
+  dropout: 0.4 #0.5 #0.6712665889822903
   nmt_model:
     model:
       name: 'Helsinki-NLP/opus-mt-de-en'
@@ -42,7 +42,7 @@ model:
   optimizer:
     type: adam_with_steps
     step_size: 1
-    gamma: 0.9
+    gamma: 0.5
 #    type: adam_with_schedule
 #    warmup_steps: 5000
 #    start_decay: 10000
