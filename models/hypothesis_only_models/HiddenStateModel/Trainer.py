@@ -59,7 +59,7 @@ class HiddenStateModelTrainer:
             max_epochs=max_epochs,
             gpus=1,
             progress_bar_refresh_rate=1,
-            val_check_interval=0.5,
+            val_check_interval=1,
             callbacks=[LearningRateMonitor(logging_interval="step")],
             logger=tb_logger,
             accumulate_grad_batches=config["accumulate_grad_batches"],

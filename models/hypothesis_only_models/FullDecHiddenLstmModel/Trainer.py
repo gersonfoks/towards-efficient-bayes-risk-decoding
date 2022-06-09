@@ -1,11 +1,12 @@
 from os.path import exists
 
 from datasets import Dataset
-from pytorch_lightning.callbacks import LearningRateMonitor
+from pytorch_lightning.callbacks import LearningRateMonitor, EarlyStopping
 from torch.utils.data import DataLoader
 
 from models.hypothesis_only_models.FullDecHiddenLstmModel.info import FullDecHiddenLstmInfo
 from utilities.PathManager import get_path_manager
+from utilities.callbacks import CustomSaveCallback
 from utilities.dataset.loading import load_dataset_for_training
 import pytorch_lightning as pl
 from pytorch_lightning import loggers as pl_loggers
@@ -76,13 +77,13 @@ class FullDecModelTrainer:
         tb_logger = pl_loggers.TensorBoardLogger(save_dir=config["log_dir"])
 
         max_epochs = 10 if smoke_test else config["max_epochs"]
-
+        custom_save_model_callback = CustomSaveCallback(model_manager, config["save_model_path"])
 
         trainer = pl.Trainer(
             max_epochs=max_epochs,
             gpus=1,
             progress_bar_refresh_rate=1,
-            callbacks=[LearningRateMonitor(logging_interval="step")],
+            callbacks=[LearningRateMonitor(logging_interval="step"), EarlyStopping(monitor="val_loss", divergence_threshold=0.2, patience=5 ), custom_save_model_callback],
             logger=tb_logger,
             accumulate_grad_batches=config["accumulate_grad_batches"],
             gradient_clip_val=2.0,

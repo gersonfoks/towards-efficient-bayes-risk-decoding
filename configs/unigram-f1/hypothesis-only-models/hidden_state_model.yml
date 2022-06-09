@@ -16,11 +16,11 @@ log_dir: './logs/hidden_state_model'
 
 model:
   type: hidden_state_model
-  lr: 0.0005 #1.4815897489348615e-05
+  lr: 0.001 #1.4815897489348615e-05
   weight_decay: 1.0e-06
   loss_function: 'MSE'
   preprocess_type: 'full'
-  dropout: 0.25 #0.6712665889822903
+  dropout: 0.4 #0.6712665889822903
   nmt_model:
     model:
       name: 'Helsinki-NLP/opus-mt-de-en'
@@ -38,7 +38,7 @@ model:
   optimizer:
     type: adam_with_steps
     step_size: 1
-    gamma: 0.9
+    gamma: 0.6
 
 max_epochs: 30
 
