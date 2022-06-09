@@ -1,10 +1,11 @@
-from pytorch_lightning.callbacks import LearningRateMonitor
+from pytorch_lightning.callbacks import LearningRateMonitor, EarlyStopping
 from torch.utils.data import DataLoader
 
 from models.hypothesis_only_models.LastHiddenLstmModel.Collator import LastHiddenLstmCollator
 from models.hypothesis_only_models.LastHiddenLstmModel.Preprocess import LastHiddenLstmPreprocess
 from models.hypothesis_only_models.LastHiddenLstmModel.manager import LastHiddenLstmManager
 from utilities.PathManager import get_path_manager
+from utilities.callbacks import CustomSaveCallback
 from utilities.dataset.loading import load_dataset_for_training
 import pytorch_lightning as pl
 from pytorch_lightning import loggers as pl_loggers
@@ -38,6 +39,7 @@ class TrainLastHiddenLSTMModel:
         # Get the collate functions
 
         collate_fn = LastHiddenLstmCollator(model_manager.nmt_model, model_manager.tokenizer)
+        custom_save_model_callback = CustomSaveCallback(model_manager, config["save_model_path"])
 
         train_dataloader = DataLoader(train_dataset_preprocessed,
                                       collate_fn=collate_fn,
@@ -49,7 +51,7 @@ class TrainLastHiddenLSTMModel:
         # Start the training
         tb_logger = pl_loggers.TensorBoardLogger(save_dir=config["log_dir"])
 
-        max_epochs = 1 if smoke_test else config["max_epochs"]
+        max_epochs = 10 if smoke_test else config["max_epochs"]
 
 
         trainer = pl.Trainer(
@@ -57,7 +59,9 @@ class TrainLastHiddenLSTMModel:
             gpus=1,
             progress_bar_refresh_rate=1,
             val_check_interval=0.5,
-            callbacks=[LearningRateMonitor(logging_interval="step")],
+            callbacks=[LearningRateMonitor(logging_interval="step"),
+                       EarlyStopping(monitor="val_loss", divergence_threshold=0.2, patience=5),
+                       custom_save_model_callback],
             logger=tb_logger,
             accumulate_grad_batches=config["accumulate_grad_batches"],
             gradient_clip_val=2.0,

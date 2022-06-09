@@ -6,7 +6,7 @@ from models.hypothesis_only_models.FullDecHiddenLstmModel.Trainer import FullDec
 from models.hypothesis_only_models.LastHiddenAndProbEntrLstmModel.Trainer import LastHiddenAndProbEntrLstmModelTrainer
 from models.hypothesis_only_models.ProbEntropyModelV2.trainer import ProbEntropyModelTrainerV2
 from models.hypothesis_only_models.AvgStdProbEntropyModel.Trainer import AvgStdPropEntropyModelTrainer
-from models.hypothesis_only_models.HiddenStateModel.Trainer import HiddenStateModelTrainer
+
 from models.hypothesis_only_models.HypothesisLstmModel.trainer import HypothesisLstmModelTrainer
 from models.hypothesis_only_models.LastHiddenLstmModel.Trainer import TrainLastHiddenLSTMModel
 from models.hypothesis_only_models.ProbEntropyModel.trainer import ProbEntropyModelTrainer
@@ -55,10 +55,6 @@ def main():
     elif model_type == "enc_dec_last_hidden_model":
         print("enc dec last hidden state model")
         train_model = EncDecLastHidenModelTrainer(config, smoke_test)
-        train_model()
-    elif model_type == "hidden_state_model":
-        print("hidden state model")
-        train_model = HiddenStateModelTrainer(config, smoke_test)
         train_model()
     elif model_type == "avg_std_prop_entropy_model":
         print("avg_std_prob_entropy_model")
