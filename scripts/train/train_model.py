@@ -10,6 +10,7 @@ from models.hypothesis_only_models.AvgStdProbEntropyModel.Trainer import AvgStdP
 from models.hypothesis_only_models.HypothesisLstmModel.trainer import HypothesisLstmModelTrainer
 from models.hypothesis_only_models.LastHiddenLstmModel.Trainer import TrainLastHiddenLSTMModel
 from models.hypothesis_only_models.ProbEntropyModel.trainer import ProbEntropyModelTrainer
+from models.reference_models.BasicReferenceLstmModel.trainer import BasicReferenceLstmModelTrainer
 from models.source_hyp_models.EncDecLastHiddenModel.Trainer import EncDecLastHidenModelTrainer
 
 
@@ -19,7 +20,7 @@ def main():
         description='Train a model according with parameters specified in the config file ')
     parser.add_argument('--config', type=str,
 
-                        default='./configs/unigram-f1/hypothesis-only-models/full_dec_model.yml',
+                        default='./configs/unigram-f1/hypothesis-only-models/basic_ref_model.yml',
                         help='config to load model from')
 
     parser.add_argument('--smoke-test', dest='smoke_test', action="store_true",
@@ -67,6 +68,10 @@ def main():
     elif model_type == "full_dec_model":
         print("full_dec_model")
         train_model = FullDecModelTrainer(config, smoke_test)
+        train_model()
+    elif model_type == "basic_ref_model":
+        print("basic_ref_model")
+        train_model = BasicReferenceLstmModelTrainer(config, smoke_test)
         train_model()
     else:
         raise ValueError("model type: {} not found".format(model_type))
