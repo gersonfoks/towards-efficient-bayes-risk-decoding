@@ -42,7 +42,7 @@ model:
     activation_function_last_layer: 'sigmoid'
   optimizer:
     type: one_cylce_lr
-    max_lr: 5.0e-4
+    max_lr: 1.0e-4
     epochs: 50
     steps_per_epoch: 7228
 #    type: adam_with_schedule
