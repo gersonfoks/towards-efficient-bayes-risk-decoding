@@ -10,7 +10,10 @@ from models.hypothesis_only_models.AvgStdProbEntropyModel.Trainer import AvgStdP
 from models.hypothesis_only_models.HypothesisLstmModel.trainer import HypothesisLstmModelTrainer
 from models.hypothesis_only_models.LastHiddenLstmModel.Trainer import TrainLastHiddenLSTMModel
 from models.hypothesis_only_models.ProbEntropyModel.trainer import ProbEntropyModelTrainer
+from models.reference_models.BasicCrossAttentionModel.trainer import BasicCrossAttentionModelTrainer
 from models.reference_models.BasicReferenceLstmModel.trainer import BasicReferenceLstmModelTrainer
+from models.reference_models.BasicReferenceLstmModelV2.trainer import BasicReferenceLstmModelV2Trainer
+from models.reference_models.LastHiddenStateRefModel.trainer import LastHiddenStateRefModelTrainer
 from models.source_hyp_models.EncDecLastHiddenModel.Trainer import EncDecLastHidenModelTrainer
 
 
@@ -73,6 +76,19 @@ def main():
         print("basic_ref_model")
         train_model = BasicReferenceLstmModelTrainer(config, smoke_test)
         train_model()
+    elif model_type == "last_hidden_state_ref_model":
+        print("last_hidden_state_ref_model")
+        train_model = LastHiddenStateRefModelTrainer(config, smoke_test)
+        train_model()
+    elif model_type == "basic_ref_model_v2":
+        print("basic_ref_model_v2")
+        train_model = BasicReferenceLstmModelV2Trainer(config, smoke_test)
+        train_model()
+    elif model_type == "basic_cross_attention_model":
+        print("basic_cross_attention_model")
+        train_model = BasicCrossAttentionModelTrainer(config, smoke_test)
+        train_model()
+
     else:
         raise ValueError("model type: {} not found".format(model_type))
 

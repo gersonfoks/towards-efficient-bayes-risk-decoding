@@ -1,8 +1,9 @@
 import torch
-from torch.optim.lr_scheduler import LambdaLR, StepLR
+from torch.optim.lr_scheduler import LambdaLR, StepLR, OneCycleLR
 
 
 def get_optimizer_function(config):
+
 
     if config["optimizer"]["type"] == "adam":
         def initializer(x):
@@ -62,7 +63,7 @@ def get_optimizer_function(config):
                 "lr_scheduler": {
 
                     "scheduler": StepLR(optimizer, step_size=step_size, gamma=gamma),
-                    "interval": "epoch",
+                    "interval": config["optimizer"]["interval"],
                 }
 
             }
@@ -83,6 +84,30 @@ def get_optimizer_function(config):
                 "lr_scheduler": {
 
                     "scheduler": StepLR(optimizer, step_size=step_size, gamma=gamma),
+                    "interval": "step",
+                }
+
+            }
+
+            return lr_config
+
+        return initializer
+
+    if config["optimizer"]["type"] == "one_cylce_lr":
+        print("using one cycle lr")
+        def initializer(x):
+            optimizer = torch.optim.Adam(x, lr=config["lr"], weight_decay=config["weight_decay"])
+
+
+            lr_config = {
+                "optimizer": optimizer,
+                "lr_scheduler": {
+
+                    "scheduler": OneCycleLR(optimizer, max_lr=config["optimizer"]["max_lr"],
+                                            steps_per_epoch=config["optimizer"]["steps_per_epoch"],
+                                            epochs=config["optimizer"]["epochs"]
+
+                                            ),
                     "interval": "step",
                 }
 

@@ -81,10 +81,8 @@ class HiddenStateEmbedding(nn.Module):
         super().__init__()
         self.nmt_model = nmt_model
         self.padding_id = padding_id
-        print("using")
 
     def forward(self, input_ids=None, attention_mask=None, decoder_input_ids=None, labels=None):
-
         with torch.no_grad():
             nmt_out = self.nmt_model.forward(input_ids=input_ids, attention_mask=attention_mask, labels=labels,
                                              decoder_input_ids=decoder_input_ids, output_hidden_states=True,
@@ -111,3 +109,30 @@ class EncDecLastStateEmbedding(nn.Module):
             -1], attention_mask_decoder,
 
 
+class GlobalMaxPooling(nn.Module):
+
+    def forward(self, x, padding=None):
+
+        if padding != None:
+
+            x = x + x * (~ padding * (- 1e6)).unsqueeze(-1)# Very big number
+
+        out = torch.max(x, dim=1).values
+
+        return out
+
+
+class GlobalMeanPooling(nn.Module):
+
+    def forward(self, x, padding=None):
+        padding = ~padding.unsqueeze(-1)
+        if padding != None:
+
+            x = x + (x * padding)
+        x_summed = torch.sum(x, dim=1)
+        normalizing_constant = torch.sum(padding.squeeze(-1), dim=-1).unsqueeze(-1)
+
+
+        out =  x_summed / normalizing_constant
+
+        return out

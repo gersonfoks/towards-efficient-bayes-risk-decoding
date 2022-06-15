@@ -1,20 +1,22 @@
 import torch
+from torch import nn
+from torch.nn import Embedding
 
-from models.common.layers import EmbbedingForPackedSequenceLayer, get_feed_forward_layers, LastStateEmbedding
+from models.common.layers import EmbbedingForPackedSequenceLayer, get_feed_forward_layers, GlobalMaxPooling, \
+    GlobalMeanPooling
 from models.common.optimization import get_optimizer_function
-from models.hypothesis_only_models.HypothesisLstmModel.model import HypothesisLstmModel
-from models.hypothesis_only_models.LastHiddenLstmModel.LastHiddenLstmModel import LastHiddenLstmModel
-from models.manager import ModelManager
-from utilities.misc import load_nmt_model
-from pathlib import Path
 
-class LastHiddenLstmManager(ModelManager):
+from models.manager import ModelManager
+from models.reference_models.BasicCrossAttentionModel.model import BasicCrossAttentionModel
+from models.reference_models.BasicReferenceLstmModel.model import BasicReferenceLstmModel
+from utilities.misc import load_nmt_model
+
+
+class BasicCrossAttentionModelManager(ModelManager):
 
     def __init__(self, config):
         super().__init__(config)
         self.config = config
-
-
 
     def create_model(self):
         config = self.config
@@ -22,11 +24,13 @@ class LastHiddenLstmManager(ModelManager):
 
         # Create the embedding layer
 
-        embedding_size = 512
+        embedding_size = config["embedding"]["size"]
 
-        embedding_layer = LastStateEmbedding(self.nmt_model)
+        embedding_layer = Embedding(self.tokenizer.vocab_size, embedding_size)
 
-        lstm_layer = torch.nn.LSTM(embedding_size, embedding_size, batch_first=True, bidirectional=True)
+        cross_attention = nn.MultiheadAttention(embedding_size, 1, batch_first=True)
+
+        pooling_layer = GlobalMeanPooling()
 
         final_layers = get_feed_forward_layers(config["feed_forward_layers"]["dims"],
                                                config["feed_forward_layers"]["activation_function"],
@@ -35,7 +39,5 @@ class LastHiddenLstmManager(ModelManager):
                                                )
 
         initialize_optimizer = get_optimizer_function(config)
-        self.model = LastHiddenLstmModel(embedding_layer, lstm_layer, final_layers, initialize_optimizer)
+        self.model = BasicCrossAttentionModel(embedding_layer, cross_attention, pooling_layer, final_layers, initialize_optimizer)
         return self.model
-
-

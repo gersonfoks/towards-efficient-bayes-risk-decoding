@@ -1,20 +1,19 @@
 import torch
 
-from models.common.layers import EmbbedingForPackedSequenceLayer, get_feed_forward_layers, LastStateEmbedding
+from models.common.layers import EmbbedingForPackedSequenceLayer, get_feed_forward_layers
 from models.common.optimization import get_optimizer_function
-from models.hypothesis_only_models.HypothesisLstmModel.model import HypothesisLstmModel
-from models.hypothesis_only_models.LastHiddenLstmModel.LastHiddenLstmModel import LastHiddenLstmModel
-from models.manager import ModelManager
-from utilities.misc import load_nmt_model
-from pathlib import Path
 
-class LastHiddenLstmManager(ModelManager):
+from models.manager import ModelManager
+
+from models.reference_models.BasicReferenceLstmModelV2.model import BasicReferenceLstmModelV2
+from utilities.misc import load_nmt_model
+
+
+class BasicReferenceLstmModelV2Manager(ModelManager):
 
     def __init__(self, config):
         super().__init__(config)
         self.config = config
-
-
 
     def create_model(self):
         config = self.config
@@ -22,20 +21,21 @@ class LastHiddenLstmManager(ModelManager):
 
         # Create the embedding layer
 
-        embedding_size = 512
+        embedding_size = config["embedding"]["size"]
 
-        embedding_layer = LastStateEmbedding(self.nmt_model)
+        embedding_layer = EmbbedingForPackedSequenceLayer(self.tokenizer.vocab_size, embedding_size)
 
-        lstm_layer = torch.nn.LSTM(embedding_size, embedding_size, batch_first=True, bidirectional=True)
+        lstm_hypothesis = torch.nn.LSTM(embedding_size, 256, bidirectional=True)
+        lstm_references_hypothesis = torch.nn.LSTM(embedding_size, 256, bidirectional=True)
 
         final_layers = get_feed_forward_layers(config["feed_forward_layers"]["dims"],
                                                config["feed_forward_layers"]["activation_function"],
                                                config["feed_forward_layers"]["activation_function_last_layer"],
                                                config["dropout"],
                                                )
+        # 4 refs x 4 features (avg + std prob and avg + std entropy)
+        prob_entropy_layer = torch.nn.Linear(16, 128) # Linear transformation for the prob and entropy (before adding it to the final layers)
 
         initialize_optimizer = get_optimizer_function(config)
-        self.model = LastHiddenLstmModel(embedding_layer, lstm_layer, final_layers, initialize_optimizer)
+        self.model = BasicReferenceLstmModelV2(embedding_layer, lstm_hypothesis, lstm_references_hypothesis, prob_entropy_layer, final_layers, initialize_optimizer)
         return self.model
-
-
