@@ -3,8 +3,8 @@ dataset:
   dir: 'predictive/tatoeba-de-en/data/raw/'
   preproces_dir: 'predictive/tatoeba-de-en/data/preprocessed/'
   sampling_method: 'ancestral'
-  n_hypotheses: 10
-  n_references: 100
+  n_hypotheses: 100
+  n_references: 1000
   repeated_indices: False
   utility: unigram-f1
 batch_size: 128
@@ -13,14 +13,13 @@ accumulate_grad_batches: 1 # Effective batch size of 128
 max_epochs: 30
 
 
-save_model_path: 'predictive/tatoeba-de-en/models/basic_ref_model_v2/'
+save_model_path: 'predictive/tatoeba-de-en/models/full_dec_utility_model/'
 
 
-log_dir: './logs/basic_ref_model_v2'
+log_dir: './logs/full_dec_utility_model'
 
 model:
-  type: basic_ref_model_v2
-  n_references: 3
+  type: full_dec_utility_model
   lr: 0.0005 #1.4815897489348615e-05
   weight_decay: 5.0e-07
   loss_function: 'MSE'
@@ -30,11 +29,9 @@ model:
       name: 'Helsinki-NLP/opus-mt-de-en'
       checkpoint: 'NMT/tatoeba-de-en/model'
       type: 'MarianMT'
-  embedding:
-    size: 512
   feed_forward_layers:
     dims:
-      - 2176 # 2048 + 128
+      - 2051
       - 1024
       - 512
       - 256
@@ -44,10 +41,9 @@ model:
     activation_function_last_layer: 'sigmoid'
   optimizer:
     type: adam_with_steps
-    step_size: 2500
+    step_size: 1
     gamma: 0.8
-    interval: step
-
+    interval: epoch
 #    type: adam_with_schedule
 #    warmup_steps: 5000
 #    start_decay: 10000

@@ -30,7 +30,7 @@ class DecoderTokenizer:
         return tokenized_sentences
 
 
-def load_utility(utility):
+def load_utility(utility, nmt_model=None, tokenizer=None):
     if utility == "unigram-f1":
         # Get the nmt model tokenizer
         config = {
@@ -40,11 +40,14 @@ def load_utility(utility):
                 "type": 'MarianMT'
             }
         }
-        nmt_model, tokenizer = load_nmt_model(config, pretrained=True)
+        if tokenizer == None:
+            nmt_model, tokenizer = load_nmt_model(config, pretrained=True)
 
         tokenizer = DecoderTokenizer(tokenizer)
 
         return NGramF(1, tokenize=True, tokenizer=tokenizer)
+    else:
+        raise ValueError("utility: {} not found!".format(utility))
 
 
 def main():
@@ -107,7 +110,7 @@ def main():
 
 
 
-        scores = utility.call_batched(source, hyp_list, references)
+        scores = utility.call_batched_fast(source, hyp_list, references)
 
         # Next we calculate the average
 

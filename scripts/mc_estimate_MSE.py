@@ -12,39 +12,13 @@ from tqdm import tqdm
 
 from custom_datasets.BayesRiskDataset.BayesRiskDatasetLoader import BayesRiskDatasetLoader
 from custom_datasets.SampleDataset.SampleDatasetLoader import SampleDatasetLoader
+from scripts.preprocessing.create_bayes_risk_dataset import load_utility
 from utilities.misc import load_nmt_model
 
 from utilities.utilities import NGramF
 
 
-class DecoderTokenizer:
 
-    def __init__(self, nmt_tokenizer, max_seq_length=75):
-        self.nmt_tokenizer = nmt_tokenizer
-        self.max_seq_length = max_seq_length
-
-    def __call__(self, sentences):
-        with self.nmt_tokenizer.as_target_tokenizer():
-            tokenized_sentences = self.nmt_tokenizer(sentences, truncation=True,
-                                                     max_length=self.max_seq_length)["input_ids"]
-        return tokenized_sentences
-
-
-def load_utility(utility):
-    if utility == "unigram-f1":
-        # Get the nmt model tokenizer
-        config = {
-            "model": {
-                "name": 'Helsinki-NLP/opus-mt-de-en',
-                "checkpoint": 'NMT/tatoeba-de-en/model',
-                "type": 'MarianMT'
-            }
-        }
-        nmt_model, tokenizer = load_nmt_model(config, pretrained=True)
-
-        tokenizer = DecoderTokenizer(tokenizer)
-
-        return NGramF(1, tokenize=True, tokenizer=tokenizer)
 
 
 def main():
@@ -114,7 +88,7 @@ def main():
 
 
 
-            scores = utility.call_batched(source, hyp_list, picked_references)
+            scores = utility.call_batched_fast(source, hyp_list, picked_references)
 
             # Next we calculate the average
 

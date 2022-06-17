@@ -33,10 +33,19 @@ class BasicReferenceLstmModelV2Trainer:
 
         # Next do the preprocessing
         #
-        preprocess = self.model_info.preprocess(model_manager.nmt_model, model_manager.tokenizer)
 
-        train_dataset_preprocessed, lookup_table_train = preprocess(train_dataset)
-        validation_dataset_preprocessed, lookup_table_val = preprocess(validation_dataset)
+
+        lookup_table_base_location = "predictive/tatoeba-de-en/data/lookup_tables/basic_ref_model_v2"
+
+        if self.smoke_test:
+            lookup_table_base_location += "_smoke_test"
+        lookup_table_val_location = lookup_table_base_location + "_val/"
+        lookup_table_train_location = lookup_table_base_location + "_train/"
+
+        train_preprocess = self.model_info.preprocess(model_manager.nmt_model, model_manager.tokenizer, lookup_table_location=lookup_table_train_location)
+        val_preprocess = self.model_info.preprocess(model_manager.nmt_model, model_manager.tokenizer, lookup_table_location=lookup_table_val_location)
+        train_dataset_preprocessed, lookup_table_train = train_preprocess(train_dataset, )
+        validation_dataset_preprocessed, lookup_table_val = val_preprocess(validation_dataset,)
 
         # Get the collate functions
 

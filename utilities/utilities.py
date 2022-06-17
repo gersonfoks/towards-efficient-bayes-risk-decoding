@@ -58,7 +58,7 @@ class NGramF(Utility):
         r = n / len(ref_set) if len(ref_set) else 0.
         return 0. if (p + r) == 0. else 2. * p * r / (p + r)
 
-    def call_batched(self, source: str, hypotheses: List[str], refs: List[str]):
+    def call_batched_fast(self, source: str, hypotheses: List[str], refs: List[str]):
         scores = []
 
 
@@ -82,3 +82,11 @@ class NGramF(Utility):
                 scores_for_hyp.append(s)
             scores.append(scores_for_hyp)
         return scores
+
+    def call_batched(self, sources: List[str], hypotheses: List[str], refs: List[List[str]]):
+
+        scores = []
+        for s, h, r in zip(sources, hypotheses, refs):
+            scores.append(self.call_batched_fast(s, [h], r))
+        return scores
+

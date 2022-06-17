@@ -4,6 +4,7 @@ import torch
 from transformers import DataCollatorForSeq2Seq
 
 from utilities.LookUpTable import LookUpTable
+from utilities.PathManager import get_path_manager
 
 
 def create_hypothesis_ids(x):
@@ -23,7 +24,7 @@ class BasicReferenceLstmModelV2Preprocess:
     Splits the dataset hypotheses column and takes the average of the unigram f1 scores
     '''
 
-    def __init__(self, nmt_model, tokenizer, max_seq_length=75):
+    def __init__(self, nmt_model, tokenizer, max_seq_length=75, lookup_table_location='predictive/tatoeba-de-en/data/lookup_tables/basic_ref_model_v2/'):
         self.nmt_model = nmt_model.to("cuda")
         self.tokenizer = tokenizer
 
@@ -37,8 +38,10 @@ class BasicReferenceLstmModelV2Preprocess:
             "std_log_prob",
             "mean_entropy",
             "std_entropy"
-
         ]
+
+        self.lookup_table_location = lookup_table_location
+        self.path_manager = get_path_manager()
 
     def __call__(self, data):
         # Add hypothesis id
@@ -64,9 +67,18 @@ class BasicReferenceLstmModelV2Preprocess:
 
         hyp_dataset = Dataset.from_pandas(dataset[["hypothesis_id", "hypothesis", "utility", "source"]])
 
-        hyp_dataset = hyp_dataset.map(self.map_to_log_probs_and_entropy, batch_size=self.batch_size,
-                                      batched=True).to_pandas()
-        look_up_table = LookUpTable(hyp_dataset, index="hypothesis_id", features=["hypothesis", "utility", ] + self.features)
+
+
+        look_up_table_location = self.path_manager.get_abs_path(self.lookup_table_location)
+
+        if LookUpTable.exists(look_up_table_location):
+            look_up_table = LookUpTable.load(look_up_table_location)
+        else:
+            hyp_dataset = hyp_dataset.map(self.map_to_log_probs_and_entropy, batch_size=self.batch_size,
+                                          batched=True).to_pandas()
+            look_up_table = LookUpTable(hyp_dataset, index="hypothesis_id", features=["hypothesis", "utility", ] + self.features)
+
+            look_up_table.save(look_up_table_location)
 
         #
         data["references"] = data["hypotheses"]
