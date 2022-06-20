@@ -13,6 +13,7 @@ from models.hypothesis_only_models.ProbEntropyModel.trainer import ProbEntropyMo
 from models.reference_models.BasicCrossAttentionModel.trainer import BasicCrossAttentionModelTrainer
 from models.reference_models.BasicReferenceLstmModel.trainer import BasicReferenceLstmModelTrainer
 from models.reference_models.BasicReferenceLstmModelV2.trainer import BasicReferenceLstmModelV2Trainer
+from models.reference_models.CometEncoddingModel.trainer import CometEncodingModelTrainer
 from models.reference_models.FullDecUtilityModel.Trainer import FullDecUtilityModelTrainer
 from models.reference_models.LastHiddenStateRefModel.trainer import LastHiddenStateRefModelTrainer
 from models.source_hyp_models.EncDecLastHiddenModel.Trainer import EncDecLastHidenModelTrainer
@@ -92,6 +93,10 @@ def main():
     elif model_type == "full_dec_utility_model":
         print("full_dec_utility_model")
         train_model = FullDecUtilityModelTrainer(config, smoke_test)
+        train_model()
+    elif model_type == "comet_encoding_model":
+        print("comet_encoding_model")
+        train_model = CometEncodingModelTrainer(config, smoke_test)
         train_model()
     else:
         raise ValueError("model type: {} not found".format(model_type))
