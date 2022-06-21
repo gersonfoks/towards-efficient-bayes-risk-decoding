@@ -14,10 +14,31 @@ from models.reference_models.BasicCrossAttentionModel.trainer import BasicCrossA
 from models.reference_models.BasicReferenceLstmModel.trainer import BasicReferenceLstmModelTrainer
 from models.reference_models.BasicReferenceLstmModelV2.trainer import BasicReferenceLstmModelV2Trainer
 from models.reference_models.CometEncoddingModel.trainer import CometEncodingModelTrainer
+from models.reference_models.FullDecCometModel.trainer import FullDecCometModelTrainer
 from models.reference_models.FullDecUtilityModel.Trainer import FullDecUtilityModelTrainer
 from models.reference_models.LastHiddenStateRefModel.trainer import LastHiddenStateRefModelTrainer
 from models.source_hyp_models.EncDecLastHiddenModel.Trainer import EncDecLastHidenModelTrainer
 
+
+model_trainers = {
+    "hypothesis_lstm_model": HypothesisLstmModelTrainer,
+    "hypothesis_decoder_model": TrainLastHiddenLSTMModel,
+    "prop_entropy_model": ProbEntropyModelTrainer,
+    "prop_entropy_model_v2": ProbEntropyModelTrainerV2,
+    "enc_dec_last_hidden_model": EncDecLastHidenModelTrainer,
+    "avg_std_prop_entropy_model": AvgStdPropEntropyModelTrainer,
+    "last_hidden_prob_entropy_model": LastHiddenAndProbEntrLstmModelTrainer,
+    "full_dec_model": FullDecModelTrainer,
+
+    # Reference models
+    "basic_ref_model": BasicReferenceLstmModelTrainer,
+    "last_hidden_state_ref_model": LastHiddenStateRefModelTrainer,
+    "basic_ref_model_v2": BasicReferenceLstmModelV2Trainer,
+    "basic_cross_attention_model": BasicCrossAttentionModelTrainer,
+    "full_dec_utility_model": FullDecUtilityModelTrainer,
+    "comet_encoding_model": CometEncodingModelTrainer,
+    "full_dec_comet_model": FullDecCometModelTrainer,
+}
 
 def main():
     # Training settings
@@ -43,63 +64,9 @@ def main():
     model_type = config["model"]["type"]
 
     smoke_test = args.smoke_test
-    if model_type == "hypothesis_lstm_model":
-        train_model = HypothesisLstmModelTrainer(config, smoke_test)
-        train_model()
-    elif model_type == "hypothesis_decoder_model":
-        print("hypothesis_decoder_model")
-        train_model = TrainLastHiddenLSTMModel(config, smoke_test)
-        train_model()
-    elif model_type == "prop_entropy_model":
-        print("prop entropy model")
-        train_model = ProbEntropyModelTrainer(config, smoke_test)
-        train_model()
-    elif model_type == "prop_entropy_model_v2":
-        print("prop_entropy_model_v2")
-        train_model = ProbEntropyModelTrainerV2(config, smoke_test)
-        train_model()
-    elif model_type == "enc_dec_last_hidden_model":
-        print("enc dec last hidden state model")
-        train_model = EncDecLastHidenModelTrainer(config, smoke_test)
-        train_model()
-    elif model_type == "avg_std_prop_entropy_model":
-        print("avg_std_prob_entropy_model")
-        train_model = AvgStdPropEntropyModelTrainer(config, smoke_test)
-        train_model()
-    elif model_type == "last_hidden_prob_entropy_model":
-        print("last_hidden_prob_entropy_model")
-        train_model = LastHiddenAndProbEntrLstmModelTrainer(config, smoke_test)
-        train_model()
-    elif model_type == "full_dec_model":
-        print("full_dec_model")
-        train_model = FullDecModelTrainer(config, smoke_test)
-        train_model()
-    elif model_type == "basic_ref_model":
-        print("basic_ref_model")
-        train_model = BasicReferenceLstmModelTrainer(config, smoke_test)
-        train_model()
-    elif model_type == "last_hidden_state_ref_model":
-        print("last_hidden_state_ref_model")
-        train_model = LastHiddenStateRefModelTrainer(config, smoke_test)
-        train_model()
-    elif model_type == "basic_ref_model_v2":
-        print("basic_ref_model_v2")
-        train_model = BasicReferenceLstmModelV2Trainer(config, smoke_test)
-        train_model()
-    elif model_type == "basic_cross_attention_model":
-        print("basic_cross_attention_model")
-        train_model = BasicCrossAttentionModelTrainer(config, smoke_test)
-        train_model()
-    elif model_type == "full_dec_utility_model":
-        print("full_dec_utility_model")
-        train_model = FullDecUtilityModelTrainer(config, smoke_test)
-        train_model()
-    elif model_type == "comet_encoding_model":
-        print("comet_encoding_model")
-        train_model = CometEncodingModelTrainer(config, smoke_test)
-        train_model()
-    else:
-        raise ValueError("model type: {} not found".format(model_type))
+    print(model_type)
+    train_model =model_trainers[model_type](config, smoke_test)
+    train_model()
 
 
 if __name__ == '__main__':
