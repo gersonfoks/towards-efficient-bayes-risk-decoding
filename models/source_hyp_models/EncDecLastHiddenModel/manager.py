@@ -1,15 +1,14 @@
 import torch
 
-from models.common.layers import EmbbedingForPackedSequenceLayer, get_feed_forward_layers, LastStateEmbedding, \
-    EncDecLastStateEmbedding
+from models.common.layers import get_feed_forward_layers, EncDecLastStateEmbedding
 from models.common.optimization import get_optimizer_function
 
-from models.manager import ModelManager
+from models.Base.BaseManager import BaseManager
 from models.source_hyp_models.EncDecLastHiddenModel.model import EncDecLastHiddenModel
 from utilities.misc import load_nmt_model
 
 
-class EncDecLastHiddenModelManager(ModelManager):
+class EncDecLastHiddenBaseManager(BaseManager):
 
     def create_model(self):
         config = self.config

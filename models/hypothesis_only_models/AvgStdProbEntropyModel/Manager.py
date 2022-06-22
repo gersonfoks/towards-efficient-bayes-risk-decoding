@@ -1,13 +1,13 @@
 import torch
 
-from models.common.layers import EmbbedingForPackedSequenceLayer, get_feed_forward_layers, LastStateEmbedding
+from models.common.layers import get_feed_forward_layers
 from models.common.optimization import get_optimizer_function
 from models.hypothesis_only_models.AvgStdProbEntropyModel.model import AvgStdProbEntropyModel
-from models.manager import ModelManager
+from models.Base.BaseManager import BaseManager
 from utilities.misc import load_nmt_model
 from pathlib import Path
 
-class AvgStdProbEntropyModelManager(ModelManager):
+class AvgStdProbEntropyBaseManager(BaseManager):
 
     def __init__(self, config):
         super().__init__(config)
@@ -54,7 +54,7 @@ class AvgStdProbEntropyModelManager(ModelManager):
 
         pl_path = model_path + 'pl_model.pt'
         checkpoint = torch.load(pl_path)
-        manager = AvgStdProbEntropyModelManager(checkpoint["config"])
+        manager = AvgStdProbEntropyBaseManager(checkpoint["config"])
         model = manager.create_model()
 
         model.load_state_dict(checkpoint["state_dict"])

@@ -3,14 +3,14 @@ import torch
 from models.common.layers import get_feed_forward_layers, HiddenStateEmbedding
 from models.common.optimization import get_optimizer_function
 
-from models.manager import ModelManager
+from models.Base.BaseManager import BaseManager
 
 
 from models.reference_models.FullDecCometModel.model import FullDecCometModel
 from utilities.misc import load_nmt_model
 
 
-class FullDecCometModelManager(ModelManager):
+class FullDecCometBaseManager(BaseManager):
 
     def __init__(self, config):
         super().__init__(config)

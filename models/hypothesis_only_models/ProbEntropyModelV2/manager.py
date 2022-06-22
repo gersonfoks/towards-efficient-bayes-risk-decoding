@@ -3,11 +3,11 @@ import torch
 from models.hypothesis_only_models.ProbEntropyModelV2.model import ProbEntropyModelV2
 from models.common.layers import get_feed_forward_layers
 from models.common.optimization import get_optimizer_function
-from models.manager import ModelManager
+from models.Base.BaseManager import BaseManager
 from utilities.misc import load_nmt_model
 from pathlib import Path
 
-class ProbEntropyModelManagerV2(ModelManager):
+class ProbEntropyBaseManagerV2(BaseManager):
 
     def __init__(self, config):
         super().__init__(config)

@@ -1,15 +1,14 @@
 import torch
 
-from models.common.layers import EmbbedingForPackedSequenceLayer, get_feed_forward_layers, LastStateEmbedding, \
-    HiddenStateEmbedding
+from models.common.layers import get_feed_forward_layers, HiddenStateEmbedding
 from models.common.optimization import get_optimizer_function
 from models.hypothesis_only_models.FullDecHiddenLstmModel.model import FullDecHiddenLstmModel
 
-from models.manager import ModelManager
+from models.Base.BaseManager import BaseManager
 from utilities.misc import load_nmt_model
 
 
-class FullDecHiddenLstmModelManager(ModelManager):
+class FullDecHiddenLstmBaseManager(BaseManager):
 
     def __init__(self, config):
         super().__init__(config)

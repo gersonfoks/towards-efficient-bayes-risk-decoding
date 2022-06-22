@@ -3,13 +3,13 @@ import torch
 from models.common.layers import EmbbedingForPackedSequenceLayer, get_feed_forward_layers
 from models.common.optimization import get_optimizer_function
 
-from models.manager import ModelManager
+from models.Base.BaseManager import BaseManager
 
 from models.reference_models.BasicReferenceLstmModelV2.model import BasicReferenceLstmModelV2
 from utilities.misc import load_nmt_model
 
 
-class BasicReferenceLstmModelV2Manager(ModelManager):
+class BasicReferenceLstmBaseV2Manager(BaseManager):
 
     def __init__(self, config):
         super().__init__(config)

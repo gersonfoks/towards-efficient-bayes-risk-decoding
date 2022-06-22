@@ -1,6 +1,6 @@
 from models.reference_models.BasicCrossAttentionModel.Collator import BasicCrossAttentionModelCollator
 from models.reference_models.BasicCrossAttentionModel.Preprocess import BasicCrossAttentionModelPreprocess
-from models.reference_models.BasicCrossAttentionModel.manager import BasicCrossAttentionModelManager
+from models.reference_models.BasicCrossAttentionModel.manager import BasicCrossAttentionBaseManager
 from models.reference_models.BasicCrossAttentionModel.model import BasicCrossAttentionModel
 
 
@@ -8,7 +8,7 @@ from models.reference_models.BasicCrossAttentionModel.model import BasicCrossAtt
 class BasicCrossAttentionModelInfo:
 
 
-    manager = BasicCrossAttentionModelManager
+    manager = BasicCrossAttentionBaseManager
     model = BasicCrossAttentionModel
     preprocess = BasicCrossAttentionModelPreprocess
     collator = BasicCrossAttentionModelCollator

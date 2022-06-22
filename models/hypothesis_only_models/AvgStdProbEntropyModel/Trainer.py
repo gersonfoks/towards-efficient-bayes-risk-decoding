@@ -8,7 +8,7 @@ from torch.utils.data import DataLoader
 from models.hypothesis_only_models.AvgStdProbEntropyModel.Collator import \
     AvgStdProbEntropyModelCollator
 from models.hypothesis_only_models.AvgStdProbEntropyModel.Manager import \
-    AvgStdProbEntropyModelManager
+    AvgStdProbEntropyBaseManager
 from models.hypothesis_only_models.AvgStdProbEntropyModel.Preprocess import \
     AvgStdProbEntropyModelPreprocess
 from utilities.PathManager import get_path_manager
@@ -28,7 +28,7 @@ class AvgStdPropEntropyModelTrainer:
         smoke_test = self.smoke_test
         # First get the model:
 
-        model_manager = AvgStdProbEntropyModelManager(config["model"])
+        model_manager = AvgStdProbEntropyBaseManager(config["model"])
         model = model_manager.create_model()
 
         # Next load the datasets
@@ -102,7 +102,7 @@ class AvgStdPropEntropyModelTrainer:
         model_path = path_manager.get_abs_path(config["save_model_path"])
         model_manager.save_model(model_path)
 
-        model, manager = AvgStdProbEntropyModelManager.load_model(model_path)
+        model, manager = AvgStdProbEntropyBaseManager.load_model(model_path)
 
         # create the dataloaders
         trainer.validate(model, val_dataloader, )

@@ -11,7 +11,7 @@ activation_functions = {
 }
 
 
-def get_feed_forward_layers(layer_dims, activation_function, activation_function_last_layer=None, dropout=0.0):
+def get_feed_forward_layers(layer_dims, activation_function, activation_function_last_layer=None, dropout=0.0, batch_norm=True):
     '''
     Creates feed forward layers with dimensions defined in layer_dims.
     :return: 
@@ -23,6 +23,9 @@ def get_feed_forward_layers(layer_dims, activation_function, activation_function
     # Add all the layers except the last one
     for layer_in, layer_out in zip(layer_dims[:-2], layer_dims[1:-1]):
         layers.append(nn.Linear(layer_in, layer_out))
+        if batch_norm:
+            print("using_batchnorm")
+            layers.append(nn.BatchNorm1d(layer_out))
         layers.append(activation_function())
         if dropout > 0:
             layers.append(nn.Dropout(dropout))

@@ -28,6 +28,9 @@ class LookUpTable:
     def __len__(self):
         return len(self.index_map)
 
+    def get_features(self, items):
+        return [self[item] for item in items]
+
 
     def save(self, location):
         Path(location).mkdir(parents=True, exist_ok=True)
