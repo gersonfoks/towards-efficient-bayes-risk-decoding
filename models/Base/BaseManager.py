@@ -6,7 +6,7 @@ from pathlib import Path
 import torch
 
 
-class ModelManager:
+class BaseManager:
 
 
     def __init__(self, config):

@@ -18,6 +18,25 @@ class NMTWrapper:
         self.batch_size = 32
 
 
+    def prepare_for_nmt(self, sources, hypotheses):
+        with self.tokenizer.as_target_tokenizer():
+            labels = self.tokenizer(hypotheses, truncation=True, max_length=self.max_seq_length)
+            sequence_lengths = torch.tensor([len(x) for x in labels["input_ids"]])
+
+        model_inputs = self.tokenizer(sources, truncation=True, max_length=self.max_seq_length)
+        # Setup the tokenizer for targets
+
+        model_inputs["labels"] = labels["input_ids"]
+
+        x = [{"labels": l, "input_ids": i, "attention_mask": a} for (l, i, a) in
+             zip(model_inputs["labels"], model_inputs["input_ids"], model_inputs["attention_mask"])]
+
+        # Next we create the inputs for the NMT model
+        x_new = self.data_collator(x).to("cuda")
+
+        return x_new, sequence_lengths
+
+
     def map_to_log_probs_and_entropy(self, batch):
         sources = batch["source"]
         hypotheses = batch["hypothesis"]

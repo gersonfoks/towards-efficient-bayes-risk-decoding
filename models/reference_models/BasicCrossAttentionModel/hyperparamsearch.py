@@ -7,7 +7,7 @@ from torch.utils.data import DataLoader
 
 from models.hypothesis_only_models.HypothesisLstmModel.Collator import HypothesisLstmModelCollator
 from models.hypothesis_only_models.HypothesisLstmModel.Preprocess import HypothesisLstmPreprocess
-from models.hypothesis_only_models.HypothesisLstmModel.manager import HypothesisLstmModelManager
+from models.hypothesis_only_models.HypothesisLstmModel.manager import HypothesisLstmBaseManager
 from utilities.dataset.loading import load_dataset_for_training
 from pytorch_lightning import loggers as pl_loggers
 import pytorch_lightning as pl
@@ -89,7 +89,7 @@ class HypothesisLstmHyperParamSearch:
         log_dir = './logs/lstm_model_hyperparam_search'
 
 
-        model_manager = HypothesisLstmModelManager(model_config)
+        model_manager = HypothesisLstmBaseManager(model_config)
 
         model = model_manager.create_model()
 

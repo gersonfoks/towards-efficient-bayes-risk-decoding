@@ -3,11 +3,11 @@ import torch
 from models.common.layers import EmbbedingForPackedSequenceLayer, get_feed_forward_layers
 from models.common.optimization import get_optimizer_function
 from models.hypothesis_only_models.HypothesisLstmModel.model import HypothesisLstmModel
-from models.manager import ModelManager
+from models.Base.BaseManager import BaseManager
 from utilities.misc import load_nmt_model
 from pathlib import Path
 
-class HypothesisLstmModelManager(ModelManager):
+class HypothesisLstmBaseManager(BaseManager):
 
     def __init__(self, config):
         super().__init__(config)
@@ -59,7 +59,7 @@ class HypothesisLstmModelManager(ModelManager):
 
         pl_path = model_path + 'pl_model.pt'
         checkpoint = torch.load(pl_path)
-        manager = HypothesisLstmModelManager(checkpoint["config"])
+        manager = HypothesisLstmBaseManager(checkpoint["config"])
         model = manager.create_model()
 
         model.load_state_dict(checkpoint["state_dict"])

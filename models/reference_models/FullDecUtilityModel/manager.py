@@ -1,18 +1,15 @@
 import torch
 
-from models.common.layers import EmbbedingForPackedSequenceLayer, get_feed_forward_layers, LastStateEmbedding, \
-    HiddenStateEmbedding
+from models.common.layers import get_feed_forward_layers, HiddenStateEmbedding
 from models.common.optimization import get_optimizer_function
-from models.hypothesis_only_models.FullDecHiddenLstmModel.model import FullDecHiddenLstmModel
 
-from models.manager import ModelManager
-from models.reference_models.FullDecUtilityModel.model import FullDecUtilityModel
-from scripts.preprocessing.create_bayes_risk_dataset import DecoderTokenizer, load_utility
+from models.Base.BaseManager import BaseManager
+from models.reference_models.FullDecUtilityModel.model import FullDecUtilityBaseModel
+from scripts.preprocessing.create_bayes_risk_dataset import load_utility
 from utilities.misc import load_nmt_model
-from utilities.utilities import NGramF
 
 
-class FullDecUtilityModelManager(ModelManager):
+class FullDecUtilityBaseManager(BaseManager):
 
     def __init__(self, config):
         super().__init__(config)
@@ -49,6 +46,6 @@ class FullDecUtilityModelManager(ModelManager):
 
 
         initialize_optimizer = get_optimizer_function(config)
-        self.model = FullDecUtilityModel(embedding_layer, lstm_layers, prob_entropy_lstm_layer, final_layers, utility,
-                                            initialize_optimizer)
+        self.model = FullDecUtilityBaseModel(embedding_layer, lstm_layers, prob_entropy_lstm_layer, final_layers, utility,
+                                             initialize_optimizer)
         return self.model

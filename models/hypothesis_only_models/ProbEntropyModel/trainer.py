@@ -7,7 +7,7 @@ from torch.utils.data import DataLoader
 from models.hypothesis_only_models.LastHiddenLstmModel.manager import LastHiddenLstmManager
 from models.hypothesis_only_models.ProbEntropyModel.collator import ProbEntropyModelCollator
 
-from models.hypothesis_only_models.ProbEntropyModel.manager import ProbEntropyModelManager
+from models.hypothesis_only_models.ProbEntropyModel.manager import ProbEntropyBaseManager
 from models.hypothesis_only_models.ProbEntropyModel.preprocess import ProbEntropyModelPreprocess
 from utilities.PathManager import get_path_manager
 from utilities.dataset.loading import load_dataset_for_training
@@ -26,7 +26,7 @@ class ProbEntropyModelTrainer:
         smoke_test = self.smoke_test
         # First get the model:
 
-        model_manager = ProbEntropyModelManager(config["model"])
+        model_manager = ProbEntropyBaseManager(config["model"])
         model = model_manager.create_model()
 
         # Next load the datasets
@@ -100,7 +100,7 @@ class ProbEntropyModelTrainer:
         model_path = path_manager.get_abs_path(config["save_model_path"])
         model_manager.save_model(model_path)
 
-        model, manager = ProbEntropyModelManager.load_model(model_path)
+        model, manager = ProbEntropyBaseManager.load_model(model_path)
 
         # create the dataloaders
         trainer.validate(model, val_dataloader, )

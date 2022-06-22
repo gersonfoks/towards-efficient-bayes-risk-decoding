@@ -1,18 +1,15 @@
-import torch
 from torch import nn
 from torch.nn import Embedding
 
-from models.common.layers import EmbbedingForPackedSequenceLayer, get_feed_forward_layers, GlobalMaxPooling, \
-    GlobalMeanPooling
+from models.common.layers import get_feed_forward_layers, GlobalMeanPooling
 from models.common.optimization import get_optimizer_function
 
-from models.manager import ModelManager
+from models.Base.BaseManager import BaseManager
 from models.reference_models.BasicCrossAttentionModel.model import BasicCrossAttentionModel
-from models.reference_models.BasicReferenceLstmModel.model import BasicReferenceLstmModel
 from utilities.misc import load_nmt_model
 
 
-class BasicCrossAttentionModelManager(ModelManager):
+class BasicCrossAttentionBaseManager(BaseManager):
 
     def __init__(self, config):
         super().__init__(config)

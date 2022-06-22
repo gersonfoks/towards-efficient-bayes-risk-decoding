@@ -5,9 +5,10 @@ from torch.nn.utils.rnn import pack_padded_sequence
 from models.Base.BaseModel import BaseModel
 
 
-class FullDecUtilityBaseModel(BaseModel):
+class FullDecRefModelV2(BaseModel):
 
-    def __init__(self, hidden_state_embedding, hidden_state_lstms, prob_entropy_lstm_layer, final_layers, utility_fn, initialize_optimizer,
+    def __init__(self, hidden_state_embedding, hidden_state_lstms, prob_entropy_lstm_layer, prob_entropy_ref_lstm_layer,
+                 final_layers, utility_fn, initialize_optimizer,
                  device="cuda", ):
         super().__init__()
         self.device_name = device
@@ -26,6 +27,7 @@ class FullDecUtilityBaseModel(BaseModel):
         self.registered_lstms = torch.nn.ParameterList(parameter_list)
 
         self.prob_entropy_lstm_layer = prob_entropy_lstm_layer
+        self.prob_entropy_ref_lstm_layer = prob_entropy_ref_lstm_layer
 
         self.final_layers = final_layers
 
@@ -39,10 +41,10 @@ class FullDecUtilityBaseModel(BaseModel):
 
     def forward(self, sources, hypotheses, features):
         embeddings, _ = self.hidden_state_embedding.forward(features["input_ids"],
-                                                                         features["attention_mask"],
-                                                                         features["decoder_input_ids"],
-                                                                         features["labels"],
-                                                                         )
+                                                            features["attention_mask"],
+                                                            features["decoder_input_ids"],
+                                                            features["labels"],
+                                                            )
         ## We need to pack the embeddings
         lengths = features["sequence_lengths"].int().to("cpu")
 
@@ -55,23 +57,24 @@ class FullDecUtilityBaseModel(BaseModel):
             l_h_n = l_h_n.permute(1, 0, 2).reshape(-1, 256)
             hidden_states.append(l_h_n)
 
-        _, (probs_entropy_h_n, _) = self.prob_entropy_lstm_layer(features["log_prob_entropy"])
+        _, (probs_entropy_h_n, _) = self.prob_entropy_lstm_layer(features["hypotheses_prob_entropy"])
 
         probs_entropy_h_n = probs_entropy_h_n.permute(1, 0, 2).reshape(-1, 256)
 
         hidden_states.append(probs_entropy_h_n)
 
+        scores = torch.tensor(self.utility.call_batched(sources, hypotheses, features["references"])).to(
+            "cuda").squeeze(dim=1).permute(1, 0)
 
-        #Next we add the utility outcome
+        ref_features = []
+        for ref_prob_entropy in features["references_prob_entropy"]:
+            _, (probs_entropy_h_n, _) = self.prob_entropy_lstm_layer(ref_prob_entropy)
+            ref_features.append(probs_entropy_h_n.permute(1, 0, 2).reshape(-1, 256))
 
+        ref_features = torch.concat(ref_features, dim=-1)
 
-        scores = torch.tensor(self.utility.call_batched(sources, hypotheses, features["references"])).to("cuda").squeeze(dim=1)
-
-
-
-        features = torch.concat(hidden_states + [scores], dim=-1)
+        features = torch.concat(hidden_states + [scores] + [ref_features], dim=-1)
 
         predicted_scores = self.final_layers(features)
 
         return predicted_scores
-

@@ -6,7 +6,7 @@ from models.hypothesis_only_models.LastHiddenLstmModel.Preprocess import LastHid
 from models.hypothesis_only_models.LastHiddenLstmModel.manager import LastHiddenLstmManager
 from models.source_hyp_models.EncDecLastHiddenModel.Collator import EncDecLastHiddenCollator
 from models.source_hyp_models.EncDecLastHiddenModel.Preprocess import EncDecLastHiddenModelPreprocess
-from models.source_hyp_models.EncDecLastHiddenModel.manager import EncDecLastHiddenModelManager
+from models.source_hyp_models.EncDecLastHiddenModel.manager import EncDecLastHiddenBaseManager
 from utilities.PathManager import get_path_manager
 from utilities.callbacks import CustomSaveCallback
 from utilities.dataset.loading import load_dataset_for_training
@@ -24,7 +24,7 @@ class EncDecLastHidenModelTrainer:
         smoke_test = self.smoke_test
         # First get the model:
 
-        model_manager = EncDecLastHiddenModelManager(config["model"])
+        model_manager = EncDecLastHiddenBaseManager(config["model"])
 
         model = model_manager.create_model()
 
@@ -79,7 +79,7 @@ class EncDecLastHidenModelTrainer:
         model_path = path_manager.get_abs_path(config["save_model_path"])
         model_manager.save_model(model_path)
 
-        model, manager = EncDecLastHiddenModelManager.load_model(model_path)
+        model, manager = EncDecLastHiddenBaseManager.load_model(model_path)
 
         # create the dataloaders
         trainer.validate(model, val_dataloader, )

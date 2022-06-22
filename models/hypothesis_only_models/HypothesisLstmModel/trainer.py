@@ -3,7 +3,7 @@ from torch.utils.data import DataLoader
 
 from models.hypothesis_only_models.HypothesisLstmModel.Collator import HypothesisLstmModelCollator
 from models.hypothesis_only_models.HypothesisLstmModel.Preprocess import HypothesisLstmPreprocess
-from models.hypothesis_only_models.HypothesisLstmModel.manager import HypothesisLstmModelManager
+from models.hypothesis_only_models.HypothesisLstmModel.manager import HypothesisLstmBaseManager
 from utilities.dataset.loading import load_dataset_for_training
 from utilities.PathManager import get_path_manager
 from utilities.dataset.loading import load_dataset_for_training
@@ -20,7 +20,7 @@ class HypothesisLstmModelTrainer:
     def __call__(self, config, smoke_test):
         # First get the model:
 
-        model_manager = HypothesisLstmModelManager(config["model"])
+        model_manager = HypothesisLstmBaseManager(config["model"])
 
         model = model_manager.create_model()
 
@@ -69,7 +69,7 @@ class HypothesisLstmModelTrainer:
         model_path = path_manager.get_abs_path(config["save_model_path"])
         model_manager.save_model(model_path)
 
-        model, manager = HypothesisLstmModelManager.load_model(model_path)
+        model, manager = HypothesisLstmBaseManager.load_model(model_path)
 
         # create the dataloaders
         trainer.validate(model, val_dataloader, )

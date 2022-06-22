@@ -4,23 +4,27 @@ from models.common.layers import get_feed_forward_layers, HiddenStateEmbedding
 from models.common.optimization import get_optimizer_function
 
 from models.Base.BaseManager import BaseManager
+from models.reference_models.FullDecRefModelV2.model import FullDecRefModelV2
 
-
-from models.reference_models.FullDecCometModel.model import FullDecCometModel
+from scripts.preprocessing.create_bayes_risk_dataset import load_utility
 from utilities.misc import load_nmt_model
 
 
-class FullDecCometBaseManager(BaseManager):
+class FullDecRefModelV2Manager(BaseManager):
 
     def __init__(self, config):
         super().__init__(config)
         self.config = config
 
+
+
     def create_model(self):
         config = self.config
         self.nmt_model, self.tokenizer = load_nmt_model(config["nmt_model"], pretrained=True)
 
+        utility = load_utility("unigram-f1", tokenizer=self.tokenizer)
 
+        # Create the embedding layer
         embedding_size = 128
 
         embedding_layer = HiddenStateEmbedding(self.nmt_model)
@@ -31,8 +35,7 @@ class FullDecCometBaseManager(BaseManager):
             lstm_layers.append(lstm_layer)
 
         prob_entropy_lstm_layer = torch.nn.LSTM(2, 128, bidirectional=True)
-
-        comet_linear_layers = torch.nn.Sequential(torch.nn.Linear(13312 , 2048), torch.nn.Dropout(config["dropout"]), torch.nn.ReLU())
+        prob_entropy_ref_lstm_layer = torch.nn.LSTM(2, 128, bidirectional=True)
 
         final_layers = get_feed_forward_layers(config["feed_forward_layers"]["dims"],
                                                config["feed_forward_layers"]["activation_function"],
@@ -40,7 +43,8 @@ class FullDecCometBaseManager(BaseManager):
                                                config["dropout"],
                                                )
 
+
         initialize_optimizer = get_optimizer_function(config)
-        self.model = FullDecCometModel(embedding_layer, lstm_layers, prob_entropy_lstm_layer, comet_linear_layers,
-                 final_layers, initialize_optimizer)
+        self.model = FullDecRefModelV2(embedding_layer, lstm_layers, prob_entropy_lstm_layer, prob_entropy_ref_lstm_layer, final_layers, utility,
+                                             initialize_optimizer)
         return self.model
