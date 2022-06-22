@@ -26,7 +26,7 @@ class FullDecUtilityModelPreprocess:
 
         self.data_collator = DataCollatorForSeq2Seq(model=nmt_model, tokenizer=tokenizer,
                                                     padding=True, return_tensors="pt", max_length=max_seq_length)
-        self.batch_size = 32
+        self.batch_size = 128
 
     def __call__(self, data):
 

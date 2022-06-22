@@ -32,7 +32,7 @@ class FullDecCometModelManager(ModelManager):
 
         prob_entropy_lstm_layer = torch.nn.LSTM(2, 128, bidirectional=True)
 
-        comet_linear_layers = torch.nn.Sequential(torch.nn.Linear(13312 , 2048))
+        comet_linear_layers = torch.nn.Sequential(torch.nn.Linear(13312 , 2048), torch.nn.Dropout(config["dropout"]), torch.nn.ReLU())
 
         final_layers = get_feed_forward_layers(config["feed_forward_layers"]["dims"],
                                                config["feed_forward_layers"]["activation_function"],
