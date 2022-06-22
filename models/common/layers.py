@@ -11,7 +11,7 @@ activation_functions = {
 }
 
 
-def get_feed_forward_layers(layer_dims, activation_function, activation_function_last_layer=None, dropout=0.0, batch_norm=True):
+def get_feed_forward_layers(layer_dims, activation_function, activation_function_last_layer=None, dropout=0.0, batch_norm=False):
     '''
     Creates feed forward layers with dimensions defined in layer_dims.
     :return: 
