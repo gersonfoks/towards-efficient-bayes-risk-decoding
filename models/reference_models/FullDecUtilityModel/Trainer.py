@@ -63,7 +63,7 @@ class FullDecUtilityModelTrainer:
 
         # Get the collate functions
 
-        collate_fn = self.info.collate(model_manager.nmt_model, model_manager.tokenizer)
+        collate_fn = self.info.collate(model_manager.nmt_model, model_manager.tokenizer, n_references=config["model"]["n_references"])
 
         train_dataloader = DataLoader(train_dataset_preprocessed,
                                       collate_fn=collate_fn,
