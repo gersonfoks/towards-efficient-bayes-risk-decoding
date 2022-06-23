@@ -139,3 +139,5 @@ class GlobalMeanPooling(nn.Module):
         out =  x_summed / normalizing_constant
 
         return out
+
+

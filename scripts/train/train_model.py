@@ -17,6 +17,7 @@ from models.reference_models.CometEncoddingModel.trainer import CometEncodingMod
 from models.reference_models.FullDecCometModel.Trainer import FullDecCometModelTrainer
 from models.reference_models.FullDecRefModelV2.Trainer import FullDecRefModelV2Trainer
 from models.reference_models.FullDecRefModelV3.Trainer import FullDecRefModelV3Trainer
+from models.reference_models.FullDecRefModelV4.Trainer import FullDecRefModelV4Trainer
 from models.reference_models.FullDecUtilityModel.Trainer import FullDecUtilityModelTrainer
 from models.reference_models.LastHiddenStateRefModel.trainer import LastHiddenStateRefModelTrainer
 from models.source_hyp_models.EncDecLastHiddenModel.Trainer import EncDecLastHidenModelTrainer
@@ -41,7 +42,8 @@ model_trainers = {
     "comet_encoding_model": CometEncodingModelTrainer,
     "full_dec_comet_model": FullDecCometModelTrainer,
     "full_dec_ref_model_v2": FullDecRefModelV2Trainer,
-    "full_dec_ref_model_v3": FullDecRefModelV3Trainer
+    "full_dec_ref_model_v3": FullDecRefModelV3Trainer,
+    "full_dec_ref_model_v4": FullDecRefModelV4Trainer,
 }
 
 def main():
