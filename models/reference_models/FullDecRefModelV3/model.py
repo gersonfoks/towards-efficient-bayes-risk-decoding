@@ -5,7 +5,7 @@ from torch.nn.utils.rnn import pack_padded_sequence
 from models.Base.BaseModel import BaseModel
 
 
-class FullDecRefModelV2(BaseModel):
+class FullDecRefModelV3(BaseModel):
 
     def __init__(self, hidden_state_embedding, hidden_state_lstms, prob_entropy_lstm_layer, prob_entropy_ref_lstm_layer, ref_fc,
                  final_layers, utility_fn, initialize_optimizer,
@@ -56,11 +56,11 @@ class FullDecRefModelV2(BaseModel):
         for embedding, lstm in zip(embeddings, self.hidden_state_lstms):
             packed_embeddings = pack_padded_sequence(embedding, lengths, enforce_sorted=False, batch_first=True)
 
-            _, (l_h_n, _) = lstm(packed_embeddings)
+            _, l_h_n = lstm(packed_embeddings)
             l_h_n = l_h_n.permute(1, 0, 2).reshape(-1, 256)
             hidden_states.append(l_h_n)
 
-        _, (probs_entropy_h_n, _) = self.prob_entropy_lstm_layer(features["hypotheses_prob_entropy"])
+        _, probs_entropy_h_n= self.prob_entropy_lstm_layer(features["hypotheses_prob_entropy"])
 
         probs_entropy_h_n = probs_entropy_h_n.permute(1, 0, 2).reshape(-1, 256)
 
@@ -71,7 +71,7 @@ class FullDecRefModelV2(BaseModel):
 
         ref_features = []
         for ref_prob_entropy in features["references_prob_entropy"]:
-            _, (probs_entropy_h_n, _) = self.prob_entropy_lstm_layer(ref_prob_entropy)
+            _, probs_entropy_h_n = self.prob_entropy_lstm_layer(ref_prob_entropy)
             ref_feature = self.ref_fc(probs_entropy_h_n.permute(1, 0, 2).reshape(-1, 256))
 
 
