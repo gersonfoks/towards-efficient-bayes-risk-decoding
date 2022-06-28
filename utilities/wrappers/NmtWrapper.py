@@ -36,8 +36,9 @@ class NMTWrapper:
 
         return x_new, sequence_lengths
 
+    def prepare_batch(self, batch):
 
-    def map_to_log_probs_and_entropy(self, batch):
+
         sources = batch["source"]
         hypotheses = batch["hypothesis"]
 
@@ -58,6 +59,38 @@ class NMTWrapper:
         ]
 
         nmt_in = self.data_collator(features).to("cuda")
+        return nmt_in, lengths
+
+    @torch.no_grad()
+    def map_to_top_k_prob(self, batch, k):
+        nmt_in, lengths = self.prepare_batch(batch)
+
+        nmt_out = self.nmt_model(**nmt_in)
+        logits = nmt_out["logits"]
+
+        hyp_input_ids = (nmt_in["labels"] * (nmt_in["labels"] != -100)).long()  # Get the indices
+
+        ids = hyp_input_ids.unsqueeze(dim=-1)
+
+        log_softmax = torch.nn.Softmax(dim=-1)
+
+        log_probs_all_tokens = log_softmax(logits)
+
+        # Get top 10
+        top_k = torch.topk(log_probs_all_tokens,  k, dim=-1, )
+
+
+        log_probs_selected_tokens = log_probs_all_tokens.gather(-1, ids).squeeze(dim=-1)
+        log_probs_selected_tokens = self.shorten_by_length(log_probs_selected_tokens, lengths)
+        top_k = self.shorten_by_length(top_k.values, lengths)
+
+        return {"top_k_prob": top_k,
+                "prob": log_probs_selected_tokens
+                }
+
+    @torch.no_grad()
+    def map_to_log_probs_and_entropy(self, batch):
+        nmt_in, lengths = self.prepare_batch(batch)
 
         log_prob, entropy = self.get_log_prob_and_entropy(nmt_in, lengths)
 
@@ -74,7 +107,7 @@ class NMTWrapper:
                 **batch}
 
     def shorten_by_length(self, vector, lengths):
-        return [v[:l].cpu().numpy() for v, l in zip(vector, lengths)]
+        return [v[:l].cpu().numpy().tolist() for v, l in zip(vector, lengths)]
 
     @torch.no_grad()
     def get_log_prob_and_entropy(self, nmt_in, lengths):

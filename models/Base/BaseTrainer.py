@@ -53,6 +53,7 @@ class BaseTrainer:
             max_epochs=max_epochs,
             gpus=1,
             progress_bar_refresh_rate=1,
+            gradient_clip_val=2.0,
             callbacks=[LearningRateMonitor(logging_interval="step"),
                        custom_save_model_callback],
             logger=tb_logger,

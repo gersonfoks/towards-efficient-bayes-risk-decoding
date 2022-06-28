@@ -141,3 +141,63 @@ class GlobalMeanPooling(nn.Module):
         return out
 
 
+class WeightedBagEmbeddingSequence(nn.Module):
+
+    def __init__(self, vocab_size, embedding_dim):
+        super().__init__()
+        self.vocab_size = vocab_size
+        self.embedding_dim = embedding_dim
+        self.embedding = torch.nn.Embedding(vocab_size, embedding_dim)
+
+
+    def forward(self, indices, weights):
+
+        '''
+        Long tensor containing indices of the tokens with size = B * s * n
+        Weights are the weights for each tensor with size = B * s * n
+        '''
+
+        shape = indices.shape
+        new_shape = (shape[0], -1)
+        indices_reshaped = indices.reshape(new_shape)
+
+        embeddings = self.embedding(indices_reshaped)
+
+        # Reformat to the right shape again
+        embeddings = embeddings.reshape(shape[0], shape[1], self.embedding_dim)
+
+        # Take the weighted average of the last dimension.
+        weighted_embedding = torch.sum(embeddings * weights, dim=-1)
+
+        return weighted_embedding
+
+
+
+class WeightedBagEmbedding(nn.Module):
+
+    def __init__(self, vocab_size, embedding_dim):
+        super().__init__()
+        self.vocab_size = vocab_size
+        self.embedding_dim = embedding_dim
+        self.embedding = torch.nn.Embedding(vocab_size, embedding_dim)
+
+
+    def forward(self, indices, weights):
+
+        '''
+        Long tensor containing indices of the tokens with size = B * n
+        Weights are the weights for each tensor with size = B * n
+        '''
+
+        embeddings = self.embedding(indices)
+
+
+        # Take the weighted average of the last dimension.
+        weighted_embedding = torch.sum(embeddings * weights, dim=-1)
+
+        return weighted_embedding
+
+
+
+
+
