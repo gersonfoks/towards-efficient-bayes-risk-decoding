@@ -118,7 +118,7 @@ class GlobalMaxPooling(nn.Module):
 
         if padding != None:
 
-            x = x + x * (~ padding * (- 1e6)).unsqueeze(-1)# Very big number
+            x = x + x * (~ padding * (- 1e6)).unsqueeze(-1)# Very big negative number
 
         out = torch.max(x, dim=1).values
 
