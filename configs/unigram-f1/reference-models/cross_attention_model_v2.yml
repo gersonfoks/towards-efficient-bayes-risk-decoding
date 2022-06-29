@@ -9,20 +9,20 @@ dataset:
 batch_size: 128
 accumulate_grad_batches: 1 # Effective batch size of 128
 
-max_epochs: 50
+max_epochs: 100
 
 
-save_model_path: 'predictive/tatoeba-de-en/models/cross_attention_model/'
+save_model_path: 'predictive/tatoeba-de-en/models/cross_attention_model_v2/'
 
 
-log_dir: './logs/cross_attention_model'
+log_dir: './logs/cross_attention_model_v2'
 
 model:
-  type: cross_attention_model
+  type: cross_attention_model_v2
   n_references: 3
-  lr: 1.0e-6 #1.4815897489348615e-05
+  lr: 1.0e-3 #1.4815897489348615e-05
   weight_decay: 5.0e-7 #5.0e-07
-  dropout: 0.5 #0.5 #0.6712665889822903
+  dropout: 0.4 #0.5 #0.6712665889822903
   nmt_model:
     model:
       name: 'Helsinki-NLP/opus-mt-de-en'
@@ -43,8 +43,8 @@ model:
   optimizer:
     type: one_cylce_lr
     max_lr: 1.0e-4
-    epochs: 50
-    steps_per_epoch: 7228 # 1037 for 10 x 100 and 7228 for 100 x 1000
+    epochs: 100
+    steps_per_epoch: 1037 #for 10 x 100 and 7228 for 100 x 1000
 
     #    type: one_cylce_lr
     #    max_lr: 1.0e-4

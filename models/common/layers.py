@@ -199,5 +199,24 @@ class WeightedBagEmbedding(nn.Module):
 
 
 
+class LearnedPoolingLayer(nn.Module):
+
+    def __init__(self, embedding_size, n_heads=4):
+
+        super().__init__()
+        self.embedding_size = embedding_size
+        query_tensor = torch.zeros(1, 1, embedding_size)
+        nn.init.xavier_normal(query_tensor)
+        self.query = torch.nn.Parameter(query_tensor)
+        self.attention = torch.nn.MultiheadAttention(embedding_size, n_heads, batch_first=True)
+
+    def forward(self, x, att_mask):
+        query = self.query.repeat(x.shape[0], 1, 1)
+
+        hidden_state, _ = self.attention(query=query, key=x,
+                                                     value=x,
+                                                     key_padding_mask=~att_mask.bool(),
+                                                     )
+        return hidden_state
 
 
