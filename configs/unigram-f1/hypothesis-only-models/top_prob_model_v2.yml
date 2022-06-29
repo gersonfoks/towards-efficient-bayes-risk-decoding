@@ -12,13 +12,13 @@ accumulate_grad_batches: 1 # Effective batch size of 128
 max_epochs: 50
 
 
-save_model_path: 'predictive/tatoeba-de-en/models/top_prob_model/'
+save_model_path: 'predictive/tatoeba-de-en/models/top_prob_model_v2/'
 
 
-log_dir: './logs/top_prob_model'
+log_dir: './logs/top_prob_model_v2'
 
 model:
-  type: top_prob_model
+  type: top_prob_model_v2
   lr: 0.005 #1.4815897489348615e-05
   weight_decay: 0.0 #5.0e-7 #5.0e-07
   n_references: 3
@@ -32,7 +32,7 @@ model:
     size: 512
   feed_forward_layers:
     dims:
-      - 512
+      - 640
       - 256
       - 128
       - 1

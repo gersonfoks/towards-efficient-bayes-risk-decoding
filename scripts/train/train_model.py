@@ -11,6 +11,7 @@ from models.hypothesis_only_models.HypothesisLstmModel.trainer import Hypothesis
 from models.hypothesis_only_models.LastHiddenLstmModel.Trainer import TrainLastHiddenLSTMModel
 from models.hypothesis_only_models.ProbEntropyModel.trainer import ProbEntropyModelTrainer
 from models.hypothesis_only_models.TopProbModel.trainer import TopProbModelTrainer
+from models.hypothesis_only_models.TopProbModelV2.trainer import TopProbModelV2Trainer
 from models.reference_models.BasicCrossAttentionModel.trainer import BasicCrossAttentionModelTrainer
 from models.reference_models.BasicReferenceLstmModel.trainer import BasicReferenceLstmModelTrainer
 from models.reference_models.BasicReferenceLstmModelV2.trainer import BasicReferenceLstmModelV2Trainer
@@ -51,6 +52,7 @@ model_trainers = {
     "cross_attention_model": CrossAttentionModelTrainer,
 
     "top_prob_model": TopProbModelTrainer,
+    "top_prob_model_v2": TopProbModelV2Trainer,
 }
 
 def main():

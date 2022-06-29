@@ -72,7 +72,7 @@ class NMTWrapper:
 
         ids = hyp_input_ids.unsqueeze(dim=-1)
 
-        log_softmax = torch.nn.Softmax(dim=-1)
+        log_softmax = torch.nn.LogSoftmax(dim=-1)
 
         log_probs_all_tokens = log_softmax(logits)
 
