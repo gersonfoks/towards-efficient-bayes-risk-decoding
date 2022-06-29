@@ -9,7 +9,7 @@ dataset:
 batch_size: 128
 accumulate_grad_batches: 1 # Effective batch size of 128
 
-max_epochs: 100
+max_epochs: 50
 
 
 save_model_path: 'predictive/tatoeba-de-en/models/cross_attention_model_v2/'
@@ -43,8 +43,8 @@ model:
   optimizer:
     type: one_cylce_lr
     max_lr: 1.0e-4
-    epochs: 100
-    steps_per_epoch: 1037 #for 10 x 100 and 7228 for 100 x 1000
+    epochs: 50
+    steps_per_epoch: 7228 # 1037for 10 x 100 and 7228 for 100 x 1000
 
     #    type: one_cylce_lr
     #    max_lr: 1.0e-4
