@@ -47,15 +47,15 @@ def get_prob_entropy_lookup_table(data, nmt_wrapper, index='hypothesis_id', loca
 
     ]
 
-    # if LookUpTable.exists(location):
-    #     look_up_table = LookUpTable.load(location)
-    # else:
-    data = data.map(nmt_wrapper.map_to_log_probs_and_entropy, batch_size=batch_size,
-                    batched=True).to_pandas()
-    look_up_table = LookUpTable(data, index=index,
-                                features=["hypothesis", "utility", ] + features)
+    if LookUpTable.exists(location):
+        look_up_table = LookUpTable.load(location)
+    else:
+        data = data.map(nmt_wrapper.map_to_log_probs_and_entropy, batch_size=batch_size,
+                        batched=True).to_pandas()
+        look_up_table = LookUpTable(data, index=index,
+                                    features=["hypothesis", "utility", ] + features)
 
-    #look_up_table.save(location)
+        look_up_table.save(location)
     return look_up_table
 
 

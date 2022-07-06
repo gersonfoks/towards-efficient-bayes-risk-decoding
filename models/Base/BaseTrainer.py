@@ -22,10 +22,12 @@ class BaseTrainer:
         self.model_info = None
 
     def get_model_manager(self):
-        return self.model_info.manager(self.config["model"])
+        self.model_manager = self.model_info.manager(self.config["model"])
+        return self.model_manager
 
     def get_model(self):
-        return self.model_manager.create_model()
+        self.model =self.model_manager.create_model()
+        return self.model
 
 
     def get_dataloaders(self):

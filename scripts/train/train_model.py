@@ -18,6 +18,7 @@ from models.reference_models.BasicReferenceLstmModelV2.trainer import BasicRefer
 from models.reference_models.CometEncoddingModel.trainer import CometEncodingModelTrainer
 from models.reference_models.CrossAttentionModel.trainer import CrossAttentionModelTrainer
 from models.reference_models.CrossAttentionModelV2.trainer import CrossAttentionModelV2Trainer
+from models.reference_models.CrossAttentionModelV3.trainer import CrossAttentionModelV3Trainer
 from models.reference_models.FullDecCometModel.Trainer import FullDecCometModelTrainer
 from models.reference_models.FullDecRefModelV2.Trainer import FullDecRefModelV2Trainer
 from models.reference_models.FullDecRefModelV3.Trainer import FullDecRefModelV3Trainer
@@ -52,9 +53,11 @@ model_trainers = {
 
     "cross_attention_model": CrossAttentionModelTrainer,
     "cross_attention_model_v2": CrossAttentionModelV2Trainer,
+    "cross_attention_model_v3": CrossAttentionModelV3Trainer,
 
     "top_prob_model": TopProbModelTrainer,
     "top_prob_model_v2": TopProbModelV2Trainer,
+
 }
 
 def main():

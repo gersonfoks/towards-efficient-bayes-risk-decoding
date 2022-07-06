@@ -6,6 +6,7 @@ from models.reference_models.CrossAttentionModel.Collator import CrossAttentionM
 from models.reference_models.CrossAttentionModel.Preprocess import CrossAttentionModelPreprocess
 from models.reference_models.CrossAttentionModel.manager import CrossAttentionModelManager
 from models.reference_models.CrossAttentionModel.model import CrossAttentionModel
+
 from models.reference_models.CrossAttentionModelV2.manager import CrossAttentionModelV2Manager
 from models.reference_models.CrossAttentionModelV2.model import CrossAttentionModelV2
 
