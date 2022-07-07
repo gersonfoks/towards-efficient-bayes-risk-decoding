@@ -6,7 +6,7 @@ dataset:
   n_references: 100
   repeated_indices: False
   utility: unigram-f1
-batch_size: 128
+batch_size: 256
 accumulate_grad_batches: 1 # Effective batch size of 128
 
 max_epochs: 50
@@ -29,8 +29,9 @@ model:
       name: 'Helsinki-NLP/opus-mt-de-en'
       checkpoint: 'NMT/tatoeba-de-en/model'
       type: 'MarianMT'
-  embedding:
-    size: 512
+  prob_entrop_embed_size: 64
+  n_learnable_embeddings: 2
+  batch_norm: True
   feed_forward_layers:
     dims:
       - 2048 # 4 * 512

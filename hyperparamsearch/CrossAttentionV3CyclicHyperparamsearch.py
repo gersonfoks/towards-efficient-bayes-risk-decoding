@@ -1,19 +1,10 @@
 
-from os.path import exists
-
-
-from datasets import Dataset
-
-from torch.utils.data import DataLoader
-
-from models.hyperparamsearch import HyperparamSearch
-from models.hypothesis_only_models.AvgStdProbEntropyModel.info import AvgStdProbEntropyModelInfo
 from models.reference_models.CrossAttentionModelV3.info import CrossAttentionModelV3Info
 from models.reference_models.CrossAttentionModelV3.trainer import CrossAttentionModelV3Trainer
 
-from utilities.PathManager import get_path_manager
+
 from utilities.callbacks import CustomSaveCallback
-from utilities.dataset.loading import load_dataset_for_training
+
 
 
 from argparse import Namespace
@@ -41,7 +32,7 @@ class CrossAttentionV3CyclicHyperparamsearch:
         self.log_dir = './logs/cross_attention_v3_cyclic_study/'
         self.save_location = './saved_models/cross_attention_v3_cyclic_study/'
 
-        self.batch_size = 32
+
 
 
         self.n_warmup_steps = 10
@@ -80,14 +71,16 @@ class CrossAttentionV3CyclicHyperparamsearch:
         print("saving study")
         joblib.dump(study, "./study/{}.pkl".format(self.study_name))
 
-    def get_model_config(self, trial):
+    def get_model_config(self, trial, steps_per_epoch):
 
+        step_size_up_multiplier = trial.suggest_categorical("step_size_up", [2, 4, 8])
+        step_size_up = steps_per_epoch * step_size_up_multiplier
         model_size = trial.suggest_categorical("model_size", ["small", "medium", "large"])
 
         dims = self.possible_dims[model_size]
 
-        base_lr = trial.suggest_float("max_lr",  1.0e-5, 1.0e-4)
-        max_lr = trial.suggest_float("base_lr",  1.1e-4, 1.0e-2)
+        base_lr = trial.suggest_float("base_lr",  1.0e-5, 1.0e-4)
+        max_lr = trial.suggest_float("max_lr",  1.1e-4, 1.0e-2)
 
         return {
             "type": self.model_type,
@@ -110,7 +103,7 @@ class CrossAttentionV3CyclicHyperparamsearch:
 
             "optimizer": {
                 "type": "cyclic_lr",
-                "step_size_up": trial.suggest_categorical("step_size_up", [2000, 4000]),
+                "step_size_up": step_size_up,
                 "mode": trial.suggest_categorical("mode", ["triangular", "triangular2"]),
                 "base_lr": base_lr,
                 "max_lr": max_lr,
@@ -144,20 +137,27 @@ class CrossAttentionV3CyclicHyperparamsearch:
 
     def objective(self, trial: optuna.trial.Trial) -> float:
 
+        batch_size = trial.suggest_categorical("batch_size", [128, 256, 512])
+        steps_per_epoch_dict = {
+            128: 1040,
+            256: 520,
+            512: 260,
+        }
+        steps_per_epoch = steps_per_epoch_dict[batch_size]
 
-        model_config = self.get_model_config(trial)
+        model_config = self.get_model_config(trial, steps_per_epoch)
         dataset_config = self.get_dataset_config()
-        max_epochs = 5 if self.smoke_test else 75
+        max_epochs = 5 if self.smoke_test else 200 # More than enough, early stopping takes care that we stop on time
         config = {
             "model": model_config,
             "dataset": dataset_config,
-            "batch_size": self.batch_size,
+            "batch_size": batch_size,
 
 
         }
         model_trainer = CrossAttentionModelV3Trainer(config, smoke_test=self.smoke_test)
 
-        self.accumulate_grad_batches = trial.suggest_categorical("accumulate_batches", [2, 4, 8])
+
 
         manager = model_trainer.get_model_manager()
         model = model_trainer.get_model()
@@ -181,7 +181,7 @@ class CrossAttentionV3CyclicHyperparamsearch:
                        save_callback
                        ],
             logger=tb_logger,
-            accumulate_grad_batches=self.accumulate_grad_batches,
+            accumulate_grad_batches=1,
         )
 
         # create the dataloaders

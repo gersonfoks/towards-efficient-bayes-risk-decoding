@@ -209,7 +209,7 @@ class LearnedPoolingLayer(nn.Module):
         super().__init__()
         self.embedding_size = embedding_size
         query_tensor = torch.zeros(1, 1, embedding_size)
-        nn.init.xavier_normal(query_tensor)
+        nn.init.xavier_normal_(query_tensor)
         self.query = torch.nn.Parameter(query_tensor)
         self.attention = torch.nn.MultiheadAttention(embedding_size, n_heads, batch_first=True)
 
