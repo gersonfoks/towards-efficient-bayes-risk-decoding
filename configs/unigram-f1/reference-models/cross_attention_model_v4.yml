@@ -1,0 +1,72 @@
+dataset:
+  dir: 'predictive/tatoeba-de-en/data/raw/'
+  preproces_dir: 'predictive/tatoeba-de-en/data/preprocessed/'
+  sampling_method: 'ancestral'
+  n_hypotheses: 10
+  n_references: 100
+  repeated_indices: False
+  utility: unigram-f1
+batch_size: 128
+accumulate_grad_batches: 1 # Effective batch size of 128
+
+max_epochs: 50
+
+
+save_model_path: 'predictive/tatoeba-de-en/models/cross_attention_model_v4/'
+
+
+log_dir: './logs/cross_attention_model_v4'
+
+model:
+  type: cross_attention_model_v4
+  n_references: 3
+  n_heads: 4
+  lr: 1.0e-4 #1.4815897489348615e-05
+  weight_decay: 5.0e-7 #5.0e-07
+  dropout: 0.4 #0.5 #0.6712665889822903
+  nmt_model:
+    model:
+      name: 'Helsinki-NLP/opus-mt-de-en'
+      checkpoint: 'NMT/tatoeba-de-en/model'
+      type: 'MarianMT'
+  prob_entrop_embed_size: 64
+  n_learnable_embeddings: 2
+  batch_norm: True
+  feed_forward_layers:
+    dims:
+      - 2048 # 4 * 512
+      - 1024
+      - 512
+      - 256
+      - 128
+      - 1
+    activation_function: 'relu'
+    activation_function_last_layer: 'sigmoid'
+  optimizer:
+#    type: one_cylce_lr
+#    max_lr: 1.0e-3
+#    epochs: 25
+#    steps_per_epoch: 1037 # 1037 for 10 x 100 and 7228 for 100 x 1000
+#    type: cyclic_lr
+#    max_lr: 1.0e-4
+#    base_lr: 1.0e-5
+#    step_size_up: 2000
+#    mode: triangular
+    type: inv_square_root
+    warmup_steps: 2000
+    lr: 0.004
+    plateau_steps: 1000
+
+
+
+    #    type: one_cylce_lr
+    #    max_lr: 1.0e-4
+    #    epochs: 50
+    #    steps_per_epoch: 7228
+    #    type: adam_with_schedule
+    #    warmup_steps: 5000
+    #    start_decay: 10000
+
+
+
+

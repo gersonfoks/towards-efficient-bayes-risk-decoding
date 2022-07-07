@@ -57,6 +57,7 @@ class BaseTrainer:
             progress_bar_refresh_rate=1,
             gradient_clip_val=2.0,
             callbacks=[LearningRateMonitor(logging_interval="step"),
+                       EarlyStopping("val_loss", patience=10, verbose=True, divergence_threshold=0.2),
                        custom_save_model_callback],
             logger=tb_logger,
             accumulate_grad_batches=self.config["accumulate_grad_batches"],
