@@ -65,8 +65,10 @@ class FullDecUtilityBaseModel(BaseModel):
         #Next we add the utility outcome
 
 
-        scores = torch.tensor(self.utility.call_batched(sources, hypotheses, features["references"])).to("cuda").squeeze(dim=1)
+        #scores = torch.tensor(self.utility.call_batched(sources, hypotheses, features["references"])).to("cuda").squeeze(dim=1)
 
+        # We already have the scores
+        scores = features["utilities"]
 
 
         features = torch.concat(hidden_states + [scores], dim=-1)

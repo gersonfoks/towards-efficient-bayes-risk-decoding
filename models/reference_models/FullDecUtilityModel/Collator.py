@@ -53,10 +53,10 @@ class FullDecUtilityModelCollator:
             [torch.concat([torch.tensor(b["log_prob"]).unsqueeze(-1), torch.tensor(b["entropy"]).unsqueeze(-1)], dim=-1)
              for b in batch], enforce_sorted=False)
 
-        references = [self.get_references(b["references"], b["reference_counts"]).tolist() for b in batch]
+        utilities = torch.tensor([self.get_references(b["pairwise_utilities"], b["reference_counts"]).tolist() for b in batch])
 
         features = {
-            "references": references,
+            "utilities": utilities,
             "sequence_lengths": sequence_lengths,
             "log_prob_entropy": log_prob_entropy,
             **x_new,

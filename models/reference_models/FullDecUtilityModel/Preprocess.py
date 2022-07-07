@@ -1,7 +1,10 @@
 import torch
 from datasets import Dataset
 import numpy as np
+from tqdm import tqdm
 from transformers import DataCollatorForSeq2Seq
+
+from scripts.preprocessing.create_bayes_risk_dataset import load_utility
 
 
 def calc_score(x):
@@ -26,12 +29,28 @@ class FullDecUtilityModelPreprocess:
 
         self.data_collator = DataCollatorForSeq2Seq(model=nmt_model, tokenizer=tokenizer,
                                                     padding=True, return_tensors="pt", max_length=max_seq_length)
-        self.batch_size = 128
+        self.batch_size = 32
 
     def __call__(self, data):
 
         data["references"] = data["hypotheses"]
         data["reference_counts"] = data["count"]
+
+        def map_utility(x):
+            source = x["source"]
+
+            hyp_list = x["hypotheses"].tolist()
+            references = x["references"].tolist()
+
+            scores = utility.call_batched_fast(source, hyp_list, references)
+
+            # Next we calculate the average
+            return scores
+
+        # We also add the utilities
+        utility = load_utility("unigram-f1", self.tokenizer)
+        tqdm.pandas()
+        data['pairwise_utilities'] =  data.progress_apply(map_utility, axis=1)
 
         df_exploded = self.explode_dataset(data)
 
@@ -47,7 +66,7 @@ class FullDecUtilityModelPreprocess:
         return dataset
 
     def explode_dataset(self, data):
-        df_exploded = data.explode(["hypotheses", "utilities", "count", ], ignore_index=True)
+        df_exploded = data.explode(["hypotheses", "utilities", "count", "pairwise_utilities" ], ignore_index=True)
 
         return df_exploded
 

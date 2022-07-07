@@ -24,7 +24,7 @@ def main():
     parser = argparse.ArgumentParser(
         description='Train a model according with parameters specified in the config file ')
 
-    base_config = './configs/unigram-f1/reference-models/fulld_dec_utility_model_base.yml'
+    base_config = './configs/unigram-f1/reference-models/full_dec_utility_model_base.yml'
 
     parser.add_argument('--smoke-test', dest='smoke_test', action="store_true",
                         help='If true does a small test run to check if everything works')
@@ -44,15 +44,16 @@ def main():
 
 
     n_references = [
-        100, # Hardest one first to check if everything goes according to plan
+        3,
+        5,
+        100,  # Hardest one first to check if everything goes according to plan
         1,
         2,
-        3,
         4,
-        5,
         10,
         25,
         50,
+
 
     ]
 
