@@ -45,15 +45,14 @@ class CrossAttentionModelV4(BaseModel):
 
         h_attention_mask = features["tokenized_hypotheses"]["attention_mask"]
 
-        h_final = self.self_attention_layer(h_emb, h_emb, h_pe_emb, h_attention_mask, h_attention_mask).squeeze(dim=1)
+        # h_final = self.self_attention_layer(h_emb, h_emb, h_pe_emb, h_attention_mask, h_attention_mask).squeeze(dim=1)
 
         predictions = []
-        h_pred = self.h_pred_layer(h_final)
-        predictions.append(h_pred)
+        # h_pred = self.h_pred_layer(h_final)
+        #predictions.append(h_pred)
 
-        hidden_states.append(h_final)
+        # hidden_states.append(h_final)
 
-        ref_preds = []
 
         ### Forward the references
         for r_tokenized, r_prob_entr in zip(features["references_tokenized"], features["reference_prob_entropy"]):
@@ -71,12 +70,13 @@ class CrossAttentionModelV4(BaseModel):
 
         hidden_states = torch.concat(hidden_states, dim=-1)
 
-        weights = self.softmax(self.final_layers(hidden_states))
+        weights = self.softmax(self.weights_layer(hidden_states))
 
         #Next we take a weighted sum
 
-        predictions = torch.concat(predictions)
-        predicted_scores = torch.sum(predictions * weights, dim=0)
+        predictions = torch.concat(predictions, dim=-1)
+        predicted_scores = torch.sum(predictions * weights, dim=-1)
+
 
 
 

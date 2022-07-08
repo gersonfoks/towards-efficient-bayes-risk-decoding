@@ -39,7 +39,7 @@ class CrossAttentionModelV4Manager(BaseManager):
 
         weights_layer = get_feed_forward_layers(config["weights_layers"]["dims"],
                                                config["weights_layers"]["activation_function"],
-                                               config["weights_layers"]["activation_function_last_layer"],
+                                               None,
                                                config["dropout"], batch_norm=self.config["batch_norm"],
                                                )
 

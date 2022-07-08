@@ -5,18 +5,19 @@ from models.Base.BaseTrainer import BaseTrainer
 from models.reference_models.CrossAttentionModel.info import CrossAttentionModelInfo
 from models.reference_models.CrossAttentionModelV2.info import CrossAttentionModelV2Info
 from models.reference_models.CrossAttentionModelV3.info import CrossAttentionModelV3Info
+from models.reference_models.CrossAttentionModelV4.info import CrossAttentionModelV4Info
 
 from utilities.PathManager import get_path_manager
 from utilities.dataset.loading import load_dataset_for_training
 
 
-class CrossAttentionModelV3Trainer(BaseTrainer):
+class CrossAttentionModelV4Trainer(BaseTrainer):
 
     def __init__(self, config, smoke_test=False):
         super().__init__(config, smoke_test)
         self.config = config
         self.smoke_test = smoke_test
-        self.model_info = CrossAttentionModelV3Info
+        self.model_info = CrossAttentionModelV4Info
         self.path_manager = get_path_manager()
 
     def get_dataloaders(self):
