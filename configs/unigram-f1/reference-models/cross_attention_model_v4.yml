@@ -17,6 +17,10 @@ save_model_path: './saved_models/cross_attention_model_v4/'
 
 log_dir: './logs/cross_attention_model_v4'
 
+# Describes how to preprocess, can use predefined preprocessing functions
+preprocess:
+  name: refs_with_prob_entropy
+
 model:
   type: cross_attention_model_v4
   n_references: 5

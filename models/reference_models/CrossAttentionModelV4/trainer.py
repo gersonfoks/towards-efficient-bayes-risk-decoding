@@ -1,4 +1,4 @@
-
+from datasets import Dataset
 from torch.utils.data import DataLoader
 
 from models.Base.BaseTrainer import BaseTrainer
@@ -9,6 +9,8 @@ from models.reference_models.CrossAttentionModelV4.info import CrossAttentionMod
 
 from utilities.PathManager import get_path_manager
 from utilities.dataset.loading import load_dataset_for_training
+from utilities.factories.PreprocessFactory import PreprocessFactory
+from utilities.wrappers.NmtWrapper import NMTWrapper
 
 
 class CrossAttentionModelV4Trainer(BaseTrainer):
@@ -21,8 +23,6 @@ class CrossAttentionModelV4Trainer(BaseTrainer):
         self.path_manager = get_path_manager()
 
     def get_dataloaders(self):
-
-
         train_dataset, validation_dataset = load_dataset_for_training(self.config["dataset"], self.smoke_test)
 
         base_path = './predictive/tatoeba-de-en/data/lookup_tables/{}_{}_prob_entropy_refs'.format(
@@ -34,22 +34,42 @@ class CrossAttentionModelV4Trainer(BaseTrainer):
         train_path = self.path_manager.get_abs_path(train_path)
         val_path = self.path_manager.get_abs_path(val_path)
 
-        train_preprocess = self.model_info.preprocess(self.model_manager.nmt_model, self.model_manager.tokenizer, table_location=train_path)
-        val_preprocess = self.model_info.preprocess(self.model_manager.nmt_model, self.model_manager.tokenizer, table_location=val_path)
+        wrapped_nmt_model = NMTWrapper(self.model_manager.nmt_model, self.model_manager.tokenizer)
+        train_preprocess_factory = PreprocessFactory(self.config["preprocess"],
+                                                     {
+                                                         "wrapped_nmt_model": wrapped_nmt_model,
+                                                         "table_location": train_path
+                                                     }
+                                                     )
+        train_preprocessor = train_preprocess_factory.get_preprocessor()
+        val_preprocess_factory = PreprocessFactory(self.config["preprocess"],
+                                                   {
+                                                       "wrapped_nmt_model": wrapped_nmt_model,
+                                                       "table_location": val_path
+                                                   }
+                                                   )
+        val_preprocessor = val_preprocess_factory.get_preprocessor()
 
-        train_dataset_preprocessed, train_lookup_table = train_preprocess(train_dataset)
-        validation_dataset_preprocessed, val_lookup_table = val_preprocess(validation_dataset)
+        train_dataframe, train_lookup_tables = train_preprocessor(train_dataset)
 
-        train_collate_fn = self.model_info.collator(self.model_manager.nmt_model, self.model_manager.tokenizer, train_lookup_table,
-                                             n_references=self.config["model"]["n_references"])
 
-        val_collate_fn = self.model_info.collator(self.model_manager.nmt_model, self.model_manager.tokenizer, val_lookup_table,
-                                                   n_references=self.config["model"]["n_references"])
+        validation_dataframe, val_lookup_tables = val_preprocessor(validation_dataset)
 
-        train_dataloader = DataLoader(train_dataset_preprocessed,
+        train_dataset = Dataset.from_pandas(train_dataframe)
+        validation_dataset = Dataset.from_pandas(validation_dataframe)
+
+        train_collate_fn = self.model_info.collator(self.model_manager.nmt_model, self.model_manager.tokenizer,
+                                                    train_lookup_tables[0],
+                                                    n_references=self.config["model"]["n_references"])
+
+        val_collate_fn = self.model_info.collator(self.model_manager.nmt_model, self.model_manager.tokenizer,
+                                                  val_lookup_tables[0],
+                                                  n_references=self.config["model"]["n_references"])
+
+        train_dataloader = DataLoader(train_dataset,
                                       collate_fn=train_collate_fn,
                                       batch_size=self.config["batch_size"], shuffle=True, )
-        val_dataloader = DataLoader(validation_dataset_preprocessed,
+        val_dataloader = DataLoader(validation_dataset,
                                     collate_fn=val_collate_fn,
                                     batch_size=self.config["batch_size"], shuffle=False, )
 

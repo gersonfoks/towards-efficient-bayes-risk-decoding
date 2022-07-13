@@ -1,36 +1,85 @@
 # Code and inspiration taken from: https://github.com/Roxot/mbr-nmt/blob/a419775b638c4b09e962acad71c4468269b0197a/mbr_nmt/utility.py#L250
 from typing import List
 
+from comet import download_model, load_from_checkpoint
 from nltk.util import ngrams
 
 
+from utilities.misc import load_nmt_model
+from utilities.wrappers.CometWrapper import CometWrapper
+
+
+class DecoderTokenizer:
+
+    def __init__(self, nmt_tokenizer, max_seq_length=75):
+        self.nmt_tokenizer = nmt_tokenizer
+        self.max_seq_length = max_seq_length
+
+    def __call__(self, sentences):
+        with self.nmt_tokenizer.as_target_tokenizer():
+            tokenized_sentences = self.nmt_tokenizer(sentences, truncation=True,
+                                                     max_length=self.max_seq_length)["input_ids"]
+        return tokenized_sentences
 
 class Utility:
-
-    def __init__(self):
-        # Whether this utility supports batching with self.sentence_scores(hyps, refs)
-        self.supports_batching = False
-
-        # Whether this utility requires tokenization as pre-processing step (requires self.tokenizer to be set).
-        self.requires_tokenization = False
-        self.tokenizer = None
-
-    def sentence_scores(self, hyps, refs):
-        """
-        :param hyps: list of strings, system hypotheses.
-        :param refs: list of strings, single reference per input.
-
-        Returns a list of sentence-level scores. Required if self.supports_batching == True.
-        """
-        pass
 
     def __call__(self, source: str, hyp: str, ref: str):
         """
         :param hyp: string, system hypothesis, tokens separated by spaces
         :param ref: string, single reference, tokens separated by spaces
-        returns the utility score of a single hypothesis, reference pair as float.
         """
-        pass
+        raise NotImplementedError()
+
+    def call_batched_fast(self, source: str, hypotheses: List[str], refs: List[str]):
+        raise NotImplementedError()
+
+    def call_batched(self, sources: List[str], hypotheses: List[str], refs: List[List[str]]):
+        raise NotImplementedError()
+
+
+def load_utility(utility, nmt_model=None, tokenizer=None):
+    '''
+    Loads the utility function
+    '''
+    if utility == "unigram-f1":
+        # Get the nmt model tokenizer
+        config = {
+            "model": {
+                "name": 'Helsinki-NLP/opus-mt-de-en',
+                "checkpoint": 'NMT/tatoeba-de-en/model',
+                "type": 'MarianMT'
+            }
+        }
+        if tokenizer == None:
+            nmt_model, tokenizer = load_nmt_model(config, pretrained=True)
+
+        tokenizer = DecoderTokenizer(tokenizer)
+        return NGramF(1, tokenize=True, tokenizer=tokenizer)
+    elif utility == "comet":
+
+        model_path = download_model("wmt20-comet-da")
+        model = load_from_checkpoint(model_path)
+
+        model.to("cuda")
+
+        wrapped_model = CometWrapper(model)
+
+        return CometUtility(wrapped_model, )
+
+    else:
+        raise ValueError("utility: {} not found!".format(utility))
+
+
+class CometUtility(Utility):
+
+    def __init__(self, wrapped_model, ):
+        self.wrapped_model = wrapped_model
+
+    def call_batched_fast(self, source: str, hypotheses: List[str], refs: List[str]):
+        '''
+            A fast call for the batch. Hypotheses and references should be for the given source.
+        '''
+        return self.wrapped_model.fast_predict_batched(source, hypotheses, refs)
 
 
 class NGramF(Utility):
@@ -61,7 +110,6 @@ class NGramF(Utility):
     def call_batched_fast(self, source: str, hypotheses: List[str], refs: List[str]):
         scores = []
 
-
         # First we tokenize:
         if self.tokenize:
             hypotheses = self.tokenizer(hypotheses)
@@ -89,4 +137,3 @@ class NGramF(Utility):
         for s, h, r in zip(sources, hypotheses, refs):
             scores.append(self.call_batched_fast(s, [h], r))
         return scores
-

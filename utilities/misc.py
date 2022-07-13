@@ -42,3 +42,12 @@ def load_nmt_model(config, pretrained=False):
         model = Base(configuration)
 
     return model, tokenizer
+
+
+def batch(iterable, n=1):
+    '''
+    Batches an iterable
+    '''
+    l = len(iterable)
+    for ndx in range(0, l, n):
+        yield iterable[ndx:min(ndx + n, l)]
