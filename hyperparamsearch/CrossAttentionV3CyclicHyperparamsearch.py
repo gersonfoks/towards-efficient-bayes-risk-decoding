@@ -1,6 +1,6 @@
 
-from models.reference_models.CrossAttentionModelV3.info import CrossAttentionModelV3Info
-from models.reference_models.CrossAttentionModelV3.trainer import CrossAttentionModelV3Trainer
+from models.old.reference_models.CrossAttentionModelV3 import CrossAttentionModelV3Info
+from models.old.reference_models.CrossAttentionModelV3.trainer import CrossAttentionModelV3Trainer
 
 
 from utilities.callbacks import CustomSaveCallback

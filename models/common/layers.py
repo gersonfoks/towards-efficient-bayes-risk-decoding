@@ -7,11 +7,12 @@ activation_functions = {
     'silu': nn.SiLU,
     'relu': nn.ReLU,
     'tanh': nn.Tanh,
-    'sigmoid': nn.Sigmoid
+    'sigmoid': nn.Sigmoid,
+
 }
 
 
-def get_feed_forward_layers(layer_dims, activation_function, activation_function_last_layer=None, dropout=0.0, batch_norm=False):
+def get_feed_forward_layers(layer_dims, activation_function, activation_function_last_layer=None, dropout=0.0, batch_norm=False, last_layer_scale=None):
     '''
     Creates feed forward layers with dimensions defined in layer_dims.
     :return: 
@@ -37,9 +38,32 @@ def get_feed_forward_layers(layer_dims, activation_function, activation_function
     layers.append(nn.Linear(layer_dims[-2], layer_dims[-1]))
 
     if activation_function_last_layer != None:
-        activation_function_last_layer = activation_functions[activation_function_last_layer]
-        layers.append(activation_function_last_layer())
+
+
+        activation_function= activation_functions[activation_function_last_layer]
+
+
+        # If we need to scale (used for comet models)
+        if last_layer_scale != None:
+            layers.append(
+                ScaledActivationFucntion(activation_function(), last_layer_scale)
+            )
+        else:
+            layers.append(activation_function())
     return nn.Sequential(*layers)
+
+
+class ScaledActivationFucntion(nn.Module):
+
+    def __init__(self, f, scale):
+        super().__init__()
+        self.f = f
+        self.scale = scale
+
+    def forward(self, x):
+        return self.f(x) * self.scale
+
+
 
 
 class EmbbedingForPackedSequenceLayer(torch.nn.Module):

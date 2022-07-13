@@ -19,22 +19,22 @@ def load_nmt_model(config, pretrained=False):
     path_manager = get_path_manager()
 
 
-    model_name = config["model"]["name"]
+    model_name = config["name"]
 
     tokenizer = MarianTokenizer.from_pretrained(model_name)
 
     # Load the base model
     Base = None
-    if config["model"]["type"] == "MarianMT":
+    if config["type"] == "MarianMT":
         Base = MarianMTModel
     else:
-        raise ValueError("Base model not found: {}".format(config["model"]["type"]))
+        raise ValueError("Base model not found: {}".format(config["type"]))
 
     model = None
     if pretrained:
 
 
-        config_path = path_manager.get_abs_path(config["model"]["checkpoint"])
+        config_path = path_manager.get_abs_path(config["checkpoint"])
 
         model = Base.from_pretrained(config_path)
     else:

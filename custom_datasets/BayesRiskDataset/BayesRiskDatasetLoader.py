@@ -73,7 +73,7 @@ class BayesRiskDatasetLoader:
         return Dataset.from_parquet(path)
 
     def get_dataset_path(self, ):
-        relative_path = "{}/{}/{}_{}_scores_{}_{}".format(self.base, self.utility, self.split, self.sampling_method,
+        relative_path = "{}{}/{}_{}_scores_{}_{}".format(self.base, self.utility, self.split, self.sampling_method,
                                                           self.n_hypotheses, self.n_references, )
         if self.develop:
             relative_path += '_develop'

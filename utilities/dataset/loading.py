@@ -14,11 +14,11 @@ def load_dataset_for_training(dataset_config, smoke_test=False):
 
     dataset_dir = dataset_config["dir"]
     train_dataset_loader = BayesRiskDatasetLoader("train_predictive", n_hypotheses, n_references,
-                                                  sampling_method, utility, develop=False,
+                                                  sampling_method, utility, develop=smoke_test,
                                                   base=dataset_dir)
 
     validation_dataset_loader = BayesRiskDatasetLoader("validation_predictive", n_hypotheses, n_references,
-                                                       sampling_method, utility, develop=False,
+                                                       sampling_method, utility, develop=smoke_test,
                                                        base=dataset_dir)
 
     if smoke_test:

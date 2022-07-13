@@ -1,9 +1,8 @@
 ### Functions that help with the preprocessing
-import torch
 import numpy as np
 from datasets import Dataset
 
-from models.reference_models.BasicReferenceLstmModelV2.Preprocess import create_hypothesis_ids
+from models.old.reference_models.BasicReferenceLstmModelV2.Preprocess import create_hypothesis_ids
 from utilities.LookUpTable import LookUpTable
 
 

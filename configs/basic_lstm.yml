@@ -1,0 +1,86 @@
+
+# Information about the dataset
+dataset:
+  dir: 'predictive/tatoeba-de-en/data/raw/'
+  preproces_dir: 'predictive/tatoeba-de-en/data/preprocessed/'
+  sampling_method: 'ancestral'
+  n_hypotheses: 10
+  n_references: 100
+  repeated_indices: False
+
+#
+model_name: basic_lstm
+
+# Describes how to preprocess, can use predefined preprocessing functions
+preprocess:
+  name: basic
+
+collator:
+  name: concat_collator
+
+# Training
+batch_size: 128
+accumulate_grad_batches: 1 # Effective batch size of 128
+
+max_epochs: 100
+
+
+# Model information
+model:
+  type: basic_lstm_model
+  nmt_model:
+      name: 'Helsinki-NLP/opus-mt-de-en'
+      checkpoint: 'NMT/tatoeba-de-en/model'
+      type: 'MarianMT'
+
+  lr: 1.0e-4 #1.4815897489348615e-05
+  weight_decay: 5.0e-7 #5.0e-07
+  dropout: 0.4 #0.5 #0.6712665889822903
+  embedding:
+    size: 256
+  feed_forward_layers:
+    dims:
+      - 512
+      - 128
+      - 1
+    activation_function: 'relu'
+
+  batch_norm: True
+
+
+
+
+
+  optimizer:
+    type: adam_with_steps
+    step_size: 1
+    gamma: 0.9
+    interval: epoch
+
+#    type: one_cylce_lr
+#    max_lr: 1.0e-3
+#    epochs: 25
+#    steps_per_epoch: 1037 # 1037 for 10 x 100 and 7228 for 100 x 1000
+#    type: cyclic_lr
+#    max_lr: 1.0e-4
+#    base_lr: 1.0e-5
+#    step_size_up: 2000
+#    mode: triangular
+#    type: inv_square_root
+#    warmup_steps: 2000
+#    lr: 0.004
+#    plateau_steps: 1000
+
+
+
+    #    type: one_cylce_lr
+    #    max_lr: 1.0e-4
+    #    epochs: 50
+    #    steps_per_epoch: 7228
+    #    type: adam_with_schedule
+    #    warmup_steps: 5000
+    #    start_decay: 10000
+
+
+
+

@@ -4,17 +4,31 @@ We need to define how many hypotheses and references we want. Furthermore we nee
 '''
 
 import argparse
-
+from pathlib import Path
 
 import pandas as pd
 from tqdm import tqdm
 
 from custom_datasets.BayesRiskDataset.BayesRiskDatasetCreator import BayesRiskDatasetCreator
 from custom_datasets.SampleDataset.SampleDatasetLoader import SampleDatasetLoader
+from utilities.PathManager import get_path_manager
 from utilities.utilities import load_utility
 
 
+def get_dataset_path(save_dir, utility, split, sampling_method, n_hypotheses, n_references, develop):
+    path_manager = get_path_manager()
+    relative_path = "{}/{}/".format(save_dir, utility, )
+    abs_path = path_manager.get_abs_path(relative_path)
 
+    Path(abs_path).mkdir(parents=True, exist_ok=True)
+
+    abs_path += "{}_{}_scores_{}_{}".format(split, sampling_method,
+                                            n_hypotheses, n_references, )
+    if develop:
+        abs_path += '_develop'
+    abs_path += '.parquet'
+
+    return abs_path
 
 
 def main():
@@ -27,7 +41,7 @@ def main():
 
     parser.add_argument('--base-dir', type=str, default='NMT/tatoeba-de-en/data/')
 
-    parser.add_argument('--save-dir', type=str, default='predictive/tatoeba-de-en/data/raw/')
+    parser.add_argument('--save-dir', type=str, default='predictive/tatoeba-de-en/data/raw')
 
     parser.add_argument('--utility', type=str, default="unigram-f1")
 
@@ -49,10 +63,6 @@ def main():
     ref_dataset = ref_dataset_loader.load()
     hyp_dataset = hyp_dataset_loader.load()
 
-    # Create a dataset loader (used to get the correct path)
-    dataset_loader = BayesRiskDatasetCreator(args.split, args.n_hypotheses, args.n_references,
-                                             args.sampling_method, args.utility, develop=args.develop,
-                                             base=args.save_dir, )
 
     utility = load_utility(args.utility)
 
@@ -79,11 +89,9 @@ def main():
     tqdm.pandas()
     hyp_dataset["utilities"] = hyp_dataset.progress_apply(map_utility, axis=1)
 
-    print(hyp_dataset)
+    hyp_dataset.drop("refs", axis=1, inplace=True)
 
-    hyp_dataset = hyp_dataset.drop("refs", axis=1)
-
-    save_path = dataset_loader.get_dataset_path()
+    save_path = get_dataset_path(args.save_dir, args.utility, args.split, args.sampling_method, args.n_hypotheses, args.n_references, args.develop)
     hyp_dataset.to_parquet(save_path)
 
 

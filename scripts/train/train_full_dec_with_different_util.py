@@ -2,7 +2,7 @@
 import argparse
 import yaml
 
-from models.reference_models.FullDecUtilityModel.Trainer import FullDecUtilityModelTrainer
+from models.old.reference_models import FullDecUtilityModelTrainer
 
 def alter_config(config, i):
     save_model_path = 'saved_models/full_dec_utility_model_{}_references/'.format(i)
