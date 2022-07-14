@@ -164,7 +164,7 @@ class BasicLstmModelHyperparamSearch:
             "feed_forward_layers": {
                 "dims": dims,
                 "activation_function": "relu",
-                "activation_function_last_layer": "sigmoid",
+                "activation_function_last_layer": "tanh",
                 "last_layer_scale": 4.0,
 
             },
