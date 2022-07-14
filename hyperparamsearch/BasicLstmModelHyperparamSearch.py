@@ -70,7 +70,7 @@ class BasicLstmModelHyperparamSearch:
             max_epochs=max_epochs,
             gpus=1,
             progress_bar_refresh_rate=1,
-            callbacks=[EarlyStopping(monitor="val_loss", patience=15),
+            callbacks=[EarlyStopping(monitor="val_loss", patience=5),
                        LearningRateMonitor(logging_interval="epoch"),
                        PyTorchLightningPruningCallback(trial, monitor="val_loss"),
                        save_callback
