@@ -165,7 +165,7 @@ class BasicLstmModelHyperparamSearch:
                 "dims": dims,
                 "activation_function": "relu",
                 "activation_function_last_layer": "sigmoid",
-                "last_layer_scale": 5.0,
+                "last_layer_scale": 4.0,
 
             },
 
