@@ -48,7 +48,7 @@ def get_optimizer_function(config):
             return lr_config
         return initializer
 
-    if config["optimizer"]["type"] == "adam_with_steps":
+    if config["optimizer"]["type"] == "adam_with_lr_decay":
 
         def initializer(x):
 

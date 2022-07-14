@@ -32,7 +32,7 @@ class BasicLstmModelManager(BaseManager):
         source_embedding_layer = Embedding(self.tokenizer.vocab_size, embedding_size)
         hypothesis_embedding_layer = Embedding(self.tokenizer.vocab_size, embedding_size)
 
-        lstm_layer = torch.nn.LSTM(embedding_size, embedding_size, bidirectional=True)
+        lstm_layer = torch.nn.LSTM(embedding_size, config["hidden_state_size"], bidirectional=True)
 
         final_layers = get_feed_forward_layers(config["feed_forward_layers"]["dims"],
                                                config["feed_forward_layers"]["activation_function"],

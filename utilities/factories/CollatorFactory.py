@@ -10,7 +10,7 @@ class CollatorFactory:
 
     def get_collators(self):
 
-        if self.config["name"] == "concat_collator":
+        if self.config["name"] == "basic_collator":
 
             return BasicCollator(self.wrapped_nmt_model.tokenizer), BasicCollator(self.wrapped_nmt_model.tokenizer)
         else:

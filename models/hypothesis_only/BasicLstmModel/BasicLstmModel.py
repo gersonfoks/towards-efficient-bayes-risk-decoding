@@ -38,7 +38,7 @@ class BasicLstmModel(BaseModel):
 
         _, (h_n, _) = self.lstm_layer(s_h_concat)
 
-        h_n = h_n.permute(1,0, 2).reshape(-1, 512)
+        h_n = h_n.permute(1,0, 2).reshape(-1, h_n.shape[-1] * 2)
 
         predicted_scores = self.final_layers(h_n)
 
@@ -55,7 +55,7 @@ class BasicLstmModel(BaseModel):
             h_index = h_mask.sum()
 
             concatonated = torch.concat([s[:s_index], h[:h_index]])
- 
+
             result.append(
                 concatonated
             )
