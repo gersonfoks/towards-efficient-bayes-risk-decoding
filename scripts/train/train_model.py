@@ -2,11 +2,17 @@
 import argparse
 import yaml
 
-from models.hypothesis_only.BasicLstmModel.BasicLstmTrainer import BasicLstmModelTrainer
+from models.QualityEstimationStyle.BasicLstmModel.BasicLstmTrainer import BasicLstmModelTrainer
+
+from models.QualityEstimationStyle.LastHiddenStateModel.LastHiddenStateModelTrainer import LastHiddenStateModelTrainer
+from models.QualityEstimationStyle.TokenStatisticsModel.TokenStatisticsModelTrainer import TokenStatisticsModelTrainer
 from utilities.config.ConfigParser import ConfigParser
 
 model_trainers = {
-    "basic_lstm_model": BasicLstmModelTrainer
+    "basic_lstm_model": BasicLstmModelTrainer,
+    "last_hidden_state_model": LastHiddenStateModelTrainer,
+    "token_statistics_model": TokenStatisticsModelTrainer,
+
 
 }
 

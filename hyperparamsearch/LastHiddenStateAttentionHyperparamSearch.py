@@ -1,4 +1,5 @@
 from models.QualityEstimationStyle.BasicLstmModel.BasicLstmTrainer import BasicLstmModelTrainer
+from models.QualityEstimationStyle.LastHiddenStateModel.LastHiddenStateModelTrainer import LastHiddenStateModelTrainer
 
 from utilities.callbacks import CustomSaveCallback
 
@@ -16,7 +17,7 @@ import pytorch_lightning as pl
 from utilities.config.ConfigParser import ConfigParser
 
 
-class BasicLstmModelHyperparamSearch:
+class LastHiddenStateAttentionHyperparamSearch:
 
     def __init__(self, config, smoke_test, utility='comet'):
 
@@ -24,9 +25,9 @@ class BasicLstmModelHyperparamSearch:
         self.smoke_test = smoke_test
         self.utility = utility
 
-        self.trainer = BasicLstmModelTrainer
+        self.trainer = LastHiddenStateModelTrainer
 
-        self.study_name = "basic_lstm_model_study"
+        self.study_name = "last_hidden_state_attention_study"
 
         self.log_dir = './logs/{}/'.format(self.study_name)
         self.save_location = './saved_models/{}/'.format(self.study_name)
@@ -34,12 +35,12 @@ class BasicLstmModelHyperparamSearch:
         self.n_warmup_steps = 10
         self.n_trials = 30
 
-        self.model_type = "basic_lstm_model"
+        self.model_type = "last_hidden_state"
 
         self.possible_dims = {
-            "small": [0, 1],
-            "medium": [0, 256, 1],
-            "large": [0, 256, 128, 1],
+            "small": [512, 1],
+            "medium": [512, 256, 1],
+            "large": [512, 256, 128, 1],
         }
 
     def objective(self, trial: optuna.trial.Trial) -> float:
@@ -115,6 +116,7 @@ class BasicLstmModelHyperparamSearch:
         dataset_config = self.get_dataset_config()
         model_config = self.get_model_config(trial)
 
+
         config = {
             "model_name": 'basic_lstm',
 
@@ -125,7 +127,7 @@ class BasicLstmModelHyperparamSearch:
                 "name": "basic"
             },
             "collator": {
-                "name": "basic_collator"
+                "name": "nmt_collator"
             },
 
 
@@ -136,29 +138,28 @@ class BasicLstmModelHyperparamSearch:
 
     def get_model_config(self, trial):
 
-        batch_size = trial.suggest_categorical("batch_size", [128, 256, 512])
+        batch_size = 64
+        accumulate_grad_batches = trial.suggest_categorical("accumulate_grad_batches", [2,4])
+
 
         feed_forward_size = trial.suggest_categorical("feed_forward_size", ["small", "medium", "large"])
 
         dims = self.possible_dims[feed_forward_size]
 
-        embedding_size = trial.suggest_categorical("embedding_size", [128, 256, 512])
-
-        hidden_state_size = trial.suggest_categorical("hidden_state_size", [256, 512, ])
-
-        dims[0] = hidden_state_size * 2  # Because of the bidirectional part.
-
         return {
 
             "batch_size": batch_size,
-            "type": "basic_lstm_model",
+            'accumulate_grad_batches': accumulate_grad_batches,
+            "type": "last_hidden_state_model",
             "lr": trial.suggest_float('lr', 1.0e-4, 1.0e-1, log=True),  # Not used
             "weight_decay": trial.suggest_float("weight_decay", 1.0e-9, 1.0e-5, log=True),
             "dropout": trial.suggest_float("dropout", 0.01, 0.9, ),
             "batch_norm": trial.suggest_categorical("batch_norm", [True, False]),
-            "hidden_state_size": hidden_state_size,
-            "embedding": {
-                "size": embedding_size
+            "hidden_state_size": 512,
+            "pooling": {
+                "name": "attention",
+                "embedding_size": 512,
+                "n_heads": trial.suggest_categorical('n_heads', [2,4,8]),
             },
 
             "feed_forward_layers": {

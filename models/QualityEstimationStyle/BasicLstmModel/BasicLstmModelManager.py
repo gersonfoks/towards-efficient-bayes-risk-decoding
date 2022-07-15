@@ -1,9 +1,9 @@
 import torch
 from torch.nn import Embedding
 
-from models.common.layers import EmbbedingForPackedSequenceLayer, get_feed_forward_layers
+from models.common.layers.helpers import get_feed_forward_layers
 from models.common.optimization import get_optimizer_function
-from models.hypothesis_only.BasicLstmModel.BasicLstmModel import BasicLstmModel
+from models.QualityEstimationStyle.BasicLstmModel.BasicLstmModel import BasicLstmModel
 from models.old.hypothesis_only_models.HypothesisLstmModel.model import HypothesisLstmModel
 from models.Base.BaseManager import BaseManager
 from utilities.misc import load_nmt_model
@@ -42,6 +42,7 @@ class BasicLstmModelManager(BaseManager):
                                                )
 
         initialize_optimizer = get_optimizer_function(config)
+
         self.model = BasicLstmModel(source_embedding_layer, hypothesis_embedding_layer, lstm_layer, final_layers, initialize_optimizer)
         return self.model
 

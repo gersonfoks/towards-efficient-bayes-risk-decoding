@@ -24,6 +24,9 @@ class BaseTrainer:
         self.manager_class = None
         self.model = None
 
+        self.train_dataframe = None
+        self.validation_dataframe = None
+
     def load_common(self):
         self.nmt_model, self.tokenizer = load_nmt_model(self.config["model"]["nmt_model"], pretrained=True)
         self.wrapped_nmt = NMTWrapper(self.nmt_model, self.tokenizer)
@@ -41,15 +44,20 @@ class BaseTrainer:
         preprocess_factory = PreprocessFactory(self.config["preprocess"])
 
         preprocessor = preprocess_factory.get_preprocessor()
-        train_dataframe, _ = preprocessor(train_dataframe)
-        validation_dataframe, _ = preprocessor(validation_dataframe)
+        train_dataframe = preprocessor(train_dataframe)
+        validation_dataframe = preprocessor(validation_dataframe)
 
+        train_dataframe = train_dataframe
+        validation_dataframe = validation_dataframe
 
         # Lastly we put it into a dataset
-        train_dataset = Dataset.from_pandas(train_dataframe)
-        validation_dataset = Dataset.from_pandas(validation_dataframe)
+        self.train_dataset = Dataset.from_pandas(train_dataframe)
+        self.validation_dataset = Dataset.from_pandas(validation_dataframe)
 
-        return train_dataset, validation_dataset
+        return self.train_dataset, self.validation_dataset
+
+    def load_tables(self):
+        pass
 
     def get_dataloaders(self, train_dataset, val_dataset):
         # First we get the collators
@@ -79,6 +87,9 @@ class BaseTrainer:
         # Load the manager and the model
         print("start loading the model")
         model_manager, model = self.load_manager_and_model()
+
+        # Next load the tables (if needed, for models that use tables)
+        self.load_tables()
 
         # Get the dataloaders
         print("Getting the dataloaders")

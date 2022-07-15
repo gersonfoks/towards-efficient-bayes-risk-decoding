@@ -1,7 +1,7 @@
 
 
 from models.Base.BaseTrainer import BaseTrainer
-from models.hypothesis_only.BasicLstmModel.BasicLstmModelManager import BasicLstmModelManager
+from models.QualityEstimationStyle.BasicLstmModel.BasicLstmModelManager import BasicLstmModelManager
 
 
 class BasicLstmModelTrainer(BaseTrainer):

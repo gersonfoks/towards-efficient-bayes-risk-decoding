@@ -1,4 +1,6 @@
 from models.QualityEstimationStyle.BasicLstmModel.BasicLstmTrainer import BasicLstmModelTrainer
+from models.QualityEstimationStyle.LastHiddenStateModel.LastHiddenStateModelTrainer import LastHiddenStateModelTrainer
+from models.QualityEstimationStyle.TokenStatisticsModel.TokenStatisticsModelTrainer import TokenStatisticsModelTrainer
 
 from utilities.callbacks import CustomSaveCallback
 
@@ -16,7 +18,7 @@ import pytorch_lightning as pl
 from utilities.config.ConfigParser import ConfigParser
 
 
-class BasicLstmModelHyperparamSearch:
+class TokenStatisticsLstmModelHyperparamSearch:
 
     def __init__(self, config, smoke_test, utility='comet'):
 
@@ -24,9 +26,9 @@ class BasicLstmModelHyperparamSearch:
         self.smoke_test = smoke_test
         self.utility = utility
 
-        self.trainer = BasicLstmModelTrainer
+        self.trainer = TokenStatisticsModelTrainer
 
-        self.study_name = "basic_lstm_model_study"
+        self.study_name = "token_statistics_lstm_study"
 
         self.log_dir = './logs/{}/'.format(self.study_name)
         self.save_location = './saved_models/{}/'.format(self.study_name)
@@ -34,7 +36,7 @@ class BasicLstmModelHyperparamSearch:
         self.n_warmup_steps = 10
         self.n_trials = 30
 
-        self.model_type = "basic_lstm_model"
+        self.model_type = "token_statistics_model"
 
         self.possible_dims = {
             "small": [0, 1],
@@ -58,6 +60,8 @@ class BasicLstmModelHyperparamSearch:
 
         # Load the manager and model
         manager, model = model_trainer.load_manager_and_model()
+
+        model_trainer.load_tables()
 
         # Create the dataloaders
         train_dataloader, val_dataloader = model_trainer.get_dataloaders(train_dataframe, validation_dataframe)
@@ -116,18 +120,18 @@ class BasicLstmModelHyperparamSearch:
         model_config = self.get_model_config(trial)
 
         config = {
-            "model_name": 'basic_lstm',
+            "model_name": 'token_statistics_lstm',
 
             "model": model_config,
             "dataset": dataset_config,
             "batch_size": model_config["batch_size"],
             "preprocess": {
-                "name": "basic"
+                "name": "refs_with_prob_entropy"
             },
+            "table_location": './FBR/predictive/tatoeba-de-en/data/lookup_tables/',
             "collator": {
-                "name": "basic_collator"
+                "name": "token_statics_collator"
             },
-
 
         }
         config_parser = ConfigParser(self.utility)
@@ -136,29 +140,33 @@ class BasicLstmModelHyperparamSearch:
 
     def get_model_config(self, trial):
 
-        batch_size = trial.suggest_categorical("batch_size", [128, 256, 512])
+        batch_size = trial.suggest_categorical("batch_size", [64, 128, 256])
 
         feed_forward_size = trial.suggest_categorical("feed_forward_size", ["small", "medium", "large"])
 
         dims = self.possible_dims[feed_forward_size]
 
-        embedding_size = trial.suggest_categorical("embedding_size", [128, 256, 512])
-
-        hidden_state_size = trial.suggest_categorical("hidden_state_size", [256, 512, ])
+        hidden_state_size = trial.suggest_categorical("hidden_state_size", [64, 128, 256, ])
+        embedding_size = trial.suggest_categorical("embedding_size", [16, 32, 64, ])
 
         dims[0] = hidden_state_size * 2  # Because of the bidirectional part.
 
         return {
 
             "batch_size": batch_size,
-            "type": "basic_lstm_model",
+
+            "type": "last_hidden_state_model",
             "lr": trial.suggest_float('lr', 1.0e-4, 1.0e-1, log=True),  # Not used
             "weight_decay": trial.suggest_float("weight_decay", 1.0e-9, 1.0e-5, log=True),
             "dropout": trial.suggest_float("dropout", 0.01, 0.9, ),
             "batch_norm": trial.suggest_categorical("batch_norm", [True, False]),
             "hidden_state_size": hidden_state_size,
-            "embedding": {
-                "size": embedding_size
+            "embedding_size": embedding_size,
+            "n_statistics": 7,
+            "pooling": {
+                "name": "lstm",
+                "embedding_size": embedding_size,
+                "hidden_state_size": hidden_state_size,
             },
 
             "feed_forward_layers": {
@@ -166,7 +174,6 @@ class BasicLstmModelHyperparamSearch:
                 "activation_function": "relu",
                 "activation_function_last_layer": "tanh",
                 "last_layer_scale": 4.0,
-
             },
 
             "nmt_model": {

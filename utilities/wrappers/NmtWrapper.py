@@ -110,6 +110,44 @@ class NMTWrapper:
         return [v[:l].cpu().numpy().tolist() for v, l in zip(vector, lengths)]
 
     @torch.no_grad()
+    def map_to_token_statistics(self, batch):
+        nmt_in, lengths = self.prepare_batch(batch)
+
+        prob, entropy, top_5 = self.get_prob_and_entropy_and_top_5(nmt_in, lengths)
+
+        return {"prob": prob,
+                "entropy": entropy,
+                "top_5": top_5,
+                **batch}
+
+    @torch.no_grad()
+    def get_prob_and_entropy_and_top_5(self, nmt_in, lengths):
+        nmt_out = self.nmt_model(**nmt_in)
+        logits = nmt_out["logits"]
+
+        hyp_input_ids = (nmt_in["labels"] * (nmt_in["labels"] != -100)).long()  # Get the indices
+
+        ids = hyp_input_ids.unsqueeze(dim=-1)
+
+        log_softmax = torch.nn.LogSoftmax(dim=-1)
+
+        log_probs_all_tokens = log_softmax(logits)
+
+        # Get the chosen log probabilities
+
+        probs_all_tokens = torch.exp(log_probs_all_tokens)
+        probs = probs_all_tokens.gather(-1, ids).squeeze(dim=-1)
+        entropy = - torch.sum(log_probs_all_tokens * probs_all_tokens, dim=-1)
+
+        top_5 = torch.topk(probs_all_tokens, 5, dim=-1, )
+
+        probs = self.shorten_by_length(probs, lengths)
+        entropy = self.shorten_by_length(entropy, lengths)
+        top_5 = self.shorten_by_length(top_5.values, lengths)
+        return probs, entropy, top_5
+
+
+    @torch.no_grad()
     def get_log_prob_and_entropy(self, nmt_in, lengths):
         nmt_out = self.nmt_model(**nmt_in)
         logits = nmt_out["logits"]
