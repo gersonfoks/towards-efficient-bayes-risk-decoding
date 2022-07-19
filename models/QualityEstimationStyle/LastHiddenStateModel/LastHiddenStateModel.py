@@ -36,8 +36,9 @@ class LastHiddenStateModel(BaseModel):
         pooled_embedding = self.pooling_layer(embeddings, attention_mask)
 
 
-
         predicted_scores = self.final_layers(pooled_embedding)
+
+
 
         return predicted_scores
 

@@ -11,8 +11,10 @@ class BasicCollator:
         self.device = device
 
     def __call__(self, batch):
+
         hypothesis = [b["hypothesis"] for b in batch]
         sources = [b["source"] for b in batch]
+
 
         utility = torch.tensor([b["utility"] for b in batch]).to("cuda")
 
