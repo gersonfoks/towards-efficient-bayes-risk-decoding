@@ -12,7 +12,7 @@ class BaseModel(pl.LightningModule):
 
         loss = self.criterion(predicted_scores, scores.to(self.device))
 
-        return {"loss": loss}
+        return {"loss": loss, "predictions": predicted_scores}
 
     def training_step(self, batch, batch_idx):
 
@@ -40,6 +40,17 @@ class BaseModel(pl.LightningModule):
 
         for log_var in self.log_vars:
             self.log("val_{}".format(log_var), batch_out[log_var], batch_size=batch_size)
+
+    @torch.no_grad()
+    def predict(self, batch):
+
+        batch_out = self.batch_to_out(batch)
+
+        return batch_out
+
+
+
+
 
     def configure_optimizers(self):
 

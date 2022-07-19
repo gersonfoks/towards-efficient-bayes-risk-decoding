@@ -23,7 +23,7 @@ class Preprocessor:
 class ResetIndex:
 
     def __call__(self, data):
-        return data.reset_index()
+        return data.reset_index(drop=True)
 
 
 class HypToRefs:
