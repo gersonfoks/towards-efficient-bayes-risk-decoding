@@ -65,8 +65,6 @@ class ScaledActivationFunction(nn.Module):
         self.scale = scale
 
     def forward(self, x):
-        print(self.f)
-        print(self.scale)
         return self.f(x) * self.scale
 
 

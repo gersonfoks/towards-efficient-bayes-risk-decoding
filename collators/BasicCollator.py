@@ -14,7 +14,7 @@ class BasicCollator:
         hypothesis = [b["hypothesis"] for b in batch]
         sources = [b["source"] for b in batch]
 
-        utility = torch.tensor([b["utility"] for b in batch])
+        utility = torch.tensor([b["utility"] for b in batch]).to("cuda")
 
         tokenized_source = self.tokenizer(sources, truncation=True, max_length=self.max_seq_length, padding=True,
                                     return_tensors="pt",)
@@ -29,7 +29,7 @@ class BasicCollator:
 
 
         features = {
-            "tokenized_source": tokenized_source,
-            "tokenized_hypothesis": tokenized_hypothesis
+            "tokenized_source": tokenized_source.to("cuda"),
+            "tokenized_hypothesis": tokenized_hypothesis.to("cuda")
         }
         return sources, hypothesis, features, utility

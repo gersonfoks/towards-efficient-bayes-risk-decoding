@@ -7,13 +7,7 @@ from hyperparamsearch.LastHiddenStateLstmHyperparamSearch import LastHiddenState
 from hyperparamsearch.TokenStatisticLstmModelHyperparamSearch import TokenStatisticsLstmModelHyperparamSearch
 
 models = {
-    # "hypothesis_lstm": HypothesisLstmHyperParamSearch,
-    #
-    # "last_hidden_state_model": LastHiddenStateLstmModelHyperParamSearch,
-    # "prob_entropy_model": ProbEntropyModelHyperparamsearch,
-    # "avg_std_prob_entropy_model": AvgStdProbEntropyModelHyperparamsearch,
-    # "enc_dec_last_hidden_model": EncDecLastHiddenModelHyperparamsearch,
-    # "full_dec_model": FullDecHyperparamSearch,
+
     "basic_lstm_model": BasicLstmModelHyperparamSearch,
     "last_hidden_state_lstm_model": LastHiddenStateLstmHyperparamSearch,
     "last_hidden_state_attention_model": LastHiddenStateAttentionHyperparamSearch,
