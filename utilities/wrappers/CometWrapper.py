@@ -55,7 +55,7 @@ class CometWrapper:
         return scores
 
     @torch.no_grad()
-    def fast_predict_batched(self, source, hypothesis, references, hyp_batch_size=10, ref_batch_size=100):
+    def fast_predict_batched(self, source, hypothesis, references, hyp_batch_size=100, ref_batch_size=100):
 
         # We need to keep track of the scores for each hypotheses
         scores = [[] for i in range(len(hypothesis))]
