@@ -78,6 +78,7 @@ class LastHiddenStateLstmHyperparamSearch:
                        ],
             logger=tb_logger,
             accumulate_grad_batches=1,
+            gradient_clip_val=config["gradient_clip_val"]
         )
 
         # create the dataloaders
@@ -119,7 +120,7 @@ class LastHiddenStateLstmHyperparamSearch:
 
         config = {
             "model_name": 'basic_lstm',
-
+            "gradient_clip_val": trial.suggest_float("gradient clip val", 1.5, 5.0),
             "model": model_config,
             "dataset": dataset_config,
             "batch_size": model_config["batch_size"],
