@@ -45,7 +45,7 @@ def main():
     parser = argparse.ArgumentParser(
         description='Train a model according with parameters specified in the config file ')
     parser.add_argument('--model-path', type=str,
-                        default='./saved_models/basic_lstm_comet/1/',
+                        default='./saved_models/basic_lstm_comet/best/',
                         help='config to load model from')
 
     parser.add_argument('--smoke-test', dest='smoke_test', action="store_true",
@@ -69,8 +69,8 @@ def main():
 
 
     # Instantiate the model manager and the model
-    n_hypotheses = 10
-    n_references = 100
+    n_hypotheses = 100
+    n_references = 1000
     sampling_method = 'ancestral'
     utility = 'comet'
 
