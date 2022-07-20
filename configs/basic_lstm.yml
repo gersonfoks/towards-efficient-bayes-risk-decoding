@@ -19,8 +19,8 @@ collator:
   name: basic_collator
 
 # Training
-batch_size: 512
-accumulate_grad_batches: 1 # Effective batch size of 128
+batch_size: 128
+accumulate_grad_batches: 4 # Effective batch size of 128
 gradient_clip_val: 5.0
 max_epochs: 200
 
@@ -46,7 +46,7 @@ model:
       - 1
     activation_function: 'relu'
     activation_function_last_layer: 'tanh'
-    last_layer_scale: 4.0
+    last_layer_scale: 2.5
 
 
   batch_norm: True

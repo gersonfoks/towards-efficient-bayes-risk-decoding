@@ -1,3 +1,5 @@
+import time
+
 import torch
 from torch.nn.utils.rnn import pack_sequence
 import numpy as np
@@ -11,6 +13,8 @@ class BasicCollator:
         self.device = device
 
     def __call__(self, batch):
+
+
 
         hypothesis = [b["hypothesis"] for b in batch]
         sources = [b["source"] for b in batch]
@@ -34,4 +38,7 @@ class BasicCollator:
             "tokenized_source": tokenized_source.to("cuda"),
             "tokenized_hypothesis": tokenized_hypothesis.to("cuda")
         }
+
+        end = time.time()
+
         return sources, hypothesis, features, utility

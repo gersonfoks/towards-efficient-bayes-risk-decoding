@@ -22,7 +22,7 @@ def main():
         description='Train a model according with parameters specified in the config file ')
     parser.add_argument('--config', type=str,
 
-                        default='./configs/unigram-f1/hypothesis-only-models/basic_ref_model.yml',
+                        default='./configs/basic_lstm.yml',
                         help='config to load model from')
 
     parser.add_argument('--smoke-test', dest='smoke_test', action="store_true",

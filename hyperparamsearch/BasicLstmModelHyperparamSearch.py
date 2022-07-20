@@ -152,7 +152,7 @@ class BasicLstmModelHyperparamSearch:
 
             "batch_size": batch_size,
             "type": "basic_lstm_model",
-            "lr": trial.suggest_float('lr', 1.0e-4, 1.0e-1, log=True),  # Not used
+            "lr": trial.suggest_float('lr', 1.0e-4, 1.0e-2, log=True),
             "weight_decay": trial.suggest_float("weight_decay", 1.0e-9, 1.0e-5, log=True),
             "dropout": trial.suggest_float("dropout", 0.01, 0.9, ),
             "batch_norm": trial.suggest_categorical("batch_norm", [True, False]),
@@ -165,7 +165,7 @@ class BasicLstmModelHyperparamSearch:
                 "dims": dims,
                 "activation_function": "relu",
                 "activation_function_last_layer": "tanh",
-                "last_layer_scale": 4.0,
+                "last_layer_scale": 2.5,
 
             },
 

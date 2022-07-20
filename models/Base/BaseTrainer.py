@@ -84,6 +84,8 @@ class BaseTrainer:
         print("start loading the dataset")
         train_dataset, val_dataset = self.load_data()
 
+
+
         # Load the manager and the model
         print("start loading the model")
         model_manager, model = self.load_manager_and_model()
