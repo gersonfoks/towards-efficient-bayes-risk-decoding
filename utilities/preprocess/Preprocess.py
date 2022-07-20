@@ -106,7 +106,7 @@ class UtilitiesToAverage:
             result.append(
                 np.sum(np.array(util) * count) / np.sum(count)
             )
-        return result
+        return pd.array(result, "float32")
 
 
 
