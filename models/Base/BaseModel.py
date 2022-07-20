@@ -9,7 +9,6 @@ class BaseModel(pl.LightningModule):
         sources, hypotheses, features, scores = batch
         predicted_scores = self.forward(sources, hypotheses, features).flatten()
 
-
         loss = self.criterion(predicted_scores, scores.to(self.device))
 
         return {"loss": loss, "predictions": predicted_scores}

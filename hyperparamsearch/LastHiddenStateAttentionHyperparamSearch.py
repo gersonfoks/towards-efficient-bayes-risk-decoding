@@ -78,6 +78,7 @@ class LastHiddenStateAttentionHyperparamSearch:
                        ],
             logger=tb_logger,
             accumulate_grad_batches=1,
+            gradient_clip_val=config["gradient_clip_val"]
         )
 
         # create the dataloaders
@@ -119,7 +120,7 @@ class LastHiddenStateAttentionHyperparamSearch:
 
         config = {
             "model_name": 'basic_lstm',
-
+            "gradient_clip_val": trial.suggest_float('gradient_clip_val', 1.5, 5.0),
             "model": model_config,
             "dataset": dataset_config,
             "batch_size": model_config["batch_size"],
@@ -139,7 +140,7 @@ class LastHiddenStateAttentionHyperparamSearch:
     def get_model_config(self, trial):
 
         batch_size = 64
-        accumulate_grad_batches = trial.suggest_categorical("accumulate_grad_batches", [2,4])
+        accumulate_grad_batches = trial.suggest_categorical("accumulate_grad_batches", [2,4, 8])
 
 
         feed_forward_size = trial.suggest_categorical("feed_forward_size", ["small", "medium", "large"])
@@ -166,7 +167,7 @@ class LastHiddenStateAttentionHyperparamSearch:
                 "dims": dims,
                 "activation_function": "relu",
                 "activation_function_last_layer": "tanh",
-                "last_layer_scale": 4.0,
+                "last_layer_scale": 2.5,
 
             },
 

@@ -140,7 +140,7 @@ class LastHiddenStateLstmHyperparamSearch:
     def get_model_config(self, trial):
 
         batch_size = 64
-        accumulate_grad_batches = trial.suggest_categorical("accumulate_grad_batches", [2,4])
+        accumulate_grad_batches = trial.suggest_categorical("accumulate_grad_batches", [2,4, 8])
 
 
         feed_forward_size = trial.suggest_categorical("feed_forward_size", ["small", "medium", "large"])
@@ -173,7 +173,7 @@ class LastHiddenStateLstmHyperparamSearch:
                 "dims": dims,
                 "activation_function": "relu",
                 "activation_function_last_layer": "tanh",
-                "last_layer_scale": 4.0,
+                "last_layer_scale": 2.5,
 
             },
 

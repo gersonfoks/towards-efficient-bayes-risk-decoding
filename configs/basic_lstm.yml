@@ -19,9 +19,9 @@ collator:
   name: basic_collator
 
 # Training
-batch_size: 512
-accumulate_grad_batches: 1 # Effective batch size of 128
-
+batch_size: 128
+accumulate_grad_batches: 4 # Effective batch size of 128
+gradient_clip_val: 5.0
 max_epochs: 200
 
 
@@ -33,7 +33,7 @@ model:
       checkpoint: 'NMT/tatoeba-de-en/model'
       type: 'MarianMT'
 
-  lr: 0.01 #1.4815897489348615e-05
+  lr: 0.001 #1.4815897489348615e-05
   weight_decay: 3.0e-6 #5.0e-07
   dropout: 0.38 #0.5 #0.6712665889822903
   embedding:
@@ -45,6 +45,8 @@ model:
       - 256
       - 1
     activation_function: 'relu'
+    activation_function_last_layer: 'tanh'
+    last_layer_scale: 2.5
 
 
   batch_norm: True
