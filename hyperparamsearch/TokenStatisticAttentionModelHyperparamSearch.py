@@ -18,7 +18,7 @@ import pytorch_lightning as pl
 from utilities.config.ConfigParser import ConfigParser
 
 
-class TokenStatisticsLstmModelHyperparamSearch:
+class TokenStatisticsAttentionModelHyperparamSearch:
 
     def __init__(self, config, smoke_test, utility='comet'):
 
@@ -28,7 +28,7 @@ class TokenStatisticsLstmModelHyperparamSearch:
 
         self.trainer = TokenStatisticsModelTrainer
 
-        self.study_name = "token_statistics_lstm_study"
+        self.study_name = "token_statistics_attention_study"
 
         self.log_dir = './logs/{}/'.format(self.study_name)
         self.save_location = './saved_models/{}/'.format(self.study_name)
@@ -146,10 +146,10 @@ class TokenStatisticsLstmModelHyperparamSearch:
 
         dims = self.possible_dims[feed_forward_size]
 
-        hidden_state_size = trial.suggest_categorical("hidden_state_size", [64, 128, 256, 512 ])
+        hidden_state_size = trial.suggest_categorical("hidden_state_size", [64, 128, 256, 512])
         embedding_size = trial.suggest_categorical("embedding_size", [64, 128, 256])
 
-        dims[0] = hidden_state_size * 2  # Because of the bidirectional part.
+        dims[0] = embedding_size
 
         return {
 
@@ -163,9 +163,9 @@ class TokenStatisticsLstmModelHyperparamSearch:
             "embedding_size": embedding_size,
             "n_statistics": 7,
             "pooling": {
-                "name": "lstm",
+                "name": "attention",
                 "embedding_size": embedding_size,
-                "hidden_state_size": hidden_state_size,
+                "n_heads": trial.suggest_categorical('n_heads', [2, 4, 8]),
             },
 
             "feed_forward_layers": {

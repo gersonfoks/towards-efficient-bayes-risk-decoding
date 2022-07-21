@@ -88,7 +88,7 @@ def main():
 
 
 
-            scores = utility.call_batched_fast(source, hyp_list, picked_references)
+            scores = utility.call_fast(source, hyp_list, picked_references)
 
             # Next we calculate the average
 

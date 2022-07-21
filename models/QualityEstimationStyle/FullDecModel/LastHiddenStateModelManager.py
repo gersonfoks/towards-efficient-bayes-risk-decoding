@@ -1,8 +1,6 @@
-from torch import nn
 
 from models.QualityEstimationStyle.LastHiddenStateModel.LastHiddenStateModel import LastHiddenStateModel
-from models.QualityEstimationStyle.TokenStatisticsModel.TokenStatisticsModel import TokenStatisticsModel
-
+from models.common.layers.embedding import LastStateEmbedding
 from models.common.layers.helpers import get_feed_forward_layers
 
 from models.common.layers.pooling import LstmPoolingLayer, LearnedPoolingLayer
@@ -12,7 +10,7 @@ from utilities.misc import load_nmt_model
 
 
 
-class TokenStatisticsModelManager(BaseManager):
+class LastHiddenStateModelManager(BaseManager):
 
     def __init__(self, config, nmt_model=None, tokenizer=None):
         super().__init__(config)
@@ -27,7 +25,7 @@ class TokenStatisticsModelManager(BaseManager):
 
         # Create the embedding layer
 
-        embedding_layer = nn.Linear(config["n_statistics"], config["embedding_size"])
+        embedding_layer = LastStateEmbedding(self.nmt_model)
 
 
         pooling = None
@@ -47,12 +45,11 @@ class TokenStatisticsModelManager(BaseManager):
                                                config["feed_forward_layers"]["activation_function"],
                                                config["feed_forward_layers"]["activation_function_last_layer"],
                                                config["dropout"],
-                                               last_layer_scale=config["feed_forward_layers"]['last_layer_scale'],
-                                               batch_norm=config["batch_norm"]
+                                               last_layer_scale=config["feed_forward_layers"]['last_layer_scale']
                                                )
 
         initialize_optimizer = get_optimizer_function(config)
 
-        self.model = TokenStatisticsModel(embedding_layer, pooling, final_layers, initialize_optimizer)
+        self.model = LastHiddenStateModel(embedding_layer, pooling, final_layers, initialize_optimizer)
         return self.model
 
