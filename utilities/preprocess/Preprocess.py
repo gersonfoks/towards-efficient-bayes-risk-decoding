@@ -40,23 +40,21 @@ class AddHypIds:
         self.add_ref_ids = add_ref_ids
 
     def __call__(self, data):
-        dataset = Dataset.from_pandas(data)
-        data = dataset.map(self.create_hypothesis_ids, batched=True, batch_size=32).to_pandas()
+
+
+        data["hypotheses_ids"] = data.apply(self.create_hypothesis_ids, axis=1)
         # Also add the reference ids
         if self.add_ref_ids:
             data["reference_ids"] = data["hypotheses_ids"]
         return data
 
     def create_hypothesis_ids(self, x):
-        hypotheses_ids = []
-        for ids, hypotheses in zip(x["index"], x["hypotheses"]):
-            hypotheses_ids.append([
-                "{}_{}".format(ids, i) for i in range(len(hypotheses))
-            ])
-        return {
-            "hypotheses_ids": hypotheses_ids,
-            **x
-        }
+
+
+        hypotheses_ids = [
+                "{}_{}".format(x.name, i) for i in range(len(x["hypotheses"]))
+            ]
+        return hypotheses_ids
 
 
 class Explode:
