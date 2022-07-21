@@ -11,6 +11,7 @@ lightning_logs
 logs
 study
 saved_models
+model_predictions
 # C extensions
 *.so
 
