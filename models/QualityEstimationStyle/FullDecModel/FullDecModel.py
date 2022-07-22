@@ -41,15 +41,16 @@ class FullDecModel(BaseModel):
 
         ]
         for emb, pooling_layer in zip(embeddings, self.full_dec_pooling_layers):
-            all_pooled_layers.append(pooling_layer(emb, features["attention_mask"]))
+            all_pooled_layers.append(pooling_layer(emb, attention_mask))
 
         statistics_embeddings = self.token_statistics_embedding.forward(features["token_statistics"], )
 
-        pooled_statistics = self.token_statistics_pooling_layer(statistics_embeddings, features["attention_mask"])
+        pooled_statistics = self.token_statistics_pooling_layer(statistics_embeddings, features["attention_mask_tokens"])
         all_pooled_layers.append(pooled_statistics)
 
         final_features = torch.concat(all_pooled_layers, dim=-1)
         predicted_scores = self.final_layers(final_features)
+
 
 
 

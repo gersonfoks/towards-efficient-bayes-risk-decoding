@@ -2,6 +2,7 @@
 import argparse
 
 from hyperparamsearch.BasicLstmModelHyperparamSearch import BasicLstmModelHyperparamSearch
+from hyperparamsearch.FullDecLstmModelHyperparamSearch import FullDecLstmModelHyperparamSearch
 from hyperparamsearch.LastHiddenStateAttentionHyperparamSearch import LastHiddenStateAttentionHyperparamSearch
 from hyperparamsearch.LastHiddenStateLstmHyperparamSearch import LastHiddenStateLstmHyperparamSearch
 from hyperparamsearch.TokenStatisticAttentionModelHyperparamSearch import TokenStatisticsAttentionModelHyperparamSearch
@@ -14,6 +15,7 @@ models = {
     "last_hidden_state_attention_model": LastHiddenStateAttentionHyperparamSearch,
     "token_statistics_lstm": TokenStatisticsLstmModelHyperparamSearch,
     "token_statistics_attention": TokenStatisticsAttentionModelHyperparamSearch,
+    "full_dec_lstm": FullDecLstmModelHyperparamSearch,
 
 }
 
