@@ -68,6 +68,7 @@ class TokenStatisticsAttentionModelHyperparamSearch:
         tb_logger = pl_loggers.TensorBoardLogger(save_dir=self.log_dir)
 
         save_callback = CustomSaveCallback(manager, self.save_location + str(trial.number) + "/")
+        
         trainer = pl.Trainer(
             max_epochs=max_epochs,
             gpus=1,
@@ -118,9 +119,11 @@ class TokenStatisticsAttentionModelHyperparamSearch:
         dataset_config = self.get_dataset_config()
         model_config = self.get_model_config(trial)
 
+        gradient_clip_val = trial.suggest_float("gradient_clip_val", 1,5)
+
         config = {
             "model_name": 'token_statistics_lstm',
-
+            "gradient_clip_val": gradient_clip_val,
             "model": model_config,
             "dataset": dataset_config,
             "batch_size": model_config["batch_size"],

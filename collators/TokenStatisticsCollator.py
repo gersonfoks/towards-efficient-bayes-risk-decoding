@@ -37,7 +37,7 @@ class TokenStatisticsCollator:
 
         entropy = [torch.tensor(f["entropy"]) for f in features]
 
-        top_5 = [torch.tensor([x.astype(float) for x in f["top_5"]]) for f in features]
+        top_5 = [torch.tensor([x.astype(float).tolist() for x in f["top_5"]]) for f in features]
         prob = [torch.tensor(f["prob"]) for f in features]
 
 
