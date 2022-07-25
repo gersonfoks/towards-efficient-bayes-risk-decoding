@@ -32,7 +32,9 @@ class LastStateEmbedding(nn.Module):
         self.nmt_model = nmt_model
         self.padding_id = padding_id
 
+    @torch.no_grad()
     def forward(self, input_ids=None, attention_mask=None, decoder_input_ids=None, labels=None):
+        self.nmt_Model.eval()
         with torch.no_grad():
             nmt_out = self.nmt_model.forward(input_ids=input_ids, attention_mask=attention_mask, labels=labels,
                                              decoder_input_ids=decoder_input_ids, output_hidden_states=True,
