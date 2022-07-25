@@ -34,7 +34,7 @@ class LastHiddenStateModelManager(BaseManager):
 
             pooling = LstmPoolingLayer(config["pooling"]["embedding_size"], config["pooling"]["hidden_state_size"])
         elif config["pooling"]["name"] == "attention":
-            pooling = LearnedPoolingLayer(config["pooling"]["embedding_size"], config["pooling"]["n_heads"])
+            pooling = LearnedPoolingLayer(config["pooling"]["embedding_size"],config["pooling"]["n_queries"],  config["pooling"]["n_heads"])
         else:
             raise ValueError('Unknown pooling: ', config["pooling"]["name"])
 

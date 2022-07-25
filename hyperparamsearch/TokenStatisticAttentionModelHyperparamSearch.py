@@ -68,7 +68,7 @@ class TokenStatisticsAttentionModelHyperparamSearch:
         tb_logger = pl_loggers.TensorBoardLogger(save_dir=self.log_dir)
 
         save_callback = CustomSaveCallback(manager, self.save_location + str(trial.number) + "/")
-        
+
         trainer = pl.Trainer(
             max_epochs=max_epochs,
             gpus=1,
@@ -136,8 +136,7 @@ class TokenStatisticsAttentionModelHyperparamSearch:
             },
 
         }
-        config_parser = ConfigParser(self.utility)
-        config = config_parser.parse(config)
+
         return config
 
     def get_model_config(self, trial):

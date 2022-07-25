@@ -74,6 +74,7 @@ class TokenStatisticsLstmModelHyperparamSearch:
             max_epochs=max_epochs,
             gpus=1,
             progress_bar_refresh_rate=1,
+            gradient_clip_val=config["gradient_clip_val"],
             callbacks=[EarlyStopping(monitor="val_loss", patience=5, verbose=True),
                        LearningRateMonitor(logging_interval="epoch"),
                        PyTorchLightningPruningCallback(trial, monitor="val_loss"),
@@ -118,13 +119,14 @@ class TokenStatisticsLstmModelHyperparamSearch:
     def get_config(self, trial):
         dataset_config = self.get_dataset_config()
         model_config = self.get_model_config(trial)
-
+        gradient_clip_val = trial.suggest_float("gradient_clip_val", 1, 5)
+        batch_size = trial.suggest_categorical("batch_size", [64, 128, 256])
         config = {
             "model_name": 'token_statistics_lstm',
-
+            "gradient_clip_val": gradient_clip_val,
             "model": model_config,
             "dataset": dataset_config,
-            "batch_size": model_config["batch_size"],
+            "batch_size": batch_size,
             "preprocess": {
                 "name": "refs_with_prob_entropy"
             },
@@ -134,32 +136,26 @@ class TokenStatisticsLstmModelHyperparamSearch:
             },
 
         }
-        config_parser = ConfigParser(self.utility)
-        config = config_parser.parse(config)
+
         return config
 
     def get_model_config(self, trial):
-
-        batch_size = trial.suggest_categorical("batch_size", [64, 128, 256])
 
         feed_forward_size = trial.suggest_categorical("feed_forward_size", ["small", "medium", "large"])
 
         dims = self.possible_dims[feed_forward_size]
 
-        hidden_state_size = trial.suggest_categorical("hidden_state_size", [64, 128, 256, 512 ])
+        hidden_state_size = trial.suggest_categorical("hidden_state_size", [64, 128, 256, ])
         embedding_size = trial.suggest_categorical("embedding_size", [64, 128, 256])
 
         dims[0] = hidden_state_size * 2  # Because of the bidirectional part.
 
         return {
 
-            "batch_size": batch_size,
-
             "type": "last_hidden_state_model",
             "lr": trial.suggest_float('lr', 1.0e-4, 1.0e-1, log=True),  # Not used
             "weight_decay": trial.suggest_float("weight_decay", 1.0e-9, 1.0e-5, log=True),
             "dropout": trial.suggest_float("dropout", 0.01, 0.9, ),
-            "batch_norm": False,
             "embedding_size": embedding_size,
             "n_statistics": 7,
             "pooling": {

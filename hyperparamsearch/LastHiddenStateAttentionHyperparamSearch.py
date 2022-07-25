@@ -77,7 +77,7 @@ class LastHiddenStateAttentionHyperparamSearch:
                        save_callback
                        ],
             logger=tb_logger,
-            accumulate_grad_batches=1,
+            accumulate_grad_batches=config["accumulate_grad_batches"],
             gradient_clip_val=config["gradient_clip_val"]
         )
 
@@ -116,14 +116,16 @@ class LastHiddenStateAttentionHyperparamSearch:
     def get_config(self, trial):
         dataset_config = self.get_dataset_config()
         model_config = self.get_model_config(trial)
-
+        batch_size = 64
+        accumulate_grad_batches = trial.suggest_categorical("accumulate_grad_batches", [2, 4, 8])
 
         config = {
+            "batch_size": batch_size,
+            'accumulate_grad_batches': accumulate_grad_batches,
             "model_name": 'basic_lstm',
             "gradient_clip_val": trial.suggest_float('gradient_clip_val', 1.5, 5.0),
             "model": model_config,
             "dataset": dataset_config,
-            "batch_size": model_config["batch_size"],
             "preprocess": {
                 "name": "basic"
             },
@@ -131,36 +133,33 @@ class LastHiddenStateAttentionHyperparamSearch:
                 "name": "nmt_collator"
             },
 
-
         }
-        config_parser = ConfigParser(self.utility)
-        config = config_parser.parse(config)
+
         return config
 
     def get_model_config(self, trial):
 
-        batch_size = 64
-        accumulate_grad_batches = trial.suggest_categorical("accumulate_grad_batches", [2,4, 8])
-
 
         feed_forward_size = trial.suggest_categorical("feed_forward_size", ["small", "medium", "large"])
 
-        dims = self.possible_dims[feed_forward_size]
+        n_queries = trial.suggest_categorical("n_queries", [1, 2])
+
+        dims = self.possible_dims[feed_forward_size].copy()
+        dims[0] = 512 * n_queries
 
         return {
 
-            "batch_size": batch_size,
-            'accumulate_grad_batches': accumulate_grad_batches,
+
             "type": "last_hidden_state_model",
             "lr": trial.suggest_float('lr', 1.0e-4, 1.0e-2, log=True),
             "weight_decay": trial.suggest_float("weight_decay", 1.0e-9, 1.0e-5, log=True),
             "dropout": trial.suggest_float("dropout", 0.01, 0.9, ),
-            "batch_norm": trial.suggest_categorical("batch_norm", [True, False]),
             "hidden_state_size": 512,
             "pooling": {
                 "name": "attention",
                 "embedding_size": 512,
-                "n_heads": trial.suggest_categorical('n_heads', [2,4,8]),
+                "n_heads": trial.suggest_categorical('n_heads', [2, 4, 8]),
+                "n_queries": n_queries,
             },
 
             "feed_forward_layers": {

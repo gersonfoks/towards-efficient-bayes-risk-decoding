@@ -77,7 +77,7 @@ class LastHiddenStateLstmHyperparamSearch:
                        save_callback
                        ],
             logger=tb_logger,
-            accumulate_grad_batches=1,
+            accumulate_grad_batches=config["accumulate_grad_batches"],
             gradient_clip_val=config["gradient_clip_val"]
         )
 
@@ -116,10 +116,11 @@ class LastHiddenStateLstmHyperparamSearch:
     def get_config(self, trial):
         dataset_config = self.get_dataset_config()
         model_config = self.get_model_config(trial)
-
+        accumulate_grad_batches = trial.suggest_categorical("accumulate_grad_batches", [2,4, 8])
 
         config = {
             "model_name": 'basic_lstm',
+            'accumulate_grad_batches': accumulate_grad_batches,
             "gradient_clip_val": trial.suggest_float("gradient clip val", 1.5, 5.0),
             "model": model_config,
             "dataset": dataset_config,
@@ -133,14 +134,13 @@ class LastHiddenStateLstmHyperparamSearch:
 
 
         }
-        config_parser = ConfigParser(self.utility)
-        config = config_parser.parse(config)
+
         return config
 
     def get_model_config(self, trial):
 
         batch_size = 64
-        accumulate_grad_batches = trial.suggest_categorical("accumulate_grad_batches", [2,4, 8])
+
 
 
         feed_forward_size = trial.suggest_categorical("feed_forward_size", ["small", "medium", "large"])
@@ -156,12 +156,12 @@ class LastHiddenStateLstmHyperparamSearch:
         return {
 
             "batch_size": batch_size,
-            'accumulate_grad_batches': accumulate_grad_batches,
+
             "type": "last_hidden_state_model",
             "lr": trial.suggest_float('lr', 1.0e-4, 1.0e-1, log=True),  # Not used
             "weight_decay": trial.suggest_float("weight_decay", 1.0e-9, 1.0e-5, log=True),
             "dropout": trial.suggest_float("dropout", 0.01, 0.9, ),
-            "batch_norm": False,
+
             "hidden_state_size": hidden_state_size,
             "pooling": {
                 "name": "lstm",
