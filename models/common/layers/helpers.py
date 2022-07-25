@@ -15,7 +15,8 @@ activation_functions = {
 }
 
 
-def get_feed_forward_layers(layer_dims, activation_function, activation_function_last_layer=None, dropout=0.0, batch_norm=False, last_layer_scale=None):
+def get_feed_forward_layers(layer_dims, activation_function, activation_function_last_layer=None, dropout=0.0,
+                            last_layer_scale=None):
     '''
     Creates feed forward layers with dimensions defined in layer_dims.
     :return: 
@@ -25,14 +26,9 @@ def get_feed_forward_layers(layer_dims, activation_function, activation_function
 
     layers = []
     # Add all the layers except the last one
-    if batch_norm:
-        print("using_batchnorm for the first layer")
-        layers.append(nn.BatchNorm1d(layer_dims[0]))
+
     for layer_in, layer_out in zip(layer_dims[:-2], layer_dims[1:-1]):
         layers.append(nn.Linear(layer_in, layer_out))
-        if batch_norm:
-            print("using_batchnorm for the first layer")
-            layers.append(nn.BatchNorm1d(layer_out))
         layers.append(activation_function())
         if dropout > 0:
             layers.append(nn.Dropout(dropout))
@@ -42,9 +38,7 @@ def get_feed_forward_layers(layer_dims, activation_function, activation_function
 
     if activation_function_last_layer != None:
 
-
-        activation_function= activation_functions[activation_function_last_layer]
-
+        activation_function = activation_functions[activation_function_last_layer]
 
         # If we need to scale (used for comet models)
         if last_layer_scale != None:
@@ -68,13 +62,9 @@ class ScaledActivationFunction(nn.Module):
         return self.f(x) * self.scale
 
 
-
-
-
 class AttentionWithLearnableEmbedding(nn.Module):
 
     def __init__(self, query_emb_size, key_emb_size, value_emb_size, n_learnable_embeddings, num_heads=4):
-
         super().__init__()
 
         self.n_learnable_embeddings = n_learnable_embeddings
@@ -87,7 +77,6 @@ class AttentionWithLearnableEmbedding(nn.Module):
 
         self.pooling = LearnedPoolingLayer(query_emb_size, )
 
-
     def forward(self, query, key, value, query_attention, key_attention):
         batch_size = query.shape[0]
         learnable_emb_query = self.learnable_embedding_query.repeat(batch_size, 1, 1)
@@ -98,19 +87,13 @@ class AttentionWithLearnableEmbedding(nn.Module):
         key = torch.concat([learnable_embedding_key, key], dim=1)
         value = torch.concat([learnable_embedding_value, value], dim=1)
 
-        query_attention = torch.concat([torch.ones(batch_size, self.n_learnable_embeddings).to("cuda"), query_attention], dim=-1)
-        key_attention = torch.concat([torch.ones(batch_size, self.n_learnable_embeddings).to("cuda"), key_attention], dim=-1)
+        query_attention = torch.concat(
+            [torch.ones(batch_size, self.n_learnable_embeddings).to("cuda"), query_attention], dim=-1)
+        key_attention = torch.concat([torch.ones(batch_size, self.n_learnable_embeddings).to("cuda"), key_attention],
+                                     dim=-1)
 
         att_out, _ = self.attention(query=query, key=key, value=value, key_padding_mask=~key_attention.bool())
 
         # pool
-        pooled_out = self.pooling(att_out,  query_attention.bool())
+        pooled_out = self.pooling(att_out, query_attention.bool())
         return pooled_out
-
-
-
-
-
-
-
-

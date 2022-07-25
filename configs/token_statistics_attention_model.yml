@@ -4,8 +4,8 @@ dataset:
   dir: 'predictive/tatoeba-de-en/data/raw/'
   preproces_dir: 'predictive/tatoeba-de-en/data/preprocessed/'
   sampling_method: 'ancestral'
-  n_hypotheses: 10
-  n_references: 100
+  n_hypotheses: 100
+  n_references: 1000
   repeated_indices: False
 
 #
@@ -21,7 +21,7 @@ collator:
   name: token_statics_collator
 
 # Training
-batch_size: 128
+batch_size: 61
 accumulate_grad_batches: 1 # Effective batch size of 128
 
 max_epochs: 150
@@ -35,19 +35,20 @@ model:
       checkpoint: 'NMT/tatoeba-de-en/model'
       type: 'MarianMT'
 
-  lr: 1.0e-4 #1.4815897489348615e-05
-  weight_decay: 5.0e-7 #5.0e-07
-  dropout: 0.4 #0.5 #0.6712665889822903
+  lr: 0.0014 #1.4815897489348615e-05
+  weight_decay: 1.5e-06 #5.0e-07
+  dropout: 0.12 #0.5 #0.6712665889822903
   n_statistics: 7
-  embedding_size: 64
+  embedding_size: 128
 
   pooling:
     name: attention
-    embedding_size: 64
-    n_heads: 4
+    embedding_size: 128
+    n_heads: 8
   feed_forward_layers:
     dims:
-      - 64
+      - 128
+      - 256
       - 1
     activation_function: 'relu'
     activation_function_last_layer: 'tanh'
@@ -58,5 +59,5 @@ model:
   optimizer:
     type: adam_with_lr_decay
     step_size: 1
-    gamma: 0.9
+    gamma: 0.7
     interval: epoch

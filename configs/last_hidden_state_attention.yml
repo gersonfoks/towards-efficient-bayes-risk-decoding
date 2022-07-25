@@ -4,8 +4,8 @@ dataset:
   dir: 'predictive/tatoeba-de-en/data/raw/'
   preproces_dir: 'predictive/tatoeba-de-en/data/preprocessed/'
   sampling_method: 'ancestral'
-  n_hypotheses: 10
-  n_references: 100
+  n_hypotheses: 100
+  n_references: 1000
   repeated_indices: False
 
 #
@@ -33,52 +33,26 @@ model:
       checkpoint: 'NMT/tatoeba-de-en/model'
       type: 'MarianMT'
 
-  lr: 1.0e-4 #1.4815897489348615e-05
-  weight_decay: 5.0e-7 #5.0e-07
-  dropout: 0.4 #0.5 #0.6712665889822903
+  lr: 4.0e-4 #1.4815897489348615e-05
+  weight_decay: 3.0e-9 #5.0e-07
+  dropout: 0.41 #0.5 #0.6712665889822903
   pooling:
     name: attention
     embedding_size: 512
-    n_heads: 4
+    n_heads: 8
   feed_forward_layers:
     dims:
       - 512
-      - 128
+      - 256
       - 1
     activation_function: 'relu'
-  batch_norm: True
-
+  grad_clip_val: 3.2
 
   optimizer:
     type: adam_with_lr_decay
     step_size: 1
-    gamma: 0.9
+    gamma: 0.86
     interval: epoch
-
-#    type: one_cylce_lr
-#    max_lr: 1.0e-3
-#    epochs: 25
-#    steps_per_epoch: 1037 # 1037 for 10 x 100 and 7228 for 100 x 1000
-#    type: cyclic_lr
-#    max_lr: 1.0e-4
-#    base_lr: 1.0e-5
-#    step_size_up: 2000
-#    mode: triangular
-#    type: inv_square_root
-#    warmup_steps: 2000
-#    lr: 0.004
-#    plateau_steps: 1000
-
-
-
-    #    type: one_cylce_lr
-    #    max_lr: 1.0e-4
-    #    epochs: 50
-    #    steps_per_epoch: 7228
-    #    type: adam_with_schedule
-    #    warmup_steps: 5000
-    #    start_decay: 10000
-
 
 
 

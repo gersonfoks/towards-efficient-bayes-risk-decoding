@@ -146,7 +146,7 @@ class TokenStatisticsAttentionModelHyperparamSearch:
 
         dims = self.possible_dims[feed_forward_size]
 
-        hidden_state_size = trial.suggest_categorical("hidden_state_size", [64, 128, 256, 512])
+
         embedding_size = trial.suggest_categorical("embedding_size", [64, 128, 256])
 
         dims[0] = embedding_size

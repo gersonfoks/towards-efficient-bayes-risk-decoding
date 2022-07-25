@@ -23,11 +23,12 @@ class LstmPoolingLayer(nn.Module):
 
 class LearnedPoolingLayer(nn.Module):
 
-    def __init__(self, embedding_size, n_heads=4):
+    def __init__(self, embedding_size, n_queries=1, n_heads=4):
 
         super().__init__()
         self.embedding_size = embedding_size
-        query_tensor = torch.zeros(1, 1, embedding_size)
+        self.n_queries = n_queries
+        query_tensor = torch.zeros(1, n_queries, embedding_size)
         nn.init.xavier_normal_(query_tensor)
         self.query = torch.nn.Parameter(query_tensor)
         self.attention = torch.nn.MultiheadAttention(embedding_size, n_heads, batch_first=True)
@@ -39,6 +40,8 @@ class LearnedPoolingLayer(nn.Module):
                                                      value=x,
                                                      key_padding_mask=~att_mask.bool(),
                                                      )
+
+        print(hidden_state.shape)
         return hidden_state
 
 

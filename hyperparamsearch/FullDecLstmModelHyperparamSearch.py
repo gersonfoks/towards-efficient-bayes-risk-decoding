@@ -1,7 +1,4 @@
-from models.QualityEstimationStyle.BasicLstmModel.BasicLstmTrainer import BasicLstmModelTrainer
 from models.QualityEstimationStyle.FullDecModel.FullDecModelTrainer import FullDecModelTrainer
-from models.QualityEstimationStyle.LastHiddenStateModel.LastHiddenStateModelTrainer import LastHiddenStateModelTrainer
-from models.QualityEstimationStyle.TokenStatisticsModel.TokenStatisticsModelTrainer import TokenStatisticsModelTrainer
 
 from utilities.callbacks import CustomSaveCallback
 
@@ -155,7 +152,7 @@ class FullDecLstmModelHyperparamSearch:
 
         full_dec_hidden_state_size = trial.suggest_categorical("full_dec_hidden_state_size", [64, 128, 256, 512])
 
-        dims[0] = full_dec_hidden_state_size * 2 * 7 + 2 * hidden_state_size # Because of the bidirectional part.
+        dims[0] = full_dec_hidden_state_size * 2 * 7 + 2 * hidden_state_size # Times 2 Because of the bidirectional part.
 
         return {
 

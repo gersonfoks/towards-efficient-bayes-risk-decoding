@@ -161,7 +161,7 @@ class LastHiddenStateLstmHyperparamSearch:
             "lr": trial.suggest_float('lr', 1.0e-4, 1.0e-1, log=True),  # Not used
             "weight_decay": trial.suggest_float("weight_decay", 1.0e-9, 1.0e-5, log=True),
             "dropout": trial.suggest_float("dropout", 0.01, 0.9, ),
-            "batch_norm": trial.suggest_categorical("batch_norm", [True, False]),
+            "batch_norm": False,
             "hidden_state_size": hidden_state_size,
             "pooling": {
                 "name": "lstm",

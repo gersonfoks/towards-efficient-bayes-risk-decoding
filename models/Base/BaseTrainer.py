@@ -113,6 +113,7 @@ class BaseTrainer:
                        custom_save_model_callback],
             logger=tb_logger,
             accumulate_grad_batches=self.config["accumulate_grad_batches"],
+
         )
 
         # create the dataloaders
