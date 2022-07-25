@@ -1,4 +1,3 @@
-from datasets import Dataset
 from torch.utils.data import DataLoader
 
 from models.Base.BaseTrainer import BaseTrainer
@@ -37,8 +36,10 @@ class TokenStatisticsModelTrainer(BaseTrainer):
     def get_train_and_val_table_location(self):
         path_manager = get_path_manager()
 
-        train_table_location = self.config["table_location"] + 'train_{}_{}/'.format(self.config["dataset"]["n_hypotheses"], self.config["dataset"]["n_references"])
-        val_table_location = self.config["table_location"] + 'val_{}_{}/'.format(self.config["dataset"]["n_hypotheses"], self.config["dataset"]["n_references"])
+        train_table_location = self.config["table_location"] + 'train_{}_{}/'.format(
+            self.config["dataset"]["n_hypotheses"], self.config["dataset"]["n_references"])
+        val_table_location = self.config["table_location"] + 'val_{}_{}/'.format(self.config["dataset"]["n_hypotheses"],
+                                                                                 self.config["dataset"]["n_references"])
 
         if self.smoke_test:
             train_table_location += "smoke_test/"
@@ -47,7 +48,6 @@ class TokenStatisticsModelTrainer(BaseTrainer):
         return path_manager.get_abs_path(train_table_location), path_manager.get_abs_path(val_table_location)
 
     def load_tables(self):
-
         train_table_location, val_table_location = self.get_train_and_val_table_location()
 
         train_lookup_table_creator = TokenStatisticsLookupTableCreator(
@@ -60,8 +60,3 @@ class TokenStatisticsModelTrainer(BaseTrainer):
         )
 
         self.val_table = val_lookup_table_creator(self.validation_dataset)
-
-
-
-
-

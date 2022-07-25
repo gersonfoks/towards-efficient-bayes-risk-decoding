@@ -51,8 +51,6 @@ def get_optimizer_function(config):
     if config["optimizer"]["type"] == "adam_with_lr_decay":
 
         def initializer(x):
-
-
             optimizer = torch.optim.Adam(x, lr=config["lr"], weight_decay=config["weight_decay"])
             step_size = config["optimizer"]["step_size"]
             gamma = config["optimizer"]["gamma"]

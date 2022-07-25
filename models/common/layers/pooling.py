@@ -41,7 +41,8 @@ class LearnedPoolingLayer(nn.Module):
                                                      key_padding_mask=~att_mask.bool(),
                                                      )
 
-        print(hidden_state.shape)
+        if self.n_queries > 1:
+            hidden_state = hidden_state.reshape(-1, self.embedding_size * self.n_queries)
         return hidden_state
 
 

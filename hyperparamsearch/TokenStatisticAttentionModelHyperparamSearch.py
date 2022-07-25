@@ -1,5 +1,3 @@
-from models.QualityEstimationStyle.BasicLstmModel.BasicLstmTrainer import BasicLstmModelTrainer
-from models.QualityEstimationStyle.LastHiddenStateModel.LastHiddenStateModelTrainer import LastHiddenStateModelTrainer
 from models.QualityEstimationStyle.TokenStatisticsModel.TokenStatisticsModelTrainer import TokenStatisticsModelTrainer
 
 from utilities.callbacks import CustomSaveCallback
@@ -73,6 +71,7 @@ class TokenStatisticsAttentionModelHyperparamSearch:
         trainer = pl.Trainer(
             max_epochs=max_epochs,
             gpus=1,
+            gradient_clip_val=config["gradient_clip_val"],
             progress_bar_refresh_rate=1,
             callbacks=[EarlyStopping(monitor="val_loss", patience=5, verbose=True),
                        LearningRateMonitor(logging_interval="epoch"),
@@ -148,24 +147,26 @@ class TokenStatisticsAttentionModelHyperparamSearch:
 
 
         embedding_size = trial.suggest_categorical("embedding_size", [64, 128, 256])
+        n_queries = trial.suggest_categorical('n_queries', [1, 2 ])
 
-        dims[0] = embedding_size
+        dims[0] = embedding_size * n_queries
+
 
         return {
 
             "batch_size": batch_size,
 
             "type": "last_hidden_state_model",
-            "lr": trial.suggest_float('lr', 1.0e-4, 1.0e-1, log=True),  # Not used
+            "lr": trial.suggest_float('lr', 1.0e-4, 1.0e-1, log=True),
             "weight_decay": trial.suggest_float("weight_decay", 1.0e-9, 1.0e-5, log=True),
             "dropout": trial.suggest_float("dropout", 0.01, 0.9, ),
-            "batch_norm": False,
             "embedding_size": embedding_size,
             "n_statistics": 7,
             "pooling": {
                 "name": "attention",
                 "embedding_size": embedding_size,
                 "n_heads": trial.suggest_categorical('n_heads', [2, 4, 8]),
+                "n_queries":  n_queries
             },
 
             "feed_forward_layers": {

@@ -36,7 +36,7 @@ class TokenStatisticsModelManager(BaseManager):
 
             pooling = LstmPoolingLayer(config["pooling"]["embedding_size"], config["pooling"]["hidden_state_size"])
         elif config["pooling"]["name"] == "attention":
-            pooling = LearnedPoolingLayer(config["pooling"]["embedding_size"], config["pooling"]["n_heads"])
+            pooling = LearnedPoolingLayer(config["pooling"]["embedding_size"],  config["pooling"]["n_queries"], config["pooling"]["n_heads"])
         else:
             raise ValueError('Unknown pooling: ', config["pooling"]["name"])
 
@@ -48,7 +48,6 @@ class TokenStatisticsModelManager(BaseManager):
                                                config["feed_forward_layers"]["activation_function_last_layer"],
                                                config["dropout"],
                                                last_layer_scale=config["feed_forward_layers"]['last_layer_scale'],
-                                               batch_norm=config["batch_norm"]
                                                )
 
         initialize_optimizer = get_optimizer_function(config)
