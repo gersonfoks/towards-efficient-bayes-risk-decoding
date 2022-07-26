@@ -81,68 +81,63 @@ class EncDecLastStateEmbedding(nn.Module):
 
 
 
-class WeightedBagEmbeddingSequence(nn.Module):
 
-    def __init__(self, vocab_size, embedding_dim):
+class CometEmbedding(nn.Module):
+
+
+    def __init__(self, comet_model, feed_forward):
         super().__init__()
-        self.vocab_size = vocab_size
-        self.embedding_dim = embedding_dim
-        self.embedding = torch.nn.Embedding(vocab_size, embedding_dim)
+        self.comet_model = comet_model
+        self.comet_model.eval()
+        self.feed_forward = feed_forward
 
+    def forward(self, source, hypothesis, references):
+        comet_embeddings = [
 
-    def forward(self, indices, weights):
+        ]
 
-        '''
-        Long tensor containing indices of the tokens with size = B * s * n
-        Weights are the weights for each tensor with size = B * s * n
-        '''
+        with torch.no_grad():
+            src_inputs = self.model.encoder.prepare_sample(source).to(self.device)
+            hyp_inputs = self.model.encoder.prepare_sample(hypothesis).to(self.device)
 
-        shape = indices.shape
-        new_shape = (shape[0], -1)
-        indices_reshaped = indices.reshape(new_shape)
+            src_sent_embed = self.model.get_sentence_embedding(**src_inputs)
+            hyp_sent_embed = self.model.get_sentence_embedding(**hyp_inputs)
 
-        embeddings = self.embedding(indices_reshaped)
+            scores = []
+            for refs in references:
 
-        # Reformat to the right shape again
-        embeddings = embeddings.reshape(shape[0], shape[1], self.embedding_dim)
-
-        # Take the weighted average of the last dimension.
-        weighted_embedding = torch.sum(embeddings * weights, dim=-1)
-
-        return weighted_embedding
+                n_refs = len(refs)
+                ref_inputs = self.model.encoder.prepare_sample(references).to(self.device)
 
 
 
-class WeightedBagEmbedding(nn.Module):
+                ref_sent_embed = self.model.get_sentence_embedding(**ref_inputs)
 
-    def __init__(self, vocab_size, embedding_dim):
-        super().__init__()
-        self.vocab_size = vocab_size
-        self.embedding_dim = embedding_dim
-        self.embedding = torch.nn.Embedding(vocab_size, embedding_dim)
+                src_sent_embed = src_sent_embed.repeat(n_refs, 1)
 
 
-    def forward(self, indices, weights):
+                for h in hyp_sent_embed:
+                    h = h.unsqueeze(dim=0).repeat(n_refs, 1)
+                    diff_ref = torch.abs(h - ref_sent_embed)
+                    diff_src = torch.abs(h - src_sent_embed)
 
-        '''
-        Long tensor containing indices of the tokens with size = B * n
-        Weights are the weights for each tensor with size = B * n
-        '''
-
-        embeddings = self.embedding(indices)
-
-
-        # Take the weighted average of the last dimension.
-        weighted_embedding = torch.sum(embeddings * weights, dim=-1)
-
-        return weighted_embedding
+                    prod_ref = h * ref_sent_embed
+                    prod_src = h * src_sent_embed
 
 
 
+                    embedded_sequences = torch.cat(
+                        (h, ref_sent_embed, prod_ref, diff_ref, prod_src, diff_src),
+                        dim=1, )
 
+                    # Forward through feed forward (project down)
+                    comet_embeddings.append(embedded_sequences)
 
-def get_learnable_embeddig(shape):
-    emb = torch.zeros(shape)  # Use two embeddings instead of one
-    nn.init.xavier_normal_(emb)
-    learnable_embedding = torch.nn.Parameter(emb)
-    return learnable_embedding
+                    scores.append(self.model.estimator(embedded_sequences).cpu().numpy().flatten())
+        embeddings = []
+        for x in comet_embeddings:
+            emb = self.feed_forward(x)
+            embeddings.append(emb)
+        embeddings = torch.concat(embeddings, dim=-1)
+
+        return embeddings, scores

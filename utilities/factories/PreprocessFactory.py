@@ -1,4 +1,5 @@
-from utilities.preprocess.Preprocess import Preprocessor, HypToRefs, AddHypIds, Explode, ResetIndex, UtilitiesToAverage
+from utilities.preprocess.Preprocess import Preprocessor, HypToRefs, AddHypIds, Explode, ResetIndex, UtilitiesToAverage, \
+    AddRefUtilities
 
 
 class PreprocessFactory:
@@ -19,13 +20,20 @@ class PreprocessFactory:
                 ResetIndex(),
 
             ]
+            preprocessor = Preprocessor(preprocessing_functions)
 
-            # table_functions = [
-            #     GetProbEntropyLookupTable(
-            #         self.additional_arguments["wrapped_nmt_model"],
-            #         table_location=self.additional_arguments["table_location"]
-            #     )
+            return preprocessor
+        elif self.config["name"] == "refs_full_dec":
+            preprocessing_functions = [
+                ResetIndex(),
+                AddRefUtilities(),
+                UtilitiesToAverage(),
+                HypToRefs(),
+                AddHypIds(),
+                Explode(cols=["hypotheses", "utilities", "count", "hypotheses_ids", "ref_utilities"]),
+                ResetIndex(),
 
+            ]
             preprocessor = Preprocessor(preprocessing_functions)
 
             return preprocessor
@@ -37,7 +45,7 @@ class PreprocessFactory:
                 ResetIndex(),
             ]
 
-            table_functions = []
+
             preprocessor = Preprocessor(preprocessing_functions)
 
             return preprocessor

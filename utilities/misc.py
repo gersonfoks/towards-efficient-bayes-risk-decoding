@@ -2,6 +2,7 @@ import math
 import os
 
 import transformers
+from comet import download_model, load_from_checkpoint
 from tqdm import tqdm
 from transformers import MarianTokenizer, MarianMTModel
 
@@ -44,6 +45,16 @@ def load_nmt_model(config, pretrained=False):
         model = Base(configuration)
 
     return model, tokenizer
+
+
+def load_comet_model():
+    model_path = download_model("wmt20-comet-da")
+    model = load_from_checkpoint(model_path)
+
+    model.to("cuda")
+    model.eval()
+
+    return model
 
 
 def batch(iterable, n=1):
