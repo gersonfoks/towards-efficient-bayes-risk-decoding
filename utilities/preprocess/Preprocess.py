@@ -91,20 +91,33 @@ class UtilitiesToAverage:
 
 
     def __call__(self, data):
+        # Bid of a hack to make sure we don't get a pyarrow error
+
         data[self.new_col_name] = data[["utilities", 'utilities_count']].apply(self.avg_utility, axis=1)
 
         return data
 
     def avg_utility(self, x):
         count = np.array(x['utilities_count'])
-        utilities = x['utilities']
+        utilities = x["utilities"]
 
         result = []
         for util in utilities:
             result.append(
                 np.sum(np.array(util) * count) / np.sum(count)
             )
-        return pd.array(result, "float32")
+        return result
+
+
+class AddRefUtilities:
+
+    def __call__(self, data):
+        # Bid of a hack to make sure we don't get a pyarrow error
+
+        data["ref_utilities"] = data["utilities"]
+
+        return data
+
 
 
 

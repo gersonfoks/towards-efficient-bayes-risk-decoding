@@ -1,6 +1,7 @@
 from collators.BasicCollator import BasicCollator
 from collators.FullDecCollator import FullDecCollator
 from collators.NMTCollator import NMTCollator
+from collators.RefFullDecCollator import RefFullDecCollator
 from collators.TokenStatisticsCollator import TokenStatisticsCollator
 
 
@@ -24,5 +25,8 @@ class CollatorFactory:
         elif self.config["name"] == "full_dec_collator":
             return FullDecCollator(self.wrapped_nmt_model.nmt_model, self.wrapped_nmt_model.tokenizer, self.tables[0]), \
                    FullDecCollator(self.wrapped_nmt_model.nmt_model, self.wrapped_nmt_model.tokenizer, self.tables[1])
+        elif self.config["name"] == "ref_full_dec_collator":
+            return RefFullDecCollator(self.wrapped_nmt_model.nmt_model, self.wrapped_nmt_model.tokenizer, self.tables[0]), \
+                   RefFullDecCollator(self.wrapped_nmt_model.nmt_model, self.wrapped_nmt_model.tokenizer, self.tables[1])
         else:
             raise ValueError("collator not known: ", self.config["name"])

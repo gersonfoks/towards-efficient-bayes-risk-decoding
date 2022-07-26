@@ -61,8 +61,9 @@ def load_utility(utility, nmt_model=None, tokenizer=None):
         model = load_from_checkpoint(model_path)
 
         model.to("cuda")
-
+        model.eval()
         wrapped_model = CometWrapper(model)
+
 
         return CometUtility(wrapped_model, )
 

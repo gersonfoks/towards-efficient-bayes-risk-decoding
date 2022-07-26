@@ -3,7 +3,7 @@ from typing import Iterator
 import torch
 from torch import nn
 
-from models.common.layers.embedding import get_learnable_embeddig
+
 from models.common.layers.pooling import LearnedPoolingLayer
 
 activation_functions = {
@@ -36,7 +36,7 @@ def get_feed_forward_layers(layer_dims, activation_function, activation_function
     # Add the last one
     layers.append(nn.Linear(layer_dims[-2], layer_dims[-1]))
 
-    if activation_function_last_layer != None:
+    if activation_function_last_layer != None and activation_function_last_layer != 'none':
 
         activation_function = activation_functions[activation_function_last_layer]
 
@@ -97,3 +97,15 @@ class AttentionWithLearnableEmbedding(nn.Module):
         # pool
         pooled_out = self.pooling(att_out, query_attention.bool())
         return pooled_out
+
+
+
+
+
+
+
+def get_learnable_embeddig(shape):
+    emb = torch.zeros(shape)
+    nn.init.xavier_normal_(emb)
+    learnable_embedding = torch.nn.Parameter(emb)
+    return learnable_embedding

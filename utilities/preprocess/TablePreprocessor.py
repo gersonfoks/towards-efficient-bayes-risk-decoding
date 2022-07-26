@@ -50,3 +50,29 @@ class TokenStatisticsLookupTableCreator:
             if self.table_ref != None:
                 look_up_table.save(self.table_ref)
         return look_up_table
+
+
+
+class RefTableCreator:
+
+    def __init__(self, base_dir, split, n_samples=100,sampling_method='ancestral', develop=False ):
+        self.reference_location = '{}/{}_{}_{}'.format(base_dir, split, sampling_method, n_samples)
+
+        if develop:
+            self.reference_location += "_develop"
+        self.reference_location += ".csv"
+
+
+
+    def __call__(self, data):
+        references = pd.read_csv(self.reference_location)
+        data["source_id"] = data.index
+        data["references"] = references["samples"]
+        data["references_count"] = references["count"]
+        source_with_refs = data[["source_id", "references", "references_count"]]
+
+        ref_lookup_table = LookUpTable(source_with_refs, 'source_id', features=[
+            "references", "references_count"
+        ])
+
+        return ref_lookup_table

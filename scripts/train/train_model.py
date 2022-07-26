@@ -7,6 +7,7 @@ from models.QualityEstimationStyle.FullDecModel.FullDecModelTrainer import FullD
 
 from models.QualityEstimationStyle.LastHiddenStateModel.LastHiddenStateModelTrainer import LastHiddenStateModelTrainer
 from models.QualityEstimationStyle.TokenStatisticsModel.TokenStatisticsModelTrainer import TokenStatisticsModelTrainer
+from models.ReferenceStyle.ReferenceFullDecModel.ReferenceFullDecModelTrainer import ReferenceFullDecModelTrainer
 from utilities.config.ConfigParser import ConfigParser
 
 model_trainers = {
@@ -14,6 +15,7 @@ model_trainers = {
     "last_hidden_state_model": LastHiddenStateModelTrainer,
     "token_statistics_model": TokenStatisticsModelTrainer,
     "full_dec_model": FullDecModelTrainer,
+    "ref_full_dec_model": ReferenceFullDecModelTrainer,
 
 
 }
@@ -45,11 +47,10 @@ def main():
 
     config_parser = ConfigParser(args.utility)
     config = config_parser.parse(config)
-    print(config)
+
     model_type = config["model"]["type"]
 
     smoke_test = args.smoke_test
-    print(model_type)
     train_model = model_trainers[model_type](config, smoke_test)
     train_model()
 
