@@ -1,5 +1,5 @@
 from utilities.preprocess.Preprocess import Preprocessor, HypToRefs, AddHypIds, Explode, ResetIndex, UtilitiesToAverage, \
-    AddRefUtilities
+    AddRefUtilities, AddSourceIndex
 
 
 class PreprocessFactory:
@@ -13,6 +13,7 @@ class PreprocessFactory:
         if self.config["name"] == "refs_with_prob_entropy":
             preprocessing_functions = [
                 ResetIndex(),
+                AddSourceIndex(),
                 UtilitiesToAverage(),
                 HypToRefs(),
                 AddHypIds(),
@@ -26,6 +27,7 @@ class PreprocessFactory:
         elif self.config["name"] == "refs_full_dec":
             preprocessing_functions = [
                 ResetIndex(),
+                AddSourceIndex(),
                 AddRefUtilities(),
                 UtilitiesToAverage(),
                 HypToRefs(),
@@ -40,6 +42,7 @@ class PreprocessFactory:
         elif self.config["name"] == "basic":
             preprocessing_functions = [
                 ResetIndex(),
+                AddSourceIndex(),
                 UtilitiesToAverage(),
                 Explode(cols=["hypotheses", "utilities", "count"]),
                 ResetIndex(),

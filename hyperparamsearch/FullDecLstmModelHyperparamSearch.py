@@ -132,8 +132,7 @@ class FullDecLstmModelHyperparamSearch:
             },
 
         }
-        config_parser = ConfigParser(self.utility)
-        config = config_parser.parse(config)
+
         return config
 
     def get_model_config(self, trial):
@@ -162,7 +161,6 @@ class FullDecLstmModelHyperparamSearch:
             "lr": trial.suggest_float('lr', 1.0e-4, 1.0e-1, log=True),  # Not used
             "weight_decay": trial.suggest_float("weight_decay", 1.0e-9, 1.0e-5, log=True),
             "dropout": trial.suggest_float("dropout", 0.01, 0.9, ),
-            "batch_norm": False,
             "embedding_size": token_embedding_size,
             "n_statistics": 7,
 

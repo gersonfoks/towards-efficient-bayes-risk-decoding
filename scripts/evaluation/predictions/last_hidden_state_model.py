@@ -39,6 +39,8 @@ def get_dataloader(config, model_config, smoke_test=False):
     validation_df = validation_dataset_loader.load(type="pandas").data
     if smoke_test:
         validation_df = validation_df.iloc[:100]
+
+    # Need this for later
     validation_df["source_index"] = validation_df.index
 
 
@@ -130,11 +132,11 @@ def main():
     parser = argparse.ArgumentParser(
         description='Train a model according with parameters specified in the config file ')
     parser.add_argument('--model-path', type=str,
-                        default='./saved_models/last_hidden_state_lstm_comet/best/',
+                        default='./saved_models/last_hidden_state_attention_comet/best/',
                         help='config to load model from')
 
     parser.add_argument('--config', type=str,
-                        default='./configs/last_hidden_state_lstm.yml',
+                        default='./configs/last_hidden_state_attention.yml',
                         help='config to load model from')
 
     parser.add_argument('--smoke-test', dest='smoke_test', action="store_true",
