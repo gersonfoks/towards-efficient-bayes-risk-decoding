@@ -123,7 +123,7 @@ class LastHiddenStateAttentionHyperparamSearch:
             "batch_size": batch_size,
             'accumulate_grad_batches': accumulate_grad_batches,
             "model_name": 'basic_lstm',
-            "gradient_clip_val": trial.suggest_float('gradient_clip_val', 1.5, 5.0),
+            "gradient_clip_val": trial.suggest_float('gradient_clip_val', 1.0, 5.0),
             "model": model_config,
             "dataset": dataset_config,
             "preprocess": {

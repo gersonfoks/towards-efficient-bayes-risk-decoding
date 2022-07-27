@@ -79,6 +79,7 @@ class FullDecLstmModelHyperparamSearch:
                        ],
             logger=tb_logger,
             accumulate_grad_batches=config["accumulate_grad_batches"],
+            gradient_clip_val=config["gradient_clip_val"],
         )
 
         # create the dataloaders
@@ -116,10 +117,12 @@ class FullDecLstmModelHyperparamSearch:
     def get_config(self, trial):
         dataset_config = self.get_dataset_config()
         model_config = self.get_model_config(trial)
+        accumulate_grad_batches = trial.suggest_categorical("accumulate_grad_batches", [2, 4, 8])
 
         config = {
             "model_name": 'full_dec_lstm',
-
+            'accumulate_grad_batches': accumulate_grad_batches,
+            "gradient_clip_val": trial.suggest_float('gradient_clip_val', 1.0, 5.0),
             "model": model_config,
             "dataset": dataset_config,
             "batch_size": model_config["batch_size"],
@@ -139,15 +142,13 @@ class FullDecLstmModelHyperparamSearch:
 
         batch_size = 64
 
-        accumulate_grad_batches = trial.suggest_categorical('accumulate_grad_batches', [2,4, 8])
-
 
         feed_forward_size = trial.suggest_categorical("feed_forward_size", ["small", "medium", "large"])
 
         dims = self.possible_dims[feed_forward_size]
 
-        hidden_state_size = trial.suggest_categorical("hidden_state_size", [64, 128, 256, 512 ])
-        token_embedding_size = trial.suggest_categorical("embedding_size", [64, 128, 256])
+        hidden_state_size = 128
+        token_embedding_size = 128
 
         full_dec_hidden_state_size = trial.suggest_categorical("full_dec_hidden_state_size", [64, 128, 256, 512])
 
@@ -156,7 +157,6 @@ class FullDecLstmModelHyperparamSearch:
         return {
 
             "batch_size": batch_size,
-            "accumulate_grad_batches": accumulate_grad_batches,
             "type": "full_dec_model",
             "lr": trial.suggest_float('lr', 1.0e-4, 1.0e-1, log=True),  # Not used
             "weight_decay": trial.suggest_float("weight_decay", 1.0e-9, 1.0e-5, log=True),

@@ -66,7 +66,7 @@ class HiddenStateEmbedding(nn.Module):
         return nmt_out["decoder_hidden_states"], attention_mask_decoder
 
     def parameters(self, recurse: bool = True):
-        return None
+        return []
 
 
 class EncDecLastStateEmbedding(nn.Module):
@@ -87,7 +87,7 @@ class EncDecLastStateEmbedding(nn.Module):
             -1], attention_mask_decoder,
 
     def parameters(self, recurse: bool = True):
-        return None
+        return []
 
 
 class CometEmbedding(nn.Module):
