@@ -13,7 +13,7 @@ from pytorch_lightning.callbacks import EarlyStopping, LearningRateMonitor
 from pytorch_lightning import loggers as pl_loggers
 import pytorch_lightning as pl
 
-from utilities.config.ConfigParser import ConfigParser
+
 
 
 class TokenStatisticsAttentionModelHyperparamSearch:
@@ -130,7 +130,7 @@ class TokenStatisticsAttentionModelHyperparamSearch:
             "preprocess": {
                 "name": "refs_with_prob_entropy"
             },
-            "table_location": './FBR/predictive/tatoeba-de-en/data/lookup_tables/',
+            "table_location": 'predictive/tatoeba-de-en/data/lookup_tables/',
             "collator": {
                 "name": "token_statics_collator"
             },

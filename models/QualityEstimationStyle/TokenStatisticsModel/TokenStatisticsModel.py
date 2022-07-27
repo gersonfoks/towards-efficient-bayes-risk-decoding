@@ -26,6 +26,7 @@ class TokenStatisticsModel(BaseModel):
 
     def forward(self, sources, hypotheses, features):
 
+
         embeddings = self.token_statistics_embedding.forward(features["token_statistics"],)
 
         pooled_embedding = self.pooling_layer(embeddings, features["attention_mask"])

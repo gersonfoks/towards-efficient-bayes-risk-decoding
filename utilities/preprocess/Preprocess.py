@@ -120,6 +120,13 @@ class AddRefUtilities:
 
 
 
+class AddSourceIndex:
 
+    def __call__(self, data):
+        # Bid of a hack to make sure we don't get a pyarrow error
+
+        data["source_index"] = data.index
+
+        return data
 
 

@@ -23,6 +23,8 @@ class NMTCollator:
         hypothesis = [b["hypothesis"] for b in batch]
         sources = [b["source"] for b in batch]
 
+        indices = [b["source_index"] for b in batch]
+
         utility = torch.tensor([b["utility"] for b in batch])
 
         # We get the lengths of the sequences (used for packing later)
@@ -42,6 +44,7 @@ class NMTCollator:
         x_new = self.data_collator(x).to("cuda")
 
         features = {
+            "index": indices,
             "sequence_lengths": sequence_lengths,
             **x_new
         }

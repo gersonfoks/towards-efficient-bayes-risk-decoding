@@ -51,12 +51,12 @@ class TokenStatisticsModelTrainer(BaseTrainer):
         train_table_location, val_table_location = self.get_train_and_val_table_location()
 
         train_lookup_table_creator = TokenStatisticsLookupTableCreator(
-            self.wrapped_nmt, train_table_location
+            self.wrapped_nmt, train_table_location, load=False,
         )
         self.train_table = train_lookup_table_creator(self.train_dataset)
 
         val_lookup_table_creator = TokenStatisticsLookupTableCreator(
-            self.wrapped_nmt, val_table_location
+            self.wrapped_nmt, val_table_location, load=False,
         )
 
         self.val_table = val_lookup_table_creator(self.validation_dataset)

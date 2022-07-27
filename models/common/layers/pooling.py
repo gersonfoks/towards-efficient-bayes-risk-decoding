@@ -34,7 +34,6 @@ class LearnedPoolingLayer(nn.Module):
 
     def forward(self, x, att_mask):
         query = self.query.repeat(x.shape[0], 1, 1)
-
         hidden_state, _ = self.attention(query=query, key=x,
                                          value=x,
                                          key_padding_mask=~att_mask.bool(),

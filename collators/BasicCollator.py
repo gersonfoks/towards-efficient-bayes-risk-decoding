@@ -19,6 +19,7 @@ class BasicCollator:
         hypothesis = [b["hypothesis"] for b in batch]
         sources = [b["source"] for b in batch]
 
+        indices = [b["source_index"] for b in batch]
 
         utility = torch.tensor([b["utility"] for b in batch]).to("cuda")
 
@@ -36,9 +37,10 @@ class BasicCollator:
 
         features = {
             "tokenized_source": tokenized_source.to("cuda"),
-            "tokenized_hypothesis": tokenized_hypothesis.to("cuda")
+            "tokenized_hypothesis": tokenized_hypothesis.to("cuda"),
+            "index": indices
         }
 
-        end = time.time()
+
 
         return sources, hypothesis, features, utility

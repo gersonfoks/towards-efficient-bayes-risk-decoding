@@ -42,6 +42,9 @@ class LastStateEmbedding(nn.Module):
         attention_mask_decoder = (self.padding_id != labels).long()
         return nmt_out["decoder_hidden_states"][-1], attention_mask_decoder
 
+    def parameters(self, recurse: bool = True):
+        return None
+
 
 class HiddenStateEmbedding(nn.Module):
 
@@ -62,6 +65,9 @@ class HiddenStateEmbedding(nn.Module):
         # print(list(nmt_out["decoder_hidden_states"]))
         return nmt_out["decoder_hidden_states"], attention_mask_decoder
 
+    def parameters(self, recurse: bool = True):
+        return None
+
 
 class EncDecLastStateEmbedding(nn.Module):
 
@@ -70,6 +76,7 @@ class EncDecLastStateEmbedding(nn.Module):
         self.nmt_model = nmt_model
         self.padding_id = padding_id
 
+    @torch.no_grad()
     def forward(self, input_ids=None, attention_mask=None, decoder_input_ids=None, labels=None):
         with torch.no_grad():
             nmt_out = self.nmt_model.forward(input_ids=input_ids, attention_mask=attention_mask, labels=labels,
@@ -79,7 +86,8 @@ class EncDecLastStateEmbedding(nn.Module):
         return nmt_out["encoder_hidden_states"][-1], attention_mask, nmt_out["decoder_hidden_states"][
             -1], attention_mask_decoder,
 
-
+    def parameters(self, recurse: bool = True):
+        return None
 
 
 class CometEmbedding(nn.Module):
@@ -141,3 +149,7 @@ class CometEmbedding(nn.Module):
         embeddings = torch.concat(embeddings, dim=-1)
 
         return embeddings, scores
+
+
+    def parameters(self, recurse: bool = True):
+        return iter([self.feed_forward])

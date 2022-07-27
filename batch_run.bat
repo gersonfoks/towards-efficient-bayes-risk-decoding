@@ -1,9 +1,9 @@
 
 
-python -m scripts.hyperparamsearch --utility=comet --model-name=token_statistics_attention
-python -m scripts.hyperparamsearch --utility=comet --model-name=token_statistics_lstm
-python -m scripts.hyperparamsearch --utility=comet --model-name=last_hidden_state_lstm_model
-python -m scripts.hyperparamsearch --utility=comet --model-name=last_hidden_state_attention_model
+python -m scripts.train.train_model --utility=comet --config=./configs/token_statistics_attention_model.yml
+python -m scripts.train.train_model --utility=comet --config=./configs/token_statistics_lstm_model.yml
+python -m scripts.train.train_model --utility=comet --config=./configs/last_hidden_state_attention.yml
+python -m scripts.train.train_model --utility=comet --config=./configs/last_hidden_state_lstm.yml
 
 
 

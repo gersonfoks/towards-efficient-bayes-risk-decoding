@@ -32,6 +32,7 @@ class TokenStatisticsCollator:
         utility = torch.tensor([b["utility"] for b in batch])
 
         hypothesis_ids = [b["hypothesis_id"] for b in batch]
+        indices = [b["source_index"] for b in batch]
 
         features = self.lookup_table.get_features(hypothesis_ids)
 
@@ -57,8 +58,8 @@ class TokenStatisticsCollator:
 
 
         features = {
-
-            "token_statistics": stacked_features,
-            "attention_mask": attention_mask,
+            "index": indices,
+            "token_statistics": stacked_features.to("cuda"),
+            "attention_mask": attention_mask.to("cuda"),
         }
         return sources, hypothesis, features, utility

@@ -4,7 +4,7 @@ from torch.nn import Embedding
 from models.common.layers.helpers import get_feed_forward_layers
 from models.common.optimization import get_optimizer_function
 from models.QualityEstimationStyle.BasicLstmModel.BasicLstmModel import BasicLstmModel
-from models.old.hypothesis_only_models.HypothesisLstmModel.model import HypothesisLstmModel
+
 from models.Base.BaseManager import BaseManager
 from utilities.misc import load_nmt_model
 from pathlib import Path

@@ -20,7 +20,7 @@ class TablePreprocessor:
 
 class TokenStatisticsLookupTableCreator:
 
-    def __init__(self, wrapped_nmt_model, table_location=None, batch_size=32):
+    def __init__(self, wrapped_nmt_model, table_location=None, batch_size=32, load=True):
         self.wrapped_nmt_model = wrapped_nmt_model
         self.table_location = table_location
         self.table_ref = None
@@ -36,10 +36,11 @@ class TokenStatisticsLookupTableCreator:
         ]
 
         self.batch_size = batch_size
+        self.load = load
 
     def __call__(self, data):
 
-        if self.table_ref != None and LookUpTable.exists(self.table_ref):
+        if self.load and self.table_ref != None and LookUpTable.exists(self.table_ref):
             look_up_table = LookUpTable.load(self.table_ref)
         else:
             data = data.map(self.wrapped_nmt_model.map_to_token_statistics, batch_size=self.batch_size,
@@ -47,7 +48,7 @@ class TokenStatisticsLookupTableCreator:
             look_up_table = LookUpTable(data, index="hypothesis_id",
                                         features=["hypothesis", "utility", ] + self.features)
 
-            if self.table_ref != None:
+            if self.load and self.table_ref != None:
                 look_up_table.save(self.table_ref)
         return look_up_table
 

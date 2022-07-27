@@ -9,7 +9,7 @@ dataset:
   repeated_indices: False
 
 #
-model_name: last_hidden_state_lstm
+model_name: last_hidden_state_attention
 
 # Describes how to preprocess, can use predefined preprocessing functions
 preprocess:
@@ -20,8 +20,8 @@ collator:
 
 # Training
 batch_size: 64
-accumulate_grad_batches: 2 # Effective batch size of 128
-
+accumulate_grad_batches: 8 # Effective batch size of 128
+gradient_clip_val: 2.7
 max_epochs: 150
 
 
@@ -34,24 +34,27 @@ model:
       type: 'MarianMT'
 
   lr: 4.0e-4 #1.4815897489348615e-05
-  weight_decay: 3.0e-9 #5.0e-07
-  dropout: 0.41 #0.5 #0.6712665889822903
+  weight_decay: 7.2e-08 #5.0e-07
+  dropout: 0.56 #0.5 #0.6712665889822903
   pooling:
     name: attention
     embedding_size: 512
     n_heads: 8
+    n_queries: 2
   feed_forward_layers:
     dims:
-      - 512
+      - 1024
       - 256
       - 1
     activation_function: 'relu'
+    activation_function_last_layer: 'tanh'
+    last_layer_scale: 2.5
   grad_clip_val: 3.2
 
   optimizer:
     type: adam_with_lr_decay
     step_size: 1
-    gamma: 0.86
+    gamma: 0.73
     interval: epoch
 
 
