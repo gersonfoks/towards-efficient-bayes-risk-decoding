@@ -22,7 +22,7 @@ collator:
 # Training
 batch_size: 64
 accumulate_grad_batches: 4 # Effective batch size of 128
-
+gradient_clip_val: 3.6
 max_epochs: 150
 
 
@@ -34,61 +34,37 @@ model:
       checkpoint: 'NMT/tatoeba-de-en/model'
       type: 'MarianMT'
 
-  lr: 1.0e-4 #1.4815897489348615e-05
-  weight_decay: 5.0e-7 #5.0e-07
-  dropout: 0.4 #0.5 #0.6712665889822903
+  lr: 1.6e-3 #1.4815897489348615e-05
+  weight_decay: 4.0e-9 #5.0e-07
+  dropout: 0.18 #0.5 #0.6712665889822903
 
   dec_pooling:
     name: lstm
     embedding_size: 512
-    hidden_state_size: 512
+    hidden_state_size: 128
 
   n_statistics: 7
-  embedding_size: 256
+  embedding_size: 128
   token_pooling:
     name: lstm
-    embedding_size: 256
-    hidden_state_size: 512
+    embedding_size: 128
+    hidden_state_size: 128
   feed_forward_layers:
     dims:
-      - 4096 # 8 * 512
-      - 256
+      - 2048 # 8 * 2 * 128
       - 128
       - 1
     activation_function: 'relu'
+    activation_function_last_layer: 'tanh'
+    last_layer_scale: 2.5
   batch_norm: False
 
 
   optimizer:
     type: adam_with_lr_decay
     step_size: 1
-    gamma: 0.9
+    gamma: 0.82
     interval: epoch
-
-#    type: one_cylce_lr
-#    max_lr: 1.0e-3
-#    epochs: 25
-#    steps_per_epoch: 1037 # 1037 for 10 x 100 and 7228 for 100 x 1000
-#    type: cyclic_lr
-#    max_lr: 1.0e-4
-#    base_lr: 1.0e-5
-#    step_size_up: 2000
-#    mode: triangular
-#    type: inv_square_root
-#    warmup_steps: 2000
-#    lr: 0.004
-#    plateau_steps: 1000
-
-
-
-    #    type: one_cylce_lr
-    #    max_lr: 1.0e-4
-    #    epochs: 50
-    #    steps_per_epoch: 7228
-    #    type: adam_with_schedule
-    #    warmup_steps: 5000
-    #    start_decay: 10000
-
 
 
 
