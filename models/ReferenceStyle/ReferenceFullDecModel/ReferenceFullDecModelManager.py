@@ -1,7 +1,6 @@
 import torch.nn
 from torch import nn
 
-from models.QualityEstimationStyle.FullDecModel.FullDecModel import FullDecModel
 from models.ReferenceStyle.ReferenceFullDecModel.ReferenceFullDecModel import ReferenceFullDecModel
 
 from models.common.layers.embedding import LastStateEmbedding, HiddenStateEmbedding
@@ -64,11 +63,11 @@ class ReferenceFullDecModelManager(BaseManager):
                                                config["feed_forward_layers"]["activation_function"],
                                                config["feed_forward_layers"]["activation_function_last_layer"],
                                                config["dropout"],
-                                               #last_layer_scale=config["feed_forward_layers"]['last_layer_scale']
+                                               last_layer_scale=config["feed_forward_layers"]['last_layer_scale']
                                                )
 
         # Initialize the gate to 0.5
-        gate = torch.nn.Parameter(torch.DoubleTensor([-1.1]))
+        gate = torch.nn.Parameter(torch.DoubleTensor([0.0]))
 
         initialize_optimizer = get_optimizer_function(config)
 

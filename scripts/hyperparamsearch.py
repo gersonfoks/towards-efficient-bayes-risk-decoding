@@ -1,12 +1,14 @@
 ### A simple script which we can use to train a model
 import argparse
 
-from hyperparamsearch.BasicLstmModelHyperparamSearch import BasicLstmModelHyperparamSearch
-from hyperparamsearch.FullDecLstmModelHyperparamSearch import FullDecLstmModelHyperparamSearch
-from hyperparamsearch.LastHiddenStateAttentionHyperparamSearch import LastHiddenStateAttentionHyperparamSearch
-from hyperparamsearch.LastHiddenStateLstmHyperparamSearch import LastHiddenStateLstmHyperparamSearch
-from hyperparamsearch.TokenStatisticAttentionModelHyperparamSearch import TokenStatisticsAttentionModelHyperparamSearch
-from hyperparamsearch.TokenStatisticLstmModelHyperparamSearch import TokenStatisticsLstmModelHyperparamSearch
+from hyperparamsearch.ReferenceStyle.ReferenceFullDecLstmModelHyperparamSearch import \
+    ReferenceFullDecLstmModelHyperparamSearch
+from hyperparamsearch.qualityEstimationStyle.BasicLstmModelHyperparamSearch import BasicLstmModelHyperparamSearch
+from hyperparamsearch.qualityEstimationStyle.FullDecLstmModelHyperparamSearch import FullDecLstmModelHyperparamSearch
+from hyperparamsearch.qualityEstimationStyle.LastHiddenStateAttentionHyperparamSearch import LastHiddenStateAttentionHyperparamSearch
+from hyperparamsearch.qualityEstimationStyle.LastHiddenStateLstmHyperparamSearch import LastHiddenStateLstmHyperparamSearch
+from hyperparamsearch.qualityEstimationStyle.TokenStatisticAttentionModelHyperparamSearch import TokenStatisticsAttentionModelHyperparamSearch
+from hyperparamsearch.qualityEstimationStyle.TokenStatisticLstmModelHyperparamSearch import TokenStatisticsLstmModelHyperparamSearch
 
 models = {
 
@@ -16,6 +18,7 @@ models = {
     "token_statistics_lstm": TokenStatisticsLstmModelHyperparamSearch,
     "token_statistics_attention": TokenStatisticsAttentionModelHyperparamSearch,
     "full_dec_lstm": FullDecLstmModelHyperparamSearch,
+    "ref_full_dec_lstm": ReferenceFullDecLstmModelHyperparamSearch,
 
 }
 

@@ -26,7 +26,9 @@ class CollatorFactory:
             return FullDecCollator(self.wrapped_nmt_model.nmt_model, self.wrapped_nmt_model.tokenizer, self.tables[0]), \
                    FullDecCollator(self.wrapped_nmt_model.nmt_model, self.wrapped_nmt_model.tokenizer, self.tables[1])
         elif self.config["name"] == "ref_full_dec_collator":
-            return RefFullDecCollator(self.wrapped_nmt_model.nmt_model, self.wrapped_nmt_model.tokenizer, self.tables[0]), \
-                   RefFullDecCollator(self.wrapped_nmt_model.nmt_model, self.wrapped_nmt_model.tokenizer, self.tables[1])
+            return RefFullDecCollator(self.wrapped_nmt_model.nmt_model, self.wrapped_nmt_model.tokenizer,
+                                      self.tables[0], n_references=self.config["n_references"]), \
+                   RefFullDecCollator(self.wrapped_nmt_model.nmt_model, self.wrapped_nmt_model.tokenizer,
+                                      self.tables[1], n_references=self.config["n_references"])
         else:
             raise ValueError("collator not known: ", self.config["name"])

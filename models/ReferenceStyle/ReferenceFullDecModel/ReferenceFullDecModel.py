@@ -1,6 +1,5 @@
 import torch
 from torch.nn import MSELoss
-import torch.nn.functional as F
 
 from models.Base.BaseModel import BaseModel
 
@@ -52,10 +51,6 @@ class ReferenceFullDecModel(BaseModel):
 
         final_features = torch.concat(all_pooled_layers, dim=-1)
         predicted_scores_features = self.final_layers(final_features)
-
-        #predicted_scores_features = torch.tanh(final_out[:, 0:1]) * 2.5
-
-        #gate = torch.sigmoid(final_out[:, 1:])
 
         gate = torch.sigmoid(self.gate)
 

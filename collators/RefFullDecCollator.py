@@ -74,7 +74,7 @@ class RefFullDecCollator:
 
         entropy = [torch.tensor(f["entropy"]) for f in features]
 
-        top_5 = [torch.tensor([x.astype(float) for x in f["top_5"]]) for f in features]
+        top_5 = [torch.tensor([x.astype(float).tolist() for x in f["top_5"]]) for f in features]
         prob = [torch.tensor(f["prob"]) for f in features]
 
         top_5 = pad_sequence(top_5, batch_first=True)
@@ -91,8 +91,6 @@ class RefFullDecCollator:
         reference_indices = [self.pick_reference(b) for b in batch]
 
         utilities = torch.tensor([np.array(b["ref_utilities"])[i] for i, b in zip(reference_indices, batch)])
-
-
 
         mean_utilities = torch.mean(utilities, dim=-1)
 
