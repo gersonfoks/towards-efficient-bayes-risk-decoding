@@ -1,0 +1,31 @@
+name: 'helsinki-tatoeba-de-en'
+model:
+  name: 'Helsinki-NLP/opus-mt-de-en'
+  checkpoint: './saved_models/NMT/de-en-model/' # Where to save the checkpoints
+  type: 'MarianMT'
+trainer_args:
+  seed: 1
+  learning_rate: 0.0003
+  warmup_steps: 16000
+  lr_scheduler_type: 'inv_sqrt'
+  #We want an effective batch size of 64, alter the variables below such that the batch size fits on the GPU
+  batch_size: 8
+  gradient_accumulation_steps: 4
+  optimizer:
+    name: 'Adam'
+    betas:
+      - 0.9
+      - 0.98
+    eps: 1e-09
+  evaluation_strategy: 'steps'
+  eval_steps: 10000
+  save_strategy: 'steps'
+  save_steps: 10000
+  max_grad_norm: 5 # gradient clipping
+  use_best_found: True
+  num_train_epochs: 500 # We want to do unlimited steps and use early stopping so we set this to very high
+  early_stopping: True
+  metric_for_best_model: "eval_loss"
+  load_best_model_at_end: True
+  early_stopping_patience: 10
+  start_decay: 10 # After how many epochs we need to start decaying
