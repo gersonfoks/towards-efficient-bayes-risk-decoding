@@ -97,8 +97,26 @@ def batch_sample(model, tokenizer, texts, n_samples=96, batch_size=32, sampling_
                 max_length=75,
             )
         else:
-            raise "sample_method not found: {}".format(sample_method)
+            raise "sample_method not found: {}".format(sampling_method)
 
         decoded_samples = tokenizer.batch_decode(sample, skip_special_tokens=True)
         samples += decoded_samples
     return samples
+
+
+def batch(iterable, n=1):
+    '''
+    Batches an iterable
+    '''
+    l = len(iterable)
+    for ndx in range(0, l, n):
+        yield iterable[ndx:min(ndx + n, l)]
+
+
+
+
+def load_bayes_risk_dataframe(sampling_method, n_hypotheses, n_references, utility='comet', seed=0,  smoke_test=False):
+    pass
+
+
+

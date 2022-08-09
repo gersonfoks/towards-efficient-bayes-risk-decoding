@@ -50,7 +50,7 @@ def main():
 
 
 
-    save_file_base = './data/samples/{}_{}_{}'.format(args.sampling_method, args.n_samples, args.seed)
+    save_file_base = './data/samples/{}_{}_{}_{}'.format(args.sampling_method, args.n_samples, args.split, args.seed)
     if args.smoke_test:
         save_file_base += '_smoke_test'
     save_file = save_file_base + '.parquet'
