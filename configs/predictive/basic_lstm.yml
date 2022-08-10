@@ -1,8 +1,6 @@
 
 # Information about the dataset
 dataset:
-  dir: 'predictive/tatoeba-de-en/data/raw/'
-  preproces_dir: 'predictive/tatoeba-de-en/data/preprocessed/'
   sampling_method: 'ancestral'
   n_hypotheses: 100
   n_references: 1000
@@ -10,6 +8,8 @@ dataset:
 
 #
 model_name: basic_lstm
+log_dir: './logs/basic_lstm/'
+save_model_path: './saved_models/basic_lstm/'
 
 # Describes how to preprocess, can use predefined preprocessing functions
 preprocess:
@@ -24,13 +24,15 @@ accumulate_grad_batches: 4 # Effective batch size of 128
 gradient_clip_val: 5.0
 max_epochs: 200
 
+# patience for early stopping
+patience: 5
 
 # Model information
 model:
   type: basic_lstm_model
   nmt_model:
       name: 'Helsinki-NLP/opus-mt-de-en'
-      checkpoint: 'NMT/tatoeba-de-en/model'
+      checkpoint: './saved_models/NMT/de-en-model/'
       type: 'MarianMT'
 
   lr: 0.001 #1.4815897489348615e-05

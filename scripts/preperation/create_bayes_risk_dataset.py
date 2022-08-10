@@ -38,6 +38,7 @@ def main():
     parser.add_argument('--seed', type=int, default=0,
                        help="seed number (when we need different samples, also used for identification)")
 
+
     args = parser.parse_args()
 
     base_dir = './data/samples/'
@@ -47,8 +48,9 @@ def main():
 
 
     # Load the references
-    ref_data_loc = base_dir + '{}_{}_{}'.format(args.sampling_method, args.n_references, args.seed)
-    hyp_data_loc = base_dir + '{}_{}_{}'.format(args.sampling_method, args.n_hypotheses, args.seed)
+    ref_data_loc = base_dir + '{}_{}_{}_{}'.format(args.sampling_method, args.n_references, args.split,args.seed)
+    hyp_data_loc = base_dir + '{}_{}_{}_{}'.format(args.sampling_method, args.n_hypotheses, args.split, 0) # We will always use seed 0 for the hypothesis
+
 
     if args.smoke_test:
         ref_data_loc += '_smoke_test'
@@ -104,13 +106,13 @@ def main():
     Path(save_loc).mkdir(parents=True, exist_ok=True)
 
     # Create save location
-    save_loc += '{}_{}_{}_{}'.format(args.sampling_method, args.n_hypotheses, args.n_references, args.seed)
+    save_loc += '{}_{}_{}_{}_{}'.format(args.sampling_method, args.n_hypotheses, args.n_references, args.split, args.seed)
     if args.smoke_test:
         save_loc += '_smoke_test'
     save_loc += '.parquet'
 
 
-    #save_path = get_dataset_path(args.save_dir, args.utility, args.split, args.sampling_method, args.n_hypotheses, args.n_references, args.develop)
+
     result_df.to_parquet(save_loc)
 
 

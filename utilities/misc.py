@@ -3,6 +3,7 @@ import math
 import pandas as pd
 import transformers
 from transformers import MarianTokenizer, MarianMTModel
+from typing import List
 
 
 def load_nmt_model(config, pretrained=False):
@@ -12,11 +13,11 @@ def load_nmt_model(config, pretrained=False):
     :param pretrained: if true we load a pretrained model found at the given checkpoint
     :return:
     '''
-    model_name = config["model"]["name"]
+    model_name = config["name"]
     tokenizer = MarianTokenizer.from_pretrained(model_name)
 
     if pretrained:
-        model = MarianMTModel.from_pretrained(config["model"]["checkpoint"])
+        model = MarianMTModel.from_pretrained(config["checkpoint"])
     else:
         configuration = transformers.AutoConfig.from_pretrained(model_name)
         model = MarianMTModel(configuration)
@@ -115,8 +116,28 @@ def batch(iterable, n=1):
 
 
 
-def load_bayes_risk_dataframe(sampling_method, n_hypotheses, n_references, utility='comet', seed=0,  smoke_test=False):
-    pass
+def load_bayes_risk_dataframe(sampling_method, n_hypotheses, n_references, split, utility='comet', seed=0,  smoke_test=False):
+    '''
+    Loads a bayes risk dataset
+    :param sampling_method: the method which the samples were generated
+    :param n_hypotheses: the number of hypotheses used
+    :param n_references: The number of references used
+    :param utility: The utility used
+    :param seed: Random seed number
+    :param smoke_test: True if we want to use the smoke_test (small) dataset
+    :return:
+    '''
+
+    ref = './data/{}/{}_{}_{}_{}_{}'.format(utility, sampling_method, n_hypotheses, n_references,split, seed )
+
+    if smoke_test:
+        ref += '_smoke_test'
+    ref += '.parquet'
+
+    df = pd.read_parquet(ref)
+
+    return df
+
 
 
 

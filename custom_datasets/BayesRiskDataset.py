@@ -1,9 +1,10 @@
 '''
 This file contains the code for the BayesRisk dataset
 '''
+from torch.utils.data.dataset import Dataset
 
 
-class BayesRiskDataset:
+class BayesRiskDataset(Dataset):
 
 
     def __init__(self, dataframe):
@@ -15,10 +16,6 @@ class BayesRiskDataset:
 
     def __getitem__(self, item):
         x = self.dataframe.iloc[item]
-
-
-        # Do some processing
-
         return x
 
 

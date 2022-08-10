@@ -1,9 +1,10 @@
 import torch
 from torch.nn import Embedding
 
+from models.QualityEstimationStyle.BasicModel.BasicLstmModel import BasicLstmModel
 from models.common.layers.helpers import get_feed_forward_layers
 from models.common.optimization import get_optimizer_function
-from models.QualityEstimationStyle.BasicLstmModel.BasicLstmModel import BasicLstmModel
+
 
 from models.base.BaseManager import BaseManager
 from utilities.misc import load_nmt_model
@@ -27,7 +28,6 @@ class BasicLstmModelManager(BaseManager):
 
         embedding_size = config["embedding"]["size"]
 
-
         # We need different embeddings for the source and hypothesis
         source_embedding_layer = Embedding(self.tokenizer.vocab_size, embedding_size)
         hypothesis_embedding_layer = Embedding(self.tokenizer.vocab_size, embedding_size)
@@ -43,7 +43,8 @@ class BasicLstmModelManager(BaseManager):
 
         initialize_optimizer = get_optimizer_function(config)
 
-        self.model = BasicLstmModel(source_embedding_layer, hypothesis_embedding_layer, lstm_layer, final_layers, initialize_optimizer)
+        self.model = BasicLstmModel(source_embedding_layer, hypothesis_embedding_layer, lstm_layer, final_layers,
+                                    initialize_optimizer)
         return self.model
 
     def save_model(self, save_model_path):

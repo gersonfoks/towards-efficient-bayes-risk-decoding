@@ -28,11 +28,11 @@ class BasicLstmModel(BaseModel):
         self.initialize_optimizer = initialize_optimizer
 
     def forward(self, sources, hypotheses, features):
-        s_emb = self.source_embedding.forward(features["tokenized_source"]["input_ids"])
-        h_emb = self.source_embedding.forward(features["tokenized_hypothesis"]["input_ids"])
+        s_emb = self.source_embedding.forward(features["tokenized_source"])
+        h_emb = self.source_embedding.forward(features["tokenized_hypothesis"])
 
-        s_att_mask = features["tokenized_source"]['attention_mask']
-        h_att_mask = features["tokenized_hypothesis"]['attention_mask']
+        s_att_mask = features["source_attention_mask"]
+        h_att_mask = features["hypothesis_attention_mask"]
         s_h_concat = self.concat_and_pack(s_emb, h_emb, s_att_mask, h_att_mask)
 
         _, (h_n, _) = self.lstm_layer(s_h_concat)
