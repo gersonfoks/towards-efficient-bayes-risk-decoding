@@ -1,0 +1,64 @@
+
+# Information about the dataset
+dataset:
+  sampling_method: 'ancestral'
+  n_hypotheses: 100
+  n_references: 1000
+
+
+
+#
+model_name: last_hidden_state_lstm
+log_dir: './logs/last_hidden_state_model/'
+save_model_path: './saved_models/last_hidden_state_model/'
+
+
+# Describes how to preprocess, can use predefined preprocessing functions
+preprocess:
+  name: basic
+
+collator:
+  name: nmt_collator
+
+# Training
+batch_size: 64
+accumulate_grad_batches: 4 # Effective batch size of 128
+
+max_epochs: 150
+gradient_clip_val: 1.9
+
+# patience for early stopping
+patience: 5
+
+# Model information
+model:
+  type: last_hidden_state_model
+  nmt_model:
+    name: 'Helsinki-NLP/opus-mt-de-en'
+    checkpoint: './saved_models/NMT/de-en-model/'
+    type: 'MarianMT'
+
+  lr: 9.6e-4 #1.4815897489348615e-05
+  weight_decay: 5.1e-7 #5.0e-07
+  dropout: 0.73 #0.5 #0.6712665889822903
+  pooling:
+    name: lstm
+    embedding_size: 512
+    hidden_state_size: 512
+  feed_forward_layers:
+    dims:
+      - 1024
+      - 1
+    activation_function: 'relu'
+    activation_function_last_layer: 'tanh'
+    last_layer_scale: 2.5
+  batch_norm: False
+  optimizer:
+    type: adam_with_lr_decay
+    step_size: 1
+    gamma: 0.7
+    interval: epoch
+
+
+
+

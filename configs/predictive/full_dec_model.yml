@@ -1,0 +1,62 @@
+# Information about the dataset
+dataset:
+  sampling_method: 'ancestral'
+  n_hypotheses: 100
+  n_references: 1000
+
+
+#
+model_name: full_dec_lstm_model
+log_dir: './logs/full_dec_model/'
+save_model_path: './saved_models/full_dec_model/'
+
+# Training
+batch_size: 64
+accumulate_grad_batches: 4 # Effective batch size of 128
+gradient_clip_val: 3.6
+max_epochs: 150
+
+
+# patience for early stopping
+patience: 3
+
+# Model information
+model:
+  type: full_dec_model
+  nmt_model:
+    name: 'Helsinki-NLP/opus-mt-de-en'
+    checkpoint: './saved_models/NMT/de-en-model/'
+    type: 'MarianMT'
+
+  lr: 1.6e-3 #1.4815897489348615e-05
+  weight_decay: 4.0e-9 #5.0e-07
+  dropout: 0.18 #0.5 #0.6712665889822903
+
+  dec_pooling:
+    name: lstm
+    embedding_size: 512
+    hidden_state_size: 128
+
+  n_statistics: 7
+  embedding_size: 128
+  token_pooling:
+    name: lstm
+    embedding_size: 128
+    hidden_state_size: 128
+  feed_forward_layers:
+    dims:
+      - 2048 # 8 * 2 * 128
+      - 128
+      - 1
+    activation_function: 'relu'
+    activation_function_last_layer: 'tanh'
+    last_layer_scale: 2.5
+
+  optimizer:
+    type: adam_with_lr_decay
+    step_size: 1
+    gamma: 0.82
+    interval: epoch
+
+
+

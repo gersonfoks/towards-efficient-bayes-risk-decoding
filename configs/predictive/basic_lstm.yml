@@ -4,19 +4,12 @@ dataset:
   sampling_method: 'ancestral'
   n_hypotheses: 100
   n_references: 1000
-  repeated_indices: False
+
 
 #
 model_name: basic_lstm
 log_dir: './logs/basic_lstm/'
 save_model_path: './saved_models/basic_lstm/'
-
-# Describes how to preprocess, can use predefined preprocessing functions
-preprocess:
-  name: basic
-
-collator:
-  name: basic_collator
 
 # Training
 batch_size: 128
