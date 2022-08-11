@@ -1,3 +1,5 @@
+from time import time
+
 import pytorch_lightning as pl
 import torch
 
@@ -48,6 +50,16 @@ class BaseModel(pl.LightningModule):
         return batch_out
 
 
+    @torch.no_grad()
+    def timed_forward(self, batch):
+        start_time = time()
+
+        sources, hypotheses, features, scores = batch
+        self.forward(sources, hypotheses, features)
+
+        end_time = time()
+
+        return start_time - end_time
 
 
 

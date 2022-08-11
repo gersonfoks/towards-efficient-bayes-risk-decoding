@@ -13,7 +13,7 @@ class BasicCollator:
     def __init__(self, device="cuda", include_id=False):
         self.device = device
 
-        self.incude_id = include_id
+        self.include_id = include_id
 
     def __call__(self, batch):
 
@@ -37,7 +37,7 @@ class BasicCollator:
 
         }
 
-        if self.incude_id:
+        if self.include_id:
             features["id"] = [b["index"] for b in batch]
 
 
