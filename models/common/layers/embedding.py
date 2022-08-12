@@ -30,7 +30,7 @@ class TokenStatisticsEmbedding(nn.Module):
         self.nmt_model = nmt_model
         self.padding_id = padding_id
         self.embedding = nn.Linear(7,
-                                   embedding_size)  # We use two statistics namely the probability and the log entropy
+                                   embedding_size)  # We use 7 statistics namely the log probability, the log entropy and finally the top 5 log probability of the tokens
 
     def forward(self, input_ids=None, attention_mask=None, decoder_input_ids=None, labels=None):
         self.nmt_model.eval()
@@ -45,6 +45,8 @@ class TokenStatisticsEmbedding(nn.Module):
             statistics = logits_to_statistics(nmt_out["logits"], attention_mask_decoder)
 
         embedding = self.embedding(statistics)
+
+
 
         return embedding, attention_mask_decoder
 
@@ -169,7 +171,7 @@ def logits_to_statistics(logits, labels):
     log_probs = log_probs_all_tokens.gather(-1, ids)
 
     top_5 = torch.topk(log_probs_all_tokens, 5, dim=-1, ).values
-    
+
     statistics = torch.concat([log_probs, entropy, top_5], dim=-1)
 
     return statistics
