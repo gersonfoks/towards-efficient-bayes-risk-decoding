@@ -29,7 +29,7 @@ class TokenStatisticsEmbedding(nn.Module):
         super().__init__()
         self.nmt_model = nmt_model
         self.padding_id = padding_id
-        self.embedding = nn.Linear(2,
+        self.embedding = nn.Linear(7,
                                    embedding_size)  # We use two statistics namely the probability and the log entropy
 
     def forward(self, input_ids=None, attention_mask=None, decoder_input_ids=None, labels=None):
@@ -60,7 +60,7 @@ class FullDecEmbedding(nn.Module):
 
         self.padding_id = padding_id
         if embedding_size != None:
-            self.embedding = nn.Linear(2,
+            self.embedding = nn.Linear(7,
                                    embedding_size)  # We use two statistics namely the probability and the log entropy
         else:
             self.embedding = None
@@ -166,8 +166,10 @@ def logits_to_statistics(logits, labels):
     probs_all_tokens = torch.exp(log_probs_all_tokens)
     entropy = - torch.sum(log_probs_all_tokens * probs_all_tokens, dim=-1).unsqueeze(dim=-1)
 
-    probs = probs_all_tokens.gather(-1, ids)
+    log_probs = log_probs_all_tokens.gather(-1, ids)
 
-    statistics = torch.concat([probs, entropy], dim=-1)
+    top_5 = torch.topk(log_probs_all_tokens, 5, dim=-1, ).values
+    
+    statistics = torch.concat([log_probs, entropy, top_5], dim=-1)
 
     return statistics
