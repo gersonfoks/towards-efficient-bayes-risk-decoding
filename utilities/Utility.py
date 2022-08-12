@@ -4,7 +4,6 @@ from typing import List
 from comet import download_model, load_from_checkpoint
 from nltk.util import ngrams
 
-
 from utilities.misc import load_nmt_model
 from utilities.wrappers.CometWrapper import CometWrapper
 
@@ -20,6 +19,7 @@ class DecoderTokenizer:
             tokenized_sentences = self.nmt_tokenizer(sentences, truncation=True,
                                                      max_length=self.max_seq_length)["input_ids"]
         return tokenized_sentences
+
 
 class Utility:
 
@@ -44,11 +44,11 @@ def load_utility(utility, nmt_model=None, tokenizer=None):
     if utility == "unigram-f1":
         # Get the nmt model tokenizer
         config = {
-            "model": {
-                "name": 'Helsinki-NLP/opus-mt-de-en',
-                "checkpoint": 'NMT/tatoeba-de-en/model',
-                "type": 'MarianMT'
-            }
+
+            "name": 'Helsinki-NLP/opus-mt-de-en',
+            "checkpoint": './saved_models/NMT/de-en-model/',
+            "type": 'MarianMT'
+
         }
         if tokenizer == None:
             nmt_model, tokenizer = load_nmt_model(config, pretrained=True)

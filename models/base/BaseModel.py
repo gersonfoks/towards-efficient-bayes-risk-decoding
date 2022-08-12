@@ -59,7 +59,7 @@ class BaseModel(pl.LightningModule):
 
         end_time = time()
 
-        return start_time - end_time
+        return end_time - start_time
 
 
 

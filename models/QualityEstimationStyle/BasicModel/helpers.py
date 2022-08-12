@@ -78,3 +78,31 @@ def load_data(config, tokenizer, seed=0, smoke_test=False):
                                 batch_size=config["batch_size"], shuffle=False, )
 
     return train_dataloader, val_dataloader
+
+
+def load_data_for_timing(tokenizer, seed=0, smoke_test=False):
+    print("Preparing the data")
+    test_df = load_bayes_risk_dataframe("ancestral",
+                                         10,
+                                         100,
+                                         'validation_predictive', # TODO make this test
+                                         seed=seed,
+                                         smoke_test=smoke_test,
+
+                                         )
+
+
+
+    test_df = prepare_dataframe(test_df, tokenizer)
+
+    test_dataset = BayesRiskDataset(test_df)
+
+
+    collator = BasicCollator()
+
+    test_dataloader = DataLoader(test_dataset,
+                                  collate_fn=collator,
+                                  batch_size=1, shuffle=False, )
+
+
+    return test_dataloader
