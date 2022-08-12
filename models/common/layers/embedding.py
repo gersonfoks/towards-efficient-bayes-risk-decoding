@@ -42,7 +42,7 @@ class TokenStatisticsEmbedding(nn.Module):
 
             attention_mask_decoder = (self.padding_id != labels).long()
 
-            statistics = logits_to_statistics(nmt_out["logits"], attention_mask_decoder)
+            statistics = logits_to_statistics(nmt_out["logits"], labels)
 
         embedding = self.embedding(statistics)
 
@@ -77,7 +77,7 @@ class FullDecEmbedding(nn.Module):
             attention_mask_decoder = (self.padding_id != labels).long()
 
             if self.embedding != None:
-                statistics = logits_to_statistics(nmt_out["logits"], attention_mask_decoder)
+                statistics = logits_to_statistics(nmt_out["logits"], labels)
         if self.embedding != None:
             embedding = self.embedding(statistics)
         else:
@@ -173,5 +173,5 @@ def logits_to_statistics(logits, labels):
     top_5 = torch.topk(probs_all_tokens, 5, dim=-1, ).values
 
     statistics = torch.concat([probs, entropy, top_5], dim=-1)
-
+    
     return statistics
