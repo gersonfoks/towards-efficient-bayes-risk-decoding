@@ -1,7 +1,7 @@
 import numpy as np
 
+from models.QualityEstimationStyle.FullDecNoStatModel.FullDecNoStatModelManager import FullDecNoStatModelManager
 from models.QualityEstimationStyle.LastHiddenStateModel.helpers import load_data
-from models.QualityEstimationStyle.TokenStatisticsModel.TokenStatisticsModelManager import TokenStatisticsModelManager
 from utilities.callbacks import CustomSaveCallback
 
 from argparse import Namespace
@@ -13,18 +13,17 @@ from optuna.integration import PyTorchLightningPruningCallback
 from pytorch_lightning.callbacks import EarlyStopping, LearningRateMonitor
 
 from pytorch_lightning import loggers as pl_loggers
-
 import pytorch_lightning as pl
 
 
-class TokenStatisticsModelHyperparamSearch:
+class FullDecNoStatModelHyperparamSearch:
 
     def __init__(self, smoke_test, utility='comet', seed=0):
 
         self.smoke_test = smoke_test
         self.utility = utility
 
-        self.study_name = "token_statistics_model"
+        self.study_name = "full_dec_no_stat_model_study"
 
         self.log_dir = './logs/{}/'.format(self.study_name)
         self.save_location = './saved_models/{}/'.format(self.study_name)
@@ -32,12 +31,12 @@ class TokenStatisticsModelHyperparamSearch:
         self.n_warmup_steps = 10
         self.n_trials = 30
 
-        self.model_type = "token_statistics_model"
+        self.model_type = "full_dec_no_stat_model"
 
         self.possible_dims = {
-            "small": [0, 1],
-            "medium": [0, 256, 1],
-            "large": [0, 256, 128, 1],
+            "small": [0, 128, 1],
+            "medium": [0, 256, 128, 1],
+            "large": [0, 512, 256, 128, 1],
         }
 
         self.seed = seed
@@ -52,7 +51,7 @@ class TokenStatisticsModelHyperparamSearch:
         config = self.get_config(trial)
 
         # Create the trainer
-        model_manager = TokenStatisticsModelManager(config["model"])
+        model_manager = FullDecNoStatModelManager(config["model"])
 
         model = model_manager.create_model()
 
@@ -61,7 +60,6 @@ class TokenStatisticsModelHyperparamSearch:
 
         train_dataloader, val_dataloader = load_data(config, nmt_model, tokenizer, seed=self.seed,
                                                      smoke_test=self.smoke_test)
-
         # Start the training
         tb_logger = pl_loggers.TensorBoardLogger(save_dir=self.log_dir)
 
@@ -70,14 +68,14 @@ class TokenStatisticsModelHyperparamSearch:
             max_epochs=max_epochs,
             gpus=1,
             progress_bar_refresh_rate=1,
-            gradient_clip_val=config["gradient_clip_val"],
-            callbacks=[EarlyStopping(monitor="val_loss", patience=5, verbose=True),
+            callbacks=[EarlyStopping(monitor="val_loss", patience=5, verbose=True, divergence_threshold=3.0),
                        LearningRateMonitor(logging_interval="epoch"),
                        PyTorchLightningPruningCallback(trial, monitor="val_loss"),
                        save_callback
                        ],
             logger=tb_logger,
-            accumulate_grad_batches=1,
+            accumulate_grad_batches=config["accumulate_grad_batches"],
+            gradient_clip_val=config["gradient_clip_val"],
         )
 
         # create the dataloaders
@@ -115,16 +113,15 @@ class TokenStatisticsModelHyperparamSearch:
     def get_config(self, trial):
         dataset_config = self.get_dataset_config()
         model_config = self.get_model_config(trial)
-        gradient_clip_val = trial.suggest_float("gradient_clip_val", 1, 5)
         accumulate_grad_batches = trial.suggest_categorical("accumulate_grad_batches", [2, 4, 8])
 
         config = {
-            "model_name": 'token_statistics_lstm',
-            "gradient_clip_val": gradient_clip_val,
+            "model_name": 'full_dec_no_stat_model',
+            'accumulate_grad_batches': accumulate_grad_batches,
+            "gradient_clip_val": trial.suggest_float('gradient_clip_val', 1.0, 5.0),
             "model": model_config,
             "dataset": dataset_config,
-            "batch_size": 32,
-            'accumulate_grad_batches': accumulate_grad_batches,
+            "batch_size": model_config["batch_size"],
 
         }
 
@@ -132,27 +129,29 @@ class TokenStatisticsModelHyperparamSearch:
 
     def get_model_config(self, trial):
 
+        batch_size = 64
+
         feed_forward_size = trial.suggest_categorical("feed_forward_size", ["small", "medium", "large"])
 
         dims = self.possible_dims[feed_forward_size]
 
-        hidden_state_size = trial.suggest_categorical("hidden_state_size", [64, 128, 256, ])
-        token_statistics_embedding_size = trial.suggest_categorical("token_statistics_embedding_size", [64, 128, 256])
 
-        dims[0] = hidden_state_size * 2  # Because of the bidirectional part.
+        full_dec_hidden_state_size = trial.suggest_categorical("full_dec_hidden_state_size", [64, 128, 256, 512])
+
+        dims[0] = full_dec_hidden_state_size * 2 * 7  # Times 2 Because of the bidirectional part.
 
         return {
 
-            "type": "last_hidden_state_model",
+            "batch_size": batch_size,
+            "type": "full_dec_model",
             "lr": trial.suggest_float('lr', 1.0e-4, 1.0e-1, log=True),  # Not used
             "weight_decay": trial.suggest_float("weight_decay", 1.0e-9, 1.0e-5, log=True),
             "dropout": trial.suggest_float("dropout", 0.01, 0.9, ),
-            "token_statistics_embedding_size": token_statistics_embedding_size,
-            "n_statistics": 7,
-            "pooling": {
+
+            "dec_pooling": {
                 "name": "lstm",
-                "embedding_size": token_statistics_embedding_size,
-                "hidden_state_size": hidden_state_size,
+                "embedding_size": 512,
+                "hidden_state_size": full_dec_hidden_state_size,
             },
 
             "feed_forward_layers": {
@@ -184,7 +183,5 @@ class TokenStatisticsModelHyperparamSearch:
             "sampling_method": 'ancestral',
             "n_hypotheses": 10,
             "n_references": 100,
-
             "utility": self.utility,
-
         }

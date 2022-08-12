@@ -23,7 +23,7 @@ class FullDecModelHyperparamSearch:
         self.smoke_test = smoke_test
         self.utility = utility
 
-        self.study_name = "token_statistics_model"
+        self.study_name = "full_dec_model_study"
 
         self.log_dir = './logs/{}/'.format(self.study_name)
         self.save_location = './saved_models/{}/'.format(self.study_name)
@@ -31,7 +31,7 @@ class FullDecModelHyperparamSearch:
         self.n_warmup_steps = 10
         self.n_trials = 30
 
-        self.model_type = "token_statistics_model"
+        self.model_type = "full_dec_model"
 
         self.possible_dims = {
             "small": [0, 128, 1],
@@ -136,7 +136,7 @@ class FullDecModelHyperparamSearch:
         dims = self.possible_dims[feed_forward_size]
 
         hidden_state_size = 128
-        token_embedding_size = 128
+        token_statistics_embedding_size = 128
 
         full_dec_hidden_state_size = trial.suggest_categorical("full_dec_hidden_state_size", [64, 128, 256, 512])
 
@@ -150,11 +150,11 @@ class FullDecModelHyperparamSearch:
             "lr": trial.suggest_float('lr', 1.0e-4, 1.0e-1, log=True),  # Not used
             "weight_decay": trial.suggest_float("weight_decay", 1.0e-9, 1.0e-5, log=True),
             "dropout": trial.suggest_float("dropout", 0.01, 0.9, ),
-            "embedding_size": token_embedding_size,
+            "token_statistics_embedding_size": token_statistics_embedding_size,
 
             "token_pooling": {
                 "name": "lstm",
-                "embedding_size": token_embedding_size,
+                "embedding_size": token_statistics_embedding_size,
                 "hidden_state_size": hidden_state_size,
             },
             "dec_pooling": {

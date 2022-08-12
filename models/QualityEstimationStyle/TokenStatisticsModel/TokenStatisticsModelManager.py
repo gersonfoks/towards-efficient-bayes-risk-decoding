@@ -1,6 +1,4 @@
-from torch import nn
 
-from models.QualityEstimationStyle.LastHiddenStateModel.LastHiddenStateModel import LastHiddenStateModel
 from models.QualityEstimationStyle.TokenStatisticsModel.TokenStatisticsModel import TokenStatisticsModel
 from models.common.layers.embedding import TokenStatisticsEmbedding
 
@@ -27,7 +25,7 @@ class TokenStatisticsModelManager(BaseManager):
 
         # Create the embedding layer
 
-        embedding_layer = TokenStatisticsEmbedding(self.nmt_model, config["embedding_size"])
+        embedding_layer = TokenStatisticsEmbedding(self.nmt_model, config["token_statistics_embedding_size"])
 
         pooling = None
         # Next we choose a way of pooling

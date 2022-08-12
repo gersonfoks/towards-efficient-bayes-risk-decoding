@@ -1,8 +1,8 @@
 from torch import nn
 
-from models.QualityEstimationStyle.FullDecModel.FullDecModel import FullDecModel
+from models.QualityEstimationStyle.FullDecNoStatModel.FullDecNoStatModel import FullDecNoStatModel
 
-from models.common.layers.embedding import  FullDecEmbedding
+from models.common.layers.embedding import FullDecEmbedding
 from models.common.layers.helpers import get_feed_forward_layers
 
 from models.common.layers.pooling import LstmPoolingLayer, LearnedPoolingLayer
@@ -11,7 +11,7 @@ from models.base.BaseManager import BaseManager
 from utilities.misc import load_nmt_model
 
 
-class FullDecModelManager(BaseManager):
+class FullDecNoStatModelManager(BaseManager):
 
     def __init__(self, config, nmt_model=None, tokenizer=None):
         super().__init__(config)
@@ -28,7 +28,7 @@ class FullDecModelManager(BaseManager):
 
         # Create the embedding layer
 
-        embedding_layer = FullDecEmbedding(self.nmt_model, config["token_statistics_embedding_size"])
+        embedding_layer = FullDecEmbedding(self.nmt_model,None)
 
         full_dec_pooling_layers = []
 
@@ -44,19 +44,6 @@ class FullDecModelManager(BaseManager):
 
         full_dec_pooling_layers = nn.ModuleList(full_dec_pooling_layers)
 
-
-        token_statistics_pooling = None
-        # Next we choose a way of pooling
-        if config["token_pooling"]["name"] == "lstm":
-
-            token_statistics_pooling = LstmPoolingLayer(config["token_pooling"]["embedding_size"],
-                                                        config["token_pooling"]["hidden_state_size"])
-        elif config["token_pooling"]["name"] == "attention":
-            token_statistics_pooling = LearnedPoolingLayer(config["token_pooling"]["embedding_size"],
-                                                           config["token_pooling"]["n_heads"])
-        else:
-            raise ValueError('Unknown pooling: ', config["token_pooling"]["name"])
-
         final_layers = get_feed_forward_layers(config["feed_forward_layers"]["dims"],
                                                config["feed_forward_layers"]["activation_function"],
                                                config["feed_forward_layers"]["activation_function_last_layer"],
@@ -66,6 +53,6 @@ class FullDecModelManager(BaseManager):
 
         initialize_optimizer = get_optimizer_function(config)
 
-        self.model = FullDecModel(embedding_layer, full_dec_pooling_layers,
-                                  token_statistics_pooling, final_layers, initialize_optimizer)
+        self.model = FullDecNoStatModel(embedding_layer, full_dec_pooling_layers,
+                                        final_layers, initialize_optimizer)
         return self.model
