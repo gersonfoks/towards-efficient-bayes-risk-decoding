@@ -41,7 +41,6 @@ model:
   weight_decay: 5.038424995735819e-06 #5.0e-07
   dropout: 0.61 #0.5 #0.6712665889822903
   embedding_size: 128
-
   pooling:
     name: lstm
     embedding_size: 128
