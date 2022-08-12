@@ -9,7 +9,6 @@ import yaml
 
 from pytorch_lightning.callbacks import LearningRateMonitor, EarlyStopping
 
-from models.QualityEstimationStyle.LastHiddenStateModel.LastHiddenStateModelManager import LastHiddenStateModelManager
 from models.QualityEstimationStyle.LastHiddenStateModel.helpers import load_data
 from models.QualityEstimationStyle.TokenStatisticsModel.TokenStatisticsModelManager import TokenStatisticsModelManager
 from utilities.callbacks import CustomSaveCallback

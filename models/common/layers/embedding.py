@@ -168,10 +168,10 @@ def logits_to_statistics(logits, labels):
     probs_all_tokens = torch.exp(log_probs_all_tokens)
     entropy = - torch.sum(log_probs_all_tokens * probs_all_tokens, dim=-1).unsqueeze(dim=-1)
 
-    log_probs = log_probs_all_tokens.gather(-1, ids)
+    probs = probs_all_tokens.gather(-1, ids)
 
-    top_5 = torch.topk(log_probs_all_tokens, 5, dim=-1, ).values
+    top_5 = torch.topk(probs_all_tokens, 5, dim=-1, ).values
 
-    statistics = torch.concat([log_probs, entropy, top_5], dim=-1)
+    statistics = torch.concat([probs, entropy, top_5], dim=-1)
 
     return statistics
