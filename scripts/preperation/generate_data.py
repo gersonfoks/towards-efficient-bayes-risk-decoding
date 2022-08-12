@@ -43,7 +43,7 @@ def main():
     with open(args.config, "r") as file:
         config = yaml.load(file, Loader=yaml.FullLoader)
     print("Loading model")
-    nmt_model, tokenizer = load_nmt_model(config, pretrained=True)
+    nmt_model, tokenizer = load_nmt_model(config["model"], pretrained=True)
 
     model = nmt_model.to("cuda")
     model.eval()
