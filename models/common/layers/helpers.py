@@ -41,7 +41,7 @@ def get_feed_forward_layers(layer_dims, activation_function, activation_function
         activation_function = activation_functions[activation_function_last_layer]
 
         # If we need to scale (used for comet models)
-        if last_layer_scale != None:
+        if last_layer_scale != None and last_layer_scale != 'none':
             print("get scaled activation funcion")
             layers.append(
                 ScaledActivationFunction(activation_function(), last_layer_scale)

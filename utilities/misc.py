@@ -135,7 +135,7 @@ def load_bayes_risk_dataframe(sampling_method, n_hypotheses, n_references, split
     ref += '.parquet'
 
     df = pd.read_parquet(ref)
-
+    print(df["utilities"])
     return df
 
 

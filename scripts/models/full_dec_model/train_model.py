@@ -58,7 +58,7 @@ def main():
 
     ### First load the dataset
     # We can use the same dataloader as for the last hidden state model
-    train_dataloader, val_dataloader = load_data(config, nmt_model, tokenizer, seed=args.seed, smoke_test= args.smoke_test)
+    train_dataloader, val_dataloader = load_data(config, nmt_model, tokenizer, seed=args.seed, smoke_test= args.smoke_test, utility=args.utility)
 
 
     ### Train
