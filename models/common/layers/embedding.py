@@ -59,9 +59,11 @@ class FullDecEmbedding(nn.Module):
         self.nmt_model = nmt_model
 
         self.padding_id = padding_id
-
-        self.embedding = nn.Linear(2,
+        if embedding_size != None:
+            self.embedding = nn.Linear(2,
                                    embedding_size)  # We use two statistics namely the probability and the log entropy
+        else:
+            self.embedding = None
 
     def forward(self, input_ids=None, attention_mask=None, decoder_input_ids=None, labels=None):
         self.nmt_model.eval()
@@ -72,14 +74,23 @@ class FullDecEmbedding(nn.Module):
 
             attention_mask_decoder = (self.padding_id != labels).long()
 
-            statistics = logits_to_statistics(nmt_out["logits"], attention_mask_decoder)
-        embedding = self.embedding(statistics)
+            if self.embedding != None:
+                statistics = logits_to_statistics(nmt_out["logits"], attention_mask_decoder)
+        if self.embedding != None:
+            embedding = self.embedding(statistics)
+        else:
+            embedding = None
 
         # print(list(nmt_out["decoder_hidden_states"]))
         return nmt_out["decoder_hidden_states"], embedding, attention_mask_decoder
 
     def parameters(self, recurse: bool = True):
-        return self.embedding.parameters()
+        if self.embedding:
+            return self.embedding.parameters()
+        else:
+            return []
+
+
 
 
 
