@@ -6,9 +6,9 @@ dataset:
 
 
 #
-model_name: full_dec_lstm_model
-log_dir: './logs/unigramf1/full_dec_model/'
-save_model_path: './saved_models/unigramf1/full_dec_model/'
+model_name: full_dec_no_stat_model
+log_dir: './logs/unigramf1/full_dec_no_stat_model/'
+save_model_path: './saved_models/unigramf1/full_dec_no_stat_model/'
 utility: 'unigram-f1'
 
 
@@ -39,14 +39,9 @@ model:
     embedding_size: 512
     hidden_state_size: 128
 
-  token_statistics_embedding_size: 128
-  token_pooling:
-    name: lstm
-    embedding_size: 128
-    hidden_state_size: 128
   feed_forward_layers:
     dims:
-      - 2048 # 8 * 2 * 128
+      - 1792 # 7 * 2 * 128
       - 128
       - 1
     activation_function: 'relu'

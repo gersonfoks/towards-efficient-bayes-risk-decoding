@@ -1,3 +1,4 @@
+
 # Information about the dataset
 dataset:
   sampling_method: 'ancestral'
@@ -5,59 +6,59 @@ dataset:
   n_references: 1000
 
 
+
 #
-model_name: full_dec_lstm_model
-log_dir: './logs/unigramf1/full_dec_model/'
-save_model_path: './saved_models/unigramf1/full_dec_model/'
+model_name: last_hidden_state_lstm
+log_dir: './logs/unigramf1/last_hidden_state_model/'
+save_model_path: './saved_models/unigramf1/last_hidden_state_model/'
 utility: 'unigram-f1'
 
+# Describes how to preprocess, can use predefined preprocessing functions
+preprocess:
+  name: basic
+
+collator:
+  name: nmt_collator
 
 # Training
 batch_size: 64
 accumulate_grad_batches: 4 # Effective batch size of 128
-gradient_clip_val: 3.6
-max_epochs: 150
 
+max_epochs: 150
+gradient_clip_val: 1.9
 
 # patience for early stopping
 patience: 3
 
 # Model information
 model:
-  type: full_dec_model
+  type: last_hidden_state_model
   nmt_model:
     name: 'Helsinki-NLP/opus-mt-de-en'
     checkpoint: './saved_models/NMT/de-en-model/'
     type: 'MarianMT'
 
-  lr: 1.6e-3 #1.4815897489348615e-05
-  weight_decay: 4.0e-9 #5.0e-07
-  dropout: 0.18 #0.5 #0.6712665889822903
-
-  dec_pooling:
+  lr: 9.6e-4 #1.4815897489348615e-05
+  weight_decay: 5.1e-7 #5.0e-07
+  dropout: 0.73 #0.5 #0.6712665889822903
+  pooling:
     name: lstm
     embedding_size: 512
-    hidden_state_size: 128
-
-  token_statistics_embedding_size: 128
-  token_pooling:
-    name: lstm
-    embedding_size: 128
-    hidden_state_size: 128
+    hidden_state_size: 512
   feed_forward_layers:
     dims:
-      - 2048 # 8 * 2 * 128
-      - 128
+      - 1024
       - 1
     activation_function: 'relu'
     activation_function_last_layer: 'sigmoid'
     last_layer_scale: none
-
+  batch_norm: False
   optimizer:
     type: adam_with_lr_decay
     step_size: 1
-    gamma: 0.82
+    gamma: 0.7
     interval: epoch
+
 
 
 
