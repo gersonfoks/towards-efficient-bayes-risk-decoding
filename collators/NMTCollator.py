@@ -9,7 +9,7 @@ class NMTCollator:
     Prepares the model for the nmt input
     '''
 
-    def __init__(self, nmt_model, tokenizer, max_seq_length=75, device="cuda", include_id=False):
+    def __init__(self, nmt_model, tokenizer, max_seq_length=75, device="cuda", include_source_id=False):
         self.nmt_model = nmt_model
         self.tokenizer = tokenizer
         self.max_seq_length = max_seq_length
@@ -19,7 +19,7 @@ class NMTCollator:
         self.data_collator = DataCollatorForSeq2Seq(model=self.nmt_model, tokenizer=self.tokenizer,
                                                     padding=True, return_tensors="pt", )
 
-        self.include_id = include_id
+        self.include_source_id = include_source_id
 
     def __call__(self, batch):
         hypothesis = [b["hypothesis"] for b in batch]
@@ -51,6 +51,6 @@ class NMTCollator:
 
         }
 
-        if self.include_id:
-            features["id"] = [b["index"] for b in batch]
+        if self.include_source_id:
+            features["source_index"] = [b["source_index"] for b in batch]
         return sources, hypothesis, features, utility

@@ -106,3 +106,36 @@ def load_data_for_timing(tokenizer, seed=0, smoke_test=False):
 
 
     return test_dataloader
+
+
+def load_test_data(tokenizer, utility="comet", seed=0, smoke_test=False):
+    print("Preparing the data")
+    test_df = load_bayes_risk_dataframe("ancestral",
+                                         100,
+                                         1000,
+                                         'test',
+                                         seed=seed,
+                                         smoke_test=smoke_test,
+                                            utility=utility
+                                         )
+
+
+
+    # Add the index
+    test_df = test_df.reset_index()
+    test_df["source_index"] = test_df["index"]
+
+    temp = prepare_dataframe(test_df, tokenizer)
+
+    test_dataset = BayesRiskDataset(temp)
+
+
+    collator = BasicCollator(include_source_id=True)
+
+
+    test_dataloader = DataLoader(test_dataset,
+                                  collate_fn=collator,
+                                  batch_size=32, shuffle=False, )
+
+
+    return test_df, test_dataloader

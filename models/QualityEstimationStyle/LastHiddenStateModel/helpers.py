@@ -67,3 +67,36 @@ def load_data(config, nmt_model, tokenizer, seed=0, smoke_test=False, utility="c
                                 batch_size=config["batch_size"], shuffle=False, )
 
     return train_dataloader, val_dataloader
+
+
+def load_test_data(nmt_model, tokenizer, utility="comet", seed=0, smoke_test=False):
+    print("Preparing the data")
+    test_df = load_bayes_risk_dataframe("ancestral",
+                                         100,
+                                         1000,
+                                         'test',
+                                         seed=seed,
+                                         smoke_test=smoke_test,
+                                            utility=utility
+                                         )
+
+
+
+    # Add the index
+    test_df = test_df.reset_index()
+    test_df["source_index"] = test_df["index"]
+
+    temp = prepare_dataframe(test_df)
+
+    test_dataset = BayesRiskDataset(temp)
+
+
+    collator = NMTCollator(nmt_model, tokenizer, include_source_id=True)
+
+
+    test_dataloader = DataLoader(test_dataset,
+                                  collate_fn=collator,
+                                  batch_size=32, shuffle=False, )
+
+
+    return test_df, test_dataloader
