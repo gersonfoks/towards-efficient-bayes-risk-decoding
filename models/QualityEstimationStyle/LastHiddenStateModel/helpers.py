@@ -1,6 +1,8 @@
+from pathlib import Path
 
+import pandas as pd
 from torch.utils.data import DataLoader
-
+from tqdm import tqdm
 
 from collators.NMTCollator import NMTCollator
 from custom_datasets.BayesRiskDataset import BayesRiskDataset
@@ -100,3 +102,68 @@ def load_test_data(nmt_model, tokenizer, utility="comet", seed=0, smoke_test=Fal
 
 
     return test_df, test_dataloader
+
+
+def generate_predictions(model, model_manager, utility, smoke_test=False, seed=0):
+
+
+    # Load the dataset
+    test_df, test_dataloader = load_test_data(model_manager.nmt_model, model_manager.tokenizer, utility,
+                                              smoke_test=smoke_test, seed=seed)
+
+    predictions = [
+
+    ]
+    all_sources = [
+
+    ]
+    all_hypotheses = [
+
+    ]
+    indices = [
+
+    ]
+
+    model = model.to("cuda").eval()
+
+    print("start gathering predictions")
+    for x in tqdm(test_dataloader):
+        sources, hypotheses, features, scores = x
+        indices += features["source_index"]
+        batch_out = model.predict(x)
+        all_sources += sources
+        all_hypotheses += hypotheses
+        predictions += batch_out["predictions"].cpu().numpy().tolist()
+    #
+    results = pd.DataFrame({
+        "source": all_sources,
+        "hypothesis": all_hypotheses,
+        "prediction": predictions,
+        "source_index": indices
+
+    })
+
+    grouped_result = {
+        "source": [],
+        "hypotheses": [],
+        "predictions": [],
+    }
+
+    indices = []
+
+    for i, x in test_df.iterrows():
+        index = x["source_index"]
+
+        indices.append(index)
+        source = x["source"]
+        temp = results[results["source_index"] == index]
+        grouped_result["source"] += [source]
+        grouped_result["hypotheses"].append(temp["hypothesis"].to_list())
+        grouped_result["predictions"].append(temp["prediction"].to_list())
+
+    grouped_results = pd.DataFrame(grouped_result)
+
+    base_dir = './model_predictions/{}/'.format(utility)
+    #
+    Path(base_dir).mkdir(parents=True, exist_ok=True)
+    grouped_results.to_parquet(base_dir + '{}_predictions.parquet'.format(model.name))

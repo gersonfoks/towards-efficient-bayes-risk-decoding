@@ -21,6 +21,7 @@ class TokenStatisticsModel(BaseModel):
         }
 
         self.initialize_optimizer = initialize_optimizer
+        self.name= 'token_statistics_model'
 
     def forward(self, sources, hypotheses, features):
         embeddings, attention_mask = self.token_statistics_embedding.forward(features["input_ids"],

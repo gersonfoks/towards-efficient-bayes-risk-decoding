@@ -21,6 +21,7 @@ class LastHiddenStateModel(BaseModel):
         }
 
         self.initialize_optimizer = initialize_optimizer
+        self.name = "last_hidden_state_model"
 
     def forward(self, sources, hypotheses, features):
         embeddings, attention_mask = self.last_hidden_state_embedding.forward(features["input_ids"],
