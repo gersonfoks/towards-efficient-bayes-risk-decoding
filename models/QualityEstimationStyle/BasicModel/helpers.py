@@ -42,7 +42,7 @@ def prepare_dataframe(df, tokenizer):
     return df
 
 
-def load_data(config, tokenizer, seed=0, smoke_test=False):
+def load_data(config, tokenizer, seed=0, smoke_test=False, utility='comet'):
     print("Preparing the data")
     train_df = load_bayes_risk_dataframe(config["dataset"]["sampling_method"],
                                          config["dataset"]["n_hypotheses"],
@@ -50,7 +50,7 @@ def load_data(config, tokenizer, seed=0, smoke_test=False):
                                          'train_predictive',
                                          seed=seed,
                                          smoke_test=smoke_test,
-
+                                        utility=utility
                                          )
 
     val_df = load_bayes_risk_dataframe(config["dataset"]["sampling_method"],
@@ -59,6 +59,7 @@ def load_data(config, tokenizer, seed=0, smoke_test=False):
                                        'validation_predictive',
                                        seed=seed,
                                        smoke_test=smoke_test,
+                                       utility=utility
                                        )
 
     train_df = prepare_dataframe(train_df, tokenizer)

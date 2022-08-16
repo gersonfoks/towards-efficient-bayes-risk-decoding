@@ -42,13 +42,8 @@ model:
       - 256
       - 1
     activation_function: 'relu'
-<<<<<<< HEAD
     activation_function_last_layer: 'sigmoid'
     last_layer_scale: none
-=======
-    activation_function_last_layer: 'tanh'
-    last_layer_scale: 2.5
->>>>>>> 1c83cb3ff77e3795a0710275f5af969eb0e7f0df
   optimizer:
     type: adam_with_lr_decay
     step_size: 1

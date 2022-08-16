@@ -39,6 +39,7 @@ class BaseManager:
         pl_path = model_path + 'pl_model.pt'
         checkpoint = torch.load(pl_path)
         manager = cls(checkpoint["config"])
+        print(checkpoint["config"])
         model = manager.create_model()
 
         model.load_state_dict(checkpoint["state_dict"])
