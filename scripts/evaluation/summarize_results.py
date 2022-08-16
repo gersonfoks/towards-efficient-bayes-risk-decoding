@@ -11,6 +11,7 @@ models = [
     'last_hidden_state_model',
     'token_statistics_model',
     'full_dec_model',
+    'full_dec_no_stats_model',
 ]
 
 
