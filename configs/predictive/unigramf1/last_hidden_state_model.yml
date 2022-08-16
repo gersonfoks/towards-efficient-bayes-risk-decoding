@@ -10,8 +10,8 @@ dataset:
 #
 model_name: last_hidden_state_lstm
 
-log_dir: './logs/unigramf1/last_hidden_state_model/'
-save_model_path: './saved_models/unigramf1/last_hidden_state_model/'
+log_dir: './logs/unigram-f1/last_hidden_state_model/'
+save_model_path: './saved_models/unigram-f1/last_hidden_state_model/'
 utility: 'unigram-f1'
 
 
@@ -52,13 +52,9 @@ model:
       - 1024
       - 1
     activation_function: 'relu'
-<<<<<<< HEAD
     activation_function_last_layer: 'sigmoid'
     last_layer_scale: none
-=======
-    activation_function_last_layer: 'tanh'
-    last_layer_scale: 2.5
->>>>>>> 1c83cb3ff77e3795a0710275f5af969eb0e7f0df
+
   batch_norm: False
   optimizer:
     type: adam_with_lr_decay
