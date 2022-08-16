@@ -7,13 +7,13 @@ dataset:
 
 #
 model_name: full_dec_no_stat_model
-log_dir: './logs/full_dec_no_stat_model/'
-save_model_path: './saved_models/full_dec_no_stat_model/'
+log_dir: './logs/comet/full_dec_no_stat_model/'
+save_model_path: './saved_models/comet/full_dec_no_stat_model/'
 
 # Training
 batch_size: 64
 accumulate_grad_batches: 4 # Effective batch size of 128
-gradient_clip_val: 3.6
+gradient_clip_val: 2.9
 max_epochs: 150
 
 
@@ -28,18 +28,18 @@ model:
     checkpoint: './saved_models/NMT/de-en-model/'
     type: 'MarianMT'
 
-  lr: 1.6e-3 #1.4815897489348615e-05
+  lr: 1.4e-3 #1.4815897489348615e-05
   weight_decay: 4.0e-9 #5.0e-07
-  dropout: 0.18 #0.5 #0.6712665889822903
+  dropout: 0.89 #0.5 #0.6712665889822903
 
   dec_pooling:
     name: lstm
     embedding_size: 512
-    hidden_state_size: 128
+    hidden_state_size: 512
 
   feed_forward_layers:
     dims:
-      - 1792 # 7 * 2 * 128
+      - 7168 # 7 * 2 * 512
       - 128
       - 1
     activation_function: 'relu'
@@ -49,7 +49,7 @@ model:
   optimizer:
     type: adam_with_lr_decay
     step_size: 1
-    gamma: 0.82
+    gamma: 0.93
     interval: epoch
 
 
