@@ -7,6 +7,8 @@ from models.base.BaseModel import BaseModel
 
 class BasicLstmModel(BaseModel):
 
+
+
     def __init__(self, source_embedding, hypothesis_embedding, lstm_layer, final_layers, initialize_optimizer,
                  device="cuda", ):
         super().__init__()
@@ -26,6 +28,8 @@ class BasicLstmModel(BaseModel):
         }
 
         self.initialize_optimizer = initialize_optimizer
+
+        self.name= "basic_model"
 
     def forward(self, sources, hypotheses, features):
         s_emb = self.source_embedding.forward(features["tokenized_source"])

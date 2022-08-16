@@ -23,6 +23,7 @@ class FullDecModel(BaseModel):
         }
 
         self.initialize_optimizer = initialize_optimizer
+        self.name = 'full_dec_model'
 
     def forward(self, sources, hypotheses, features):
         hidden_layer_embeddings, token_statistic_embedding, attention_mask = self.full_dec_embedding.forward(

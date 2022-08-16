@@ -10,10 +10,10 @@ class BasicCollator:
     Prepares the input for the basic model
     """
 
-    def __init__(self, device="cuda", include_id=False):
+    def __init__(self, device="cuda", include_source_id=False):
         self.device = device
 
-        self.include_id = include_id
+        self.include_source_id = include_source_id
 
     def __call__(self, batch):
 
@@ -37,8 +37,8 @@ class BasicCollator:
 
         }
 
-        if self.include_id:
-            features["id"] = [b["index"] for b in batch]
+        if self.include_source_id:
+            features["source_index"] = [b["source_index"] for b in batch]
 
 
         return sources, hypothesis, features, utility
