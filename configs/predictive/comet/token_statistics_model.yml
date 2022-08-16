@@ -8,16 +8,9 @@ dataset:
 
 #
 model_name: token_statistics_lstm
-log_dir: './logs/token_statistics_model/'
-save_model_path: './saved_models/token_statistics_model/'
+log_dir: './logs/comet/token_statistics_model/'
+save_model_path: './saved_models/comet/token_statistics_model/'
 
-
-# Describes how to preprocess, can use predefined preprocessing functions
-preprocess:
-  name: refs_with_prob_entropy
-
-collator:
-  name: token_statics_collator
 
 # Training
 batch_size: 32

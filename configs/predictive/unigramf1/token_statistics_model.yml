@@ -14,13 +14,6 @@ save_model_path: './saved_models/unigram-f1/token_statistics_model/'
 utility: 'unigram-f1'
 
 
-# Describes how to preprocess, can use predefined preprocessing functions
-preprocess:
-  name: refs_with_prob_entropy
-
-collator:
-  name: token_statics_collator
-
 # Training
 batch_size: 32
 accumulate_grad_batches: 4 # Effective batch size of 128

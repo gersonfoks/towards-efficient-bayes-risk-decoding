@@ -22,7 +22,7 @@ patience: 3
 
 # Model information
 model:
-  type: full_dec_model
+  type: full_dec_no_stat_model
   nmt_model:
     name: 'Helsinki-NLP/opus-mt-de-en'
     checkpoint: './saved_models/NMT/de-en-model/'

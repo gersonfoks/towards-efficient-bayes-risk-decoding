@@ -56,7 +56,7 @@ def main():
 
     ### First load the dataset
 
-    train_dataloader, val_dataloader = load_data(config, nmt_model, tokenizer, seed=args.seed, smoke_test= args.smoke_test)
+    train_dataloader, val_dataloader = load_data(config, nmt_model, tokenizer, seed=args.seed, smoke_test= args.smoke_test, utility=args.utility)
 
 
     ### Train
