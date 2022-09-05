@@ -60,7 +60,7 @@ print_as_table(results, models, ["median_kendall_taus", "mean_kendall_taus"])
 
 print_as_table(results, models, ["MSE"])
 
-print_as_table(results, models, ["top_10_comet_mean", "best_comet_mean"])
+print_as_table(results, models, ["best_comet_mean", "top_10_comet_mean", ])
 
 
 

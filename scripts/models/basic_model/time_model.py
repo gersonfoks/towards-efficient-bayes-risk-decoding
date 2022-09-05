@@ -22,7 +22,7 @@ def main():
     parser = argparse.ArgumentParser(
         description='Gets the mean and std running time of the basic model')
     parser.add_argument('--model-path', type=str,
-                        default='./saved_models/comet/basic_lstm/best/',
+                        default='./saved_models/comet/basic_model/best/',
                         help='config to load model from')
 
     parser.add_argument('--smoke-test', dest='smoke_test', action="store_true",

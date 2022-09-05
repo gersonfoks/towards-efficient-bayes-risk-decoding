@@ -46,7 +46,7 @@ def main():
 
     wrapped_model = NMTWrapper(nmt_model, tokenizer)
 
-    df = pd.read_parquet('./data/comet/ancestral_10_100_validation_predictive_0_smoke_test.parquet')
+    df = pd.read_parquet('./data/comet/ancestral_100_1000_test_0.parquet')[:100]
 
     df = df.explode(["hypotheses", "utilities"])
 

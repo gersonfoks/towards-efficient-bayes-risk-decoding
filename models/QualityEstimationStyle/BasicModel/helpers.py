@@ -84,13 +84,12 @@ def load_data(config, tokenizer, seed=0, smoke_test=False, utility='comet'):
 def load_data_for_timing(tokenizer, seed=0, smoke_test=False):
     print("Preparing the data")
     test_df = load_bayes_risk_dataframe("ancestral",
-                                         10,
                                          100,
-                                         'validation_predictive', # TODO make this test
+                                         1000,
+                                         'test',
                                          seed=seed,
                                          smoke_test=smoke_test,
-
-                                         )
+                                         )[:100]
 
 
 

@@ -10,17 +10,11 @@ from tqdm import tqdm
 
 from models.QualityEstimationStyle.BasicModel.BasicLstmModelManager import BasicLstmModelManager
 from models.QualityEstimationStyle.BasicModel.helpers import load_test_data
+from utilities.constants import PRETTY_NAMES
 from utilities.evaluation import  evaluate_predictions
-from utilities.misc import load_bayes_risk_dataframe
+from utilities.misc import load_bayes_risk_dataframe, map_to_utility
 
-
-
-pretty_names = {
-    'basic_model': 'Basic Model',
-    'full_dec_model': 'Full Dec Model',
-    'last_hidden_state_model': 'Last Hidden State Model',
-    'token_statistics_model': 'Token Statistics Model',
-}
+pretty_names = PRETTY_NAMES
 
 def main():
     # Training settings
@@ -74,20 +68,7 @@ def main():
     # Map utilities to mean utilities:
 
 
-    def map_to_utility(x):
 
-        utilities = x["utilities"]
-        references_count = np.array(x["references_count"])
-        all_utilities = [
-
-        ]
-        for util in utilities:
-
-            utility = np.sum(references_count * util, axis=-1) / np.sum(references_count)
-            all_utilities.append(utility)
-
-
-        return all_utilities
 
     test_df["utility"] = test_df[["utilities", 'references_count']].apply(map_to_utility, axis=1)
 

@@ -4,7 +4,7 @@ import pandas as pd
 import transformers
 from transformers import MarianTokenizer, MarianMTModel
 from typing import List
-
+import numpy as np
 
 def load_nmt_model(config, pretrained=False):
     '''
@@ -116,7 +116,7 @@ def batch(iterable, n=1):
 
 
 
-def load_bayes_risk_dataframe(sampling_method, n_hypotheses, n_references, split, utility='comet', seed=0,  smoke_test=False):
+def load_bayes_risk_dataframe(sampling_method, n_hypotheses, n_references, split, utility='comet', seed=0,  smoke_test=False, prepend='.'):
     '''
     Loads a bayes risk dataset
     :param sampling_method: the method which the samples were generated
@@ -128,16 +128,31 @@ def load_bayes_risk_dataframe(sampling_method, n_hypotheses, n_references, split
     :return:
     '''
 
-    ref = './data/{}/{}_{}_{}_{}_{}'.format(utility, sampling_method, n_hypotheses, n_references,split, seed )
+    ref = '{}/data/{}/{}_{}_{}_{}_{}'.format(prepend, utility, sampling_method, n_hypotheses, n_references,split, seed )
 
     if smoke_test:
         ref += '_smoke_test'
     ref += '.parquet'
 
     df = pd.read_parquet(ref)
-    print(df["utilities"])
+
     return df
 
+
+def map_to_utility(x):
+
+    utilities = x["utilities"]
+    references_count = np.array(x["references_count"])
+    all_utilities = [
+
+    ]
+    for util in utilities:
+
+        utility = np.sum(references_count * util, axis=-1) / np.sum(references_count)
+        all_utilities.append(utility)
+
+
+    return all_utilities
 
 
 
