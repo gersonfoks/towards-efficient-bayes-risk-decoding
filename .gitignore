@@ -9,7 +9,6 @@ __pycache__/
 comet_model
 lightning_logs
 logs
-study
 saved_models
 data
 model_predictions
