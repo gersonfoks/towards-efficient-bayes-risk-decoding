@@ -107,7 +107,7 @@ class BasicReferenceModelHyperparamsearch:
     def get_config(self, trial):
         dataset_config = self.get_dataset_config()
         model_config = self.get_model_config(trial)
-        accumulate_grad_batches = trial.suggest_categorical("accumulate_grad_batches", [2, 4, 8])
+        accumulate_grad_batches = 4
 
         config = {
             "model_name": 'full_dec_lstm',
