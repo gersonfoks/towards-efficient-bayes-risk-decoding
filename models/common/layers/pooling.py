@@ -47,6 +47,7 @@ class LearnedPoolingLayer(nn.Module):
 class GlobalMaxPooling(nn.Module):
 
     def forward(self, x, padding=None):
+
         if padding != None:
             x = x + x * (~ padding * (- 1e6)).unsqueeze(-1)  # Very big negative number
 
@@ -58,9 +59,16 @@ class GlobalMaxPooling(nn.Module):
 class GlobalMeanPooling(nn.Module):
 
     def forward(self, x, padding=None):
+        '''
+        Gets the mean value of the last layer
+        :param x: vectors to pool
+        :param padding: 1 if there is padding 0 otherwise
+        :return:
+        '''
         padding = ~padding.unsqueeze(-1)
         if padding != None:
-            x = x + (x * padding)
+
+            x = x * padding
         x_summed = torch.sum(x, dim=1)
         normalizing_constant = torch.sum(padding.squeeze(-1), dim=-1).unsqueeze(-1)
 

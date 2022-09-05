@@ -7,7 +7,7 @@ from models.base.BaseModel import BaseModel
 class BasicReferenceModel(BaseModel):
 
     def __init__(self, full_dec_embedding, full_dec_pooling_layers,
-                 token_statistics_pooling_layer, final_layers, initialize_optimizer, device="cuda", ):
+                 token_statistics_pooling_layer, final_layers, initialize_optimizer, device="cuda", min_value=None, max_value=None):
         super().__init__()
         self.device_name = device
 
@@ -24,6 +24,9 @@ class BasicReferenceModel(BaseModel):
         }
 
         self.initialize_optimizer = initialize_optimizer
+
+        self.min_value = min_value
+        self.max_value = max_value
 
     def forward(self, sources, hypotheses, features):
         hidden_layer_embeddings, token_statistic_embedding, attention_mask = self.full_dec_embedding.forward(
@@ -48,5 +51,9 @@ class BasicReferenceModel(BaseModel):
 
         # Learn to alter the predicted scores
         final_score = features['mean_utilities'].unsqueeze(dim=-1).float() + predicted_scores_features
+
+
+        if self.min_value != None and self.max_value != None:
+            self.final_score = torch.clamp(final_score, min=self.min_value, max=self.max_value)
 
         return final_score

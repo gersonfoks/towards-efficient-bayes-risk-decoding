@@ -1,6 +1,8 @@
 import torch
 from torch import nn
 
+from models.common.layers.pooling import GlobalMeanPooling
+
 
 class LastStateEmbedding(nn.Module):
 
@@ -46,8 +48,6 @@ class TokenStatisticsEmbedding(nn.Module):
 
         embedding = self.embedding(statistics)
 
-
-
         return embedding, attention_mask_decoder
 
     def parameters(self, recurse: bool = True):
@@ -63,7 +63,7 @@ class FullDecEmbedding(nn.Module):
         self.padding_id = padding_id
         if embedding_size != None:
             self.embedding = nn.Linear(7,
-                                   embedding_size)  # We use two statistics namely the probability and the log entropy
+                                       embedding_size)  # We use two statistics namely the probability and the log entropy
         else:
             self.embedding = None
 
@@ -91,9 +91,6 @@ class FullDecEmbedding(nn.Module):
             return self.embedding.parameters()
         else:
             return []
-
-
-
 
 
 class CometEmbedding(nn.Module):
@@ -175,3 +172,25 @@ def logits_to_statistics(logits, labels):
     statistics = torch.concat([probs, entropy, top_5], dim=-1)
 
     return statistics
+
+
+class UnigramCountEmbedding(nn.Module):
+
+    def __init__(self, embedding, padding_id=-100):
+        super().__init__()
+        self.embedding = embedding
+        self.padding_id = padding_id
+        self.mean_pooling = GlobalMeanPooling()
+
+    @torch.no_grad()
+    def forward(self, input_ids):
+        with torch.no_grad():
+            embedding = self.embedding(input_ids)
+            padding = input_ids == self.padding_id
+
+            mean_embedding = self.mean_pooling(embedding, padding)
+
+        return mean_embedding
+
+    def parameters(self, recurse: bool = True):
+        return []
