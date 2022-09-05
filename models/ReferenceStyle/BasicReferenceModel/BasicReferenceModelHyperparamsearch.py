@@ -22,7 +22,7 @@ class BasicReferenceModelHyperparamsearch:
         self.smoke_test = smoke_test
         self.utility = utility
 
-        self.study_name = "basic_reference_model"
+        self.study_name = "basic_reference_model_study"
 
         self.log_dir = './logs/{}/'.format(self.study_name)
         self.save_location = './saved_models/{}/'.format(self.study_name)

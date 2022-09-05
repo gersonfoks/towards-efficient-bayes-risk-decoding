@@ -31,7 +31,7 @@ class BasicReferenceCollator:
             indices = np.random.choice(len(b["utilities"]),p=b["probs"], replace=True, size=self.n_ref_utilities)
 
             chosen_utilities = b["utilities"][indices]
-            
+
             resulting_utilities.append(np.mean(chosen_utilities))
 
         return torch.tensor(resulting_utilities).to("cuda")
