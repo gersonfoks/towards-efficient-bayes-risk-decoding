@@ -65,5 +65,12 @@ class BasicReferenceModelManager(BaseManager):
 
         initialize_optimizer = get_optimizer_function(config)
 
-        self.model = BasicReferenceModel(embedding_layer, full_dec_pooling_layers, token_statistics_pooling, final_layers, initialize_optimizer)
+        min_value = None
+        max_value = None
+        if "min_value" in config.keys():
+            min_value = config["min_value"]
+        if "max_value" in config.keys():
+            max_value = config["max_value"]
+
+        self.model = BasicReferenceModel(embedding_layer, full_dec_pooling_layers, token_statistics_pooling, final_layers, initialize_optimizer, min_value=min_value, max_value=max_value)
         return self.model

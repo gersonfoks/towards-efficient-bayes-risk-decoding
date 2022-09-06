@@ -10,6 +10,9 @@ class BasicReferenceModel(BaseModel):
                  token_statistics_pooling_layer, final_layers, initialize_optimizer, device="cuda", min_value=None, max_value=None):
         super().__init__()
         self.device_name = device
+        print("Clamp between: ")
+        print(min_value)
+        print(max_value)
 
         self.full_dec_embedding = full_dec_embedding
         self.full_dec_pooling_layers = full_dec_pooling_layers

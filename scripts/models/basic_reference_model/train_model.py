@@ -9,14 +9,13 @@ import yaml
 
 from pytorch_lightning.callbacks import LearningRateMonitor, EarlyStopping
 
-from models.QualityEstimationStyle.FullDecModel.FullDecModelManager import FullDecModelManager
-from models.QualityEstimationStyle.LastHiddenStateModel.LastHiddenStateModelManager import LastHiddenStateModelManager
-from models.QualityEstimationStyle.LastHiddenStateModel.helpers import load_data
-from models.QualityEstimationStyle.TokenStatisticsModel.TokenStatisticsModelManager import TokenStatisticsModelManager
+from models.ReferenceStyle.BasicReferenceModel.BasicReferenceModelManager import BasicReferenceModelManager
+from models.ReferenceStyle.BasicReferenceModel.helpers import load_data
 from utilities.callbacks import CustomSaveCallback
 
 from pytorch_lightning import loggers as pl_loggers
 import pytorch_lightning as pl
+
 
 def main():
     # Training settings
@@ -35,6 +34,10 @@ def main():
                         default='comet',
                         help='Utility function used')
 
+    parser.add_argument('--n-references', type=int,
+                        default=5,
+                        help='How many references the model has access to')
+
     parser.set_defaults(smoke_test=False)
 
     args = parser.parse_args()
@@ -49,7 +52,7 @@ def main():
 
     # We first load the model as the model also has the tokenizer that we want to use
 
-    model_manager = FullDecModelManager(config["model"])
+    model_manager = BasicReferenceModelManager(config["model"])
 
     model = model_manager.create_model()
 
@@ -58,8 +61,9 @@ def main():
 
     ### First load the dataset
     # We can use the same dataloader as for the last hidden state model
-    train_dataloader, val_dataloader = load_data(config, nmt_model, tokenizer, seed=args.seed, smoke_test= args.smoke_test, utility=args.utility)
-
+    train_dataloader, val_dataloader = load_data(config, nmt_model, tokenizer, seed=args.seed,
+                                                 smoke_test=args.smoke_test, utility=args.utility,
+                                                 n_references=args.n_references)
 
     ### Train
 
@@ -85,6 +89,7 @@ def main():
 
     ### Evaluate
     trainer.validate(model, val_dataloader, )
+
 
 if __name__ == '__main__':
     main()

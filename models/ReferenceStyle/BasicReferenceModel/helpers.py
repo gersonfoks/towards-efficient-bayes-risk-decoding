@@ -44,7 +44,7 @@ def prepare_dataframe(df, tokenizer):
     return df
 
 
-def load_data(config, nmt_model, tokenizer, seed=0, smoke_test=False, utility='comet'):
+def load_data(config, nmt_model, tokenizer, seed=0, smoke_test=False, utility='comet', n_references=5):
     print("Preparing the data")
     train_df = load_bayes_risk_dataframe(config["dataset"]["sampling_method"],
                                          config["dataset"]["n_hypotheses"],
@@ -72,7 +72,7 @@ def load_data(config, nmt_model, tokenizer, seed=0, smoke_test=False, utility='c
     train_dataset = BayesRiskDataset(train_df)
     val_dataset = BayesRiskDataset(val_df)
 
-    collator = BasicReferenceCollator(nmt_model, tokenizer)
+    collator = BasicReferenceCollator(nmt_model, tokenizer, n_references=n_references)
 
     train_dataloader = DataLoader(train_dataset,
                                   collate_fn=collator,
