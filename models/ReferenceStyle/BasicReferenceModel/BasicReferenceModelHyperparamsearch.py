@@ -62,7 +62,7 @@ class BasicReferenceModelHyperparamsearch:
             max_epochs=max_epochs,
             gpus=1,
             progress_bar_refresh_rate=1,
-            callbacks=[EarlyStopping(monitor="val_loss", patience=5, verbose=True, divergence_threshold=3.0),
+            callbacks=[EarlyStopping(monitor="val_loss", patience=3, verbose=True, divergence_threshold=1.0),
                        LearningRateMonitor(logging_interval="epoch"),
                        PyTorchLightningPruningCallback(trial, monitor="val_loss"),
                        save_callback
@@ -172,7 +172,7 @@ class BasicReferenceModelHyperparamsearch:
                 "type": "adam_with_lr_decay",
                 "step_size": 1,
                 "interval": "epoch",
-                "gamma": 0.82
+                "gamma": trial.suggest_float("gamma", 0.5, 1.0)
             }
 
         }
