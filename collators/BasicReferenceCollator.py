@@ -34,7 +34,7 @@ class BasicReferenceCollator:
 
             resulting_utilities.append(np.mean(chosen_utilities))
 
-        return torch.tensor(resulting_utilities).to("cuda")
+        return torch.tensor(resulting_utilities).to("cuda").float()
 
 
     def __call__(self, batch):

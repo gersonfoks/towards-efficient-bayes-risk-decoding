@@ -14,25 +14,12 @@ def prepare_dataframe(df, tokenizer):
     :param tokenizer: tokenizer used to tokenize the source and hypothesis
     :return:
     '''
-    dataset = Dataset.from_pandas(df)
-    # 1) Tokenize the dataset
 
-    source_tokenize = SourceTokenizer(tokenizer)
-
-    dataset = dataset.map(source_tokenize, batched=True)
-
-    df = dataset.to_pandas()
 
     df = df.explode(column=['hypotheses', 'utilities'])
     df.reset_index(drop=True, inplace=True)
     df.rename({"hypotheses": "hypothesis"}, inplace=True, axis=1)
 
-    dataset = Dataset.from_pandas(df)
-
-    target_tokenize = TargetTokenizer(tokenizer)
-
-    dataset = dataset.map(target_tokenize, batched=True)
-    df = dataset.to_pandas()
 
     df["utility"] = df[["utilities", 'references_count']].apply(lambda x: np.sum(
         np.array(x["utilities"]) * np.array(x["references_count"]) / np.sum(np.array(x["references_count"]))), axis=1)
