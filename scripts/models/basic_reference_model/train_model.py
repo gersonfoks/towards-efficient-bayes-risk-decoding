@@ -67,9 +67,14 @@ def main():
 
     ### Train
 
-    tb_logger = pl_loggers.TensorBoardLogger(save_dir=config["log_dir"])
+    # Create the save model location
+
+    log_dir = './logs/{}/basic_reference_model_{}/'.format(args.utility, args.n_references)
+    save_dir = './saved_models/{}/basic_reference_model_{}/'.format(args.utility, args.n_references)
+
+    tb_logger = pl_loggers.TensorBoardLogger(save_dir=log_dir)
     max_epochs = 10 if smoke_test else config["max_epochs"]
-    custom_save_model_callback = CustomSaveCallback(model_manager, config["save_model_path"])
+    custom_save_model_callback = CustomSaveCallback(model_manager, save_dir)
 
     trainer = pl.Trainer(
         max_epochs=max_epochs,
