@@ -10,7 +10,9 @@ from tqdm import tqdm
 
 from models.QualityEstimationStyle.FullDecModel.FullDecModelManager import FullDecModelManager
 from models.QualityEstimationStyle.LastHiddenStateModel.LastHiddenStateModelManager import LastHiddenStateModelManager
-from models.QualityEstimationStyle.LastHiddenStateModel.helpers import load_test_data
+
+from models.ReferenceStyle.BasicReferenceModel.BasicReferenceModelManager import BasicReferenceModelManager
+from models.ReferenceStyle.BasicReferenceModel.helpers import load_test_data
 
 
 def main():
@@ -18,13 +20,16 @@ def main():
     parser = argparse.ArgumentParser(
         description='Get the predictions of a basic lstm model ')
     parser.add_argument('--model-path', type=str,
-                        default='./saved_models/comet/full_dec_model/best/',
+                        default='./saved_models/comet/basic_reference_model_5/best/',
                         help='config to load model from')
 
     parser.add_argument('--smoke-test', dest='smoke_test', action="store_true",
                         help='If true does a small test run to check if everything works')
     parser.add_argument('--seed', type=int, default=0,
                         help="seed number (when we need different samples, also used for identification)")
+
+    parser.add_argument('--n_references', type=int, default=5,
+                        help="number of references to use")
 
     parser.add_argument('--utility', type=str,
                         default='comet',
@@ -37,11 +42,10 @@ def main():
     np.random.seed(args.seed)
     pytorch_lightning.seed_everything(args.seed)
 
-    smoke_test = args.smoke_test
 
     # We first load the model as the model also has the tokenizer that we want to use
 
-    model, model_manager = FullDecModelManager.load_model(args.model_path)
+    model, model_manager = BasicReferenceModelManager.load_model(args.model_path)
 
 
 
@@ -49,9 +53,6 @@ def main():
 
     # Load the dataset
     test_df, test_dataloader = load_test_data(model_manager.nmt_model, model_manager.tokenizer, utility, smoke_test=args.smoke_test, seed=args.seed )
-
-
-
 
 
 
@@ -114,7 +115,7 @@ def main():
     base_dir = './model_predictions/{}/'.format(args.utility)
     #
     Path(base_dir).mkdir(parents=True, exist_ok=True)
-    grouped_results.to_parquet(base_dir + '{}_predictions.parquet'.format(model.name))
+    grouped_results.to_parquet(base_dir + '{}_{}_predictions.parquet'.format(model.name, args.n_references))
 
 
 if __name__ == '__main__':

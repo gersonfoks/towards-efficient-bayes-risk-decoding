@@ -31,6 +31,8 @@ class BasicReferenceModel(BaseModel):
         self.min_value = min_value
         self.max_value = max_value
 
+        self.name = 'basic_reference_model'
+
     def forward(self, sources, hypotheses, features):
         hidden_layer_embeddings, token_statistic_embedding, attention_mask = self.full_dec_embedding.forward(
             features["input_ids"],

@@ -57,10 +57,6 @@ def main():
     test_df, test_dataloader = load_test_data(model_manager.tokenizer, utility, smoke_test=args.smoke_test, seed=args.seed )
 
 
-
-
-
-
     predictions = [
 
     ]
