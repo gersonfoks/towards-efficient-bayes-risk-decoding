@@ -8,7 +8,7 @@ from utilities.misc import load_bayes_risk_dataframe
 from utilities.preprocessing import SourceTokenizer, TargetTokenizer
 import numpy as np
 
-def prepare_dataframe(df, tokenizer):
+def prepare_dataframe(df):
     '''
     Prepares a dataframe such that it can be used to train the model
     :param df: dataframe to prepare
@@ -51,9 +51,9 @@ def load_data(config, tokenizer, seed=0, smoke_test=False, utility='comet'):
                                        utility=utility
                                        )
 
-    train_df = prepare_dataframe(train_df, tokenizer)
+    train_df = prepare_dataframe(train_df)
 
-    val_df = prepare_dataframe(val_df, tokenizer)
+    val_df = prepare_dataframe(val_df)
 
     train_dataset = BayesRiskDataset(train_df)
     val_dataset = BayesRiskDataset(val_df)

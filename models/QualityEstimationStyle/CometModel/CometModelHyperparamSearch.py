@@ -1,7 +1,8 @@
 import numpy as np
 
-from models.QualityEstimationStyle.FullDecModel.FullDecModelManager import FullDecModelManager
-from models.QualityEstimationStyle.LastHiddenStateModel.helpers import load_data
+from models.QualityEstimationStyle.CometModel.CometModelManager import CometModelManager
+from models.QualityEstimationStyle.CometModel.helpers import load_data
+
 from utilities.callbacks import CustomSaveCallback
 
 from argparse import Namespace
@@ -25,18 +26,22 @@ class CometModelHyperparamSearch:
 
         self.study_name = "comet_model_study"
 
+        if self.smoke_test:
+            self.study_name += '_smoke_test'
+
         self.log_dir = './logs/{}/'.format(self.study_name)
         self.save_location = './saved_models/{}/'.format(self.study_name)
 
         self.n_warmup_steps = 10
         self.n_trials = 30
 
-        self.model_type = "comet_model_study"
+        self.model_type = "comet_model"
 
         self.possible_dims = {
-            "small": [0, 128, 1],
+            "small": [0, 256, 1],
             "medium": [0, 256, 128, 1],
             "large": [0, 512, 256, 128, 1],
+            "extra_large": [0, 1024, 512, 256, 128, 1],
         }
 
         self.seed = seed
@@ -51,14 +56,14 @@ class CometModelHyperparamSearch:
         config = self.get_config(trial)
 
         # Create the trainer
-        model_manager = FullDecModelManager(config["model"])
+        model_manager = CometModelManager(config["model"])
 
         model = model_manager.create_model()
 
         tokenizer = model_manager.tokenizer
         nmt_model = model_manager.nmt_model
 
-        train_dataloader, val_dataloader = load_data(config, nmt_model, tokenizer, seed=self.seed,
+        train_dataloader, val_dataloader = load_data(config, tokenizer, seed=self.seed,
                                                      smoke_test=self.smoke_test)
         # Start the training
         tb_logger = pl_loggers.TensorBoardLogger(save_dir=self.log_dir)
@@ -92,7 +97,7 @@ class CometModelHyperparamSearch:
         )
 
         if self.smoke_test:
-            self.n_trials = 5
+            self.n_trials = 3
         study = optuna.create_study(study_name=self.study_name, direction="minimize", pruner=pruner)
         study.optimize(self.objective, n_trials=self.n_trials, )
 
@@ -129,39 +134,23 @@ class CometModelHyperparamSearch:
 
     def get_model_config(self, trial):
 
-        batch_size = 64
+        batch_size = 32
 
-        feed_forward_size = trial.suggest_categorical("feed_forward_size", ["small", "medium", "large"])
+        feed_forward_size = trial.suggest_categorical("feed_forward_size", ["small", "medium", "large", "extra_large"])
 
         dims = self.possible_dims[feed_forward_size]
 
-        hidden_state_size = 128
-        token_statistics_embedding_size = 128
 
-        full_dec_hidden_state_size = trial.suggest_categorical("full_dec_hidden_state_size", [64, 128, 256, 512])
-
-        dims[
-            0] = full_dec_hidden_state_size * 2 * 7 + 2 * hidden_state_size  # Times 2 Because of the bidirectional part.
+        dims[0] = 4096
 
         return {
 
             "batch_size": batch_size,
-            "type": "full_dec_model",
-            "lr": trial.suggest_float('lr', 1.0e-4, 1.0e-1, log=True),  # Not used
+            "type": "comet_model",
+            "lr": trial.suggest_float('lr', 1.0e-5, 1.0e-1, log=True),  # Not used
             "weight_decay": trial.suggest_float("weight_decay", 1.0e-9, 1.0e-5, log=True),
             "dropout": trial.suggest_float("dropout", 0.01, 0.9, ),
-            "token_statistics_embedding_size": token_statistics_embedding_size,
 
-            "token_pooling": {
-                "name": "lstm",
-                "embedding_size": token_statistics_embedding_size,
-                "hidden_state_size": hidden_state_size,
-            },
-            "dec_pooling": {
-                "name": "lstm",
-                "embedding_size": 512,
-                "hidden_state_size": full_dec_hidden_state_size,
-            },
 
             "feed_forward_layers": {
                 "dims": dims,
