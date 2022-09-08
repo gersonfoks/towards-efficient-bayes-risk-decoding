@@ -11,7 +11,6 @@ from datasets import Dataset
 from utilities.wrappers.CometWrapper import CometWrapper
 from comet import download_model, load_from_checkpoint
 import numpy as np
-import pandas as pd
 import pytorch_lightning
 
 from utilities.misc import load_bayes_risk_dataframe, batch
