@@ -1,6 +1,6 @@
 import numpy as np
 
-from models.ReferenceStyle.BasicReferenceModel.BasicReferenceModelManager import BasicReferenceModelManager
+
 from models.ReferenceStyle.UnigramCountModel.UnigramCountModelManager import UnigramCountModelManager
 from models.ReferenceStyle.UnigramCountModel.helpers import load_data
 from utilities.callbacks import CustomSaveCallback
@@ -116,7 +116,7 @@ class UnigramCountModelHyperparamsearch:
     def get_config(self, trial):
         dataset_config = self.get_dataset_config()
         model_config = self.get_model_config(trial)
-        accumulate_grad_batches = 4
+        accumulate_grad_batches = trial.suggest_categorical("accumulate grad batches", [2, 4, 8])
 
         config = {
             "model_name": self.model_type,
