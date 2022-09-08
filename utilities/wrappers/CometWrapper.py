@@ -13,6 +13,7 @@ class CometWrapper:
 
         self.device = device
 
+    @torch.no_grad()
     def to_embedding(self, strings):
         inputs = self.model.encoder.prepare_sample(strings).to(self.device)
 
@@ -120,3 +121,5 @@ class CometWrapper:
 
                     scores[i] += list(self.model.estimator(embedded_sequences).cpu().numpy().flatten())
         return scores
+
+

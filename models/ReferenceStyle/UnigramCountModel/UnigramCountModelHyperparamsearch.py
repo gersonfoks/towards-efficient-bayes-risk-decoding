@@ -32,11 +32,9 @@ class UnigramCountModelHyperparamsearch:
         self.save_location = './saved_models/{}/'.format(self.study_name)
 
         self.n_warmup_steps = 5
-        self.n_trials =  30
+        self.n_trials = 30
 
         self.model_type = "unigram_count_model"
-
-
 
         self.possible_dims = {
             "small": [0, 1],
@@ -138,7 +136,7 @@ class UnigramCountModelHyperparamsearch:
         feed_forward_size = trial.suggest_categorical("feed_forward_size", ["small", "medium", "large"])
 
         dims = self.possible_dims[feed_forward_size]
-        dims[0] = 513 # 512 + 1 for the mean utility
+        dims[0] = 513  # 512 + 1 for the mean utility
 
         return {
             "batch_size": batch_size,
@@ -147,8 +145,7 @@ class UnigramCountModelHyperparamsearch:
             "weight_decay": trial.suggest_float("weight_decay", 1.0e-9, 1.0e-5, log=True),
             "dropout": trial.suggest_float("dropout", 0.01, 0.9, ),
 
-
-            "n_heads": trial.suggest_categorical('n_heads', [2,4,8]),
+            "n_heads": trial.suggest_categorical('n_heads', [2, 4, 8]),
             "min_value": 0,
             "max_value": 1,
             "feed_forward_layers": {
@@ -171,7 +168,7 @@ class UnigramCountModelHyperparamsearch:
                 "type": "adam_with_lr_decay",
                 "step_size": 1,
                 "interval": "epoch",
-                "gamma": 0.82
+                "gamma": trial.suggest_float("gamma", 0.01, 0.9, ),
             }
 
         }

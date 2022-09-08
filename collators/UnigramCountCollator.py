@@ -10,7 +10,7 @@ class UnigramCountCollator:
     '''
 
     def __init__(self, tokenizer, max_seq_length=75, device="cuda", include_source_id=False,
-                 n_ref_utilities=5):
+                 n_model_references=5):
 
         self.tokenizer = tokenizer
         self.max_seq_length = max_seq_length
@@ -19,14 +19,14 @@ class UnigramCountCollator:
 
         self.include_source_id = include_source_id
 
-        self.n_ref_utilities = n_ref_utilities
+        self.n_model_references = n_model_references
 
     def get_utilities(self, batch):
 
         resulting_utilities = []
         references = []
         for b in batch:
-            indices = np.random.choice(len(b["utilities"]), p=b["probs"], replace=True, size=self.n_ref_utilities)
+            indices = np.random.choice(len(b["utilities"]), p=b["probs"], replace=True, size=self.n_model_references)
 
             chosen_utilities = b["utilities"][indices]
 

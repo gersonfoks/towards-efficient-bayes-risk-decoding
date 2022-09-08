@@ -1,3 +1,4 @@
+from comet import download_model, load_from_checkpoint
 from torch import nn
 
 from models.QualityEstimationStyle.CometModel.CometModel import CometModel
@@ -10,6 +11,7 @@ from models.common.layers.pooling import LstmPoolingLayer, LearnedPoolingLayer
 from models.common.optimization import get_optimizer_function
 from models.base.BaseManager import BaseManager
 from utilities.misc import load_nmt_model
+from utilities.wrappers.CometWrapper import CometWrapper
 
 
 class CometModelManager(BaseManager):
@@ -24,6 +26,15 @@ class CometModelManager(BaseManager):
     def create_model(self):
         config = self.config
 
+
+        # Load the comet model and put it inside a wrapper
+        model_path = download_model("wmt20-comet-da")
+        model = load_from_checkpoint(model_path)
+        model.to("cuda")
+        model.eval()
+        wrapped_model = CometWrapper(model)
+
+
         final_layers = get_feed_forward_layers(config["feed_forward_layers"]["dims"],
                                                config["feed_forward_layers"]["activation_function"],
                                                config["feed_forward_layers"]["activation_function_last_layer"],
@@ -33,5 +44,5 @@ class CometModelManager(BaseManager):
 
         initialize_optimizer = get_optimizer_function(config)
 
-        self.model = CometModel(final_layers, initialize_optimizer)
+        self.model = CometModel(wrapped_model, final_layers, initialize_optimizer)
         return self.model

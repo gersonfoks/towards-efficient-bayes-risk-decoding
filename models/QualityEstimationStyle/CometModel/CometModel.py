@@ -6,10 +6,11 @@ from models.base.BaseModel import BaseModel
 
 class CometModel(BaseModel):
 
-    def __init__(self,  final_layers, initialize_optimizer, device="cuda", ):
+    def __init__(self,  comet_wrapper, final_layers, initialize_optimizer, device="cuda", ):
         super().__init__()
         self.device_name = device
 
+        self.comet_wrapper = comet_wrapper
         self.final_layers = final_layers
 
         self.criterion = MSELoss()
@@ -23,9 +24,9 @@ class CometModel(BaseModel):
 
     def forward(self, sources, hypotheses, features):
 
+        s_emb = self.comet_wrapper.to_embedding(sources)
+        h_emb = self.comet_wrapper.to_embedding(hypotheses)
 
-        s_emb = features["source_embedding"]
-        h_emb = features["hypothesis_embedding"]
 
         feature_vector = torch.concat([
             s_emb, h_emb, s_emb * h_emb, torch.abs(s_emb - h_emb)
