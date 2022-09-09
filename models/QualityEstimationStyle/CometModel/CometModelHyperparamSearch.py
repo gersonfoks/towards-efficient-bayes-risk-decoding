@@ -134,7 +134,7 @@ class CometModelHyperparamSearch:
 
     def get_model_config(self, trial):
 
-        batch_size = 32
+        batch_size = 64
 
         feed_forward_size = trial.suggest_categorical("feed_forward_size", ["small", "medium", "large", "extra_large"])
 
