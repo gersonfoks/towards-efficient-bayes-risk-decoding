@@ -137,6 +137,8 @@ class NGramF(Utility):
         scores = []
         for s, h, r in zip(sources, hypotheses, refs):
             scores.append(self.call_batched_fast(s, [h], r))
+
+        # scores = Parallel(n_jobs=8)(delayed(self.call_batched_fast(s, [h], r)) for s, h, r in zip(sources, hypotheses, refs))
         return scores
 
 
@@ -146,8 +148,6 @@ class ChrF(Utility):
         Utility.__init__(self)
         self.n_word_order = 2
 
-
-
     def __call__(self, source: str, hyp: str, ref: str):
         """
         :param hyp: string, system hypothesis, tokens separated by spaces
@@ -155,23 +155,41 @@ class ChrF(Utility):
         """
         return sacrebleu.sentence_chrf(hyp, [ref], word_order=2).score
 
-
-
     def call_batched_fast(self, source: str, hypotheses: List[str], refs: List[str]):
-        scores = []
+        # scores = []
+        #
+        # for hyp in hypotheses:
+        #     scores_for_hyp = [sacrebleu.sentence_chrf(hyp, [ref], word_order=2).score/100 for ref in refs]
+        #
+        #     scores.append(scores_for_hyp)
+        from joblib import Parallel, delayed
 
-        for hyp in hypotheses:
-            scores_for_hyp = [sacrebleu.sentence_chrf(hyp, [ref], word_order=2).score/100 for ref in refs]
+        # scores = []
+        #
+        #
+        #
+        #
+        # for hyp in hypotheses:
+        #     scores_for_hyp = Parallel(n_jobs=4)(
+        #         delayed(lambda : sacrebleu.sentence_chrf(hyp, [ref], word_order=2).score / 100)() for ref in refs)
+        #
+        #     scores.append(scores_for_hyp)
 
-            scores.append(scores_for_hyp)
+        def get_score(hyp):
+            return [sacrebleu.sentence_chrf(hyp, [ref], word_order=2).score / 100 for ref in refs]
+
+        scores =  Parallel(n_jobs=8)(
+                    delayed(get_score)(hyp) for hyp in hypotheses)
+        #
+
+
         return scores
-
-
 
     def call_batched(self, sources: List[str], hypotheses: List[str], refs: List[List[str]]):
 
         scores = []
         for s, h, r in zip(sources, hypotheses, refs):
             scores.append(self.call_batched_fast(s, [h], r))
+        # scores = Parallel(n_jobs=8)(
+        #     delayed(self.call_batched_fast(s, [h], r)) for s, h, r in zip(sources, hypotheses, refs))
         return scores
-
