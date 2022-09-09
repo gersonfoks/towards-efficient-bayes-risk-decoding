@@ -1,11 +1,9 @@
 # Code and inspiration taken from: https://github.com/Roxot/mbr-nmt/blob/a419775b638c4b09e962acad71c4468269b0197a/mbr_nmt/utility.py#L250
 from typing import List
 
-import evaluate
 import sacrebleu
 from comet import download_model, load_from_checkpoint
 from nltk.util import ngrams
-from torchmetrics import CHRFScore
 
 from utilities.misc import load_nmt_model
 from utilities.wrappers.CometWrapper import CometWrapper
