@@ -32,8 +32,8 @@ class CometModelHyperparamSearch:
         self.log_dir = './logs/{}/'.format(self.study_name)
         self.save_location = './saved_models/{}/'.format(self.study_name)
 
-        self.n_warmup_steps = 10
-        self.n_trials = 30
+        self.n_warmup_steps = 5
+        self.n_trials = 15
 
         self.model_type = "comet_model"
 
