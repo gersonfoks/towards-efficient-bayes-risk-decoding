@@ -1,0 +1,58 @@
+
+# Information about the dataset
+dataset:
+  sampling_method: 'ancestral'
+  n_hypotheses: 100
+  n_references: 1000
+
+
+#
+model_name: token_statistics_lstm
+
+log_dir: './logs/unigram-f1/token_statistics_model/'
+save_model_path: './saved_models/unigram-f1/token_statistics_model/'
+utility: 'unigram-f1'
+
+
+# Training
+batch_size: 32
+accumulate_grad_batches: 4 # Effective batch size of 128
+gradient_clip_val: 1.00
+max_epochs: 150
+
+# patience for early stopping
+patience: 3
+
+
+# Model information
+model:
+  type: token_statistics_model
+  nmt_model:
+    name: 'Helsinki-NLP/opus-mt-de-en'
+    checkpoint: './saved_models/NMT/de-en-model/'
+    type: 'MarianMT'
+
+  lr: 0.0028 #1.4815897489348615e-05
+  weight_decay: 5.038424995735819e-06 #5.0e-07
+  dropout: 0.61 #0.5 #0.6712665889822903
+
+  token_statistics_embedding_size: 128
+
+  pooling:
+    name: lstm
+    embedding_size: 128
+    hidden_state_size: 128
+  feed_forward_layers:
+    dims:
+      - 256
+      - 1
+    activation_function: 'relu'
+    activation_function_last_layer: 'sigmoid'
+    last_layer_scale: none
+
+
+  optimizer:
+    type: adam_with_lr_decay
+    step_size: 1
+    gamma: 0.79
+    interval: epoch

@@ -1,0 +1,64 @@
+# Information about the dataset
+dataset:
+  sampling_method: 'ancestral'
+  n_hypotheses: 100
+  n_references: 1000
+
+
+#
+model_name: basic_reference_model
+log_dir: './logs/unigram-f1/basic_reference_model/'
+save_model_path: './saved_models/unigram-f1/basic_reference_model/'
+utility: 'unigram-f1'
+# Training
+batch_size: 64
+accumulate_grad_batches: 4 # Effective batch size of 128
+gradient_clip_val: 1.1
+max_epochs: 150
+
+
+# patience for early stopping
+patience: 3
+
+# Model information
+model:
+  type: basic_reference_model
+  nmt_model:
+    name: 'Helsinki-NLP/opus-mt-de-en'
+    checkpoint: './saved_models/NMT/de-en-model/'
+    type: 'MarianMT'
+#0.00036
+  lr: 3.6e-4 #1.4815897489348615e-05
+  weight_decay: 4.0e-9 #5.0e-07
+  dropout: 0.18 #0.5 #0.6712665889822903
+
+  min_value: 0.0
+  max_value: 1.0
+
+  dec_pooling:
+    name: lstm
+    embedding_size: 512
+    hidden_state_size: 128
+
+  token_statistics_embedding_size: 128
+  token_pooling:
+    name: lstm
+    embedding_size: 128
+    hidden_state_size: 128
+  feed_forward_layers:
+    dims:
+      - 2049 # 8 * 2 * 128
+      - 128
+      - 1
+    activation_function: 'relu'
+    activation_function_last_layer: 'tanh'
+    last_layer_scale: none
+
+  optimizer:
+    type: adam_with_lr_decay
+    step_size: 1
+    gamma: 0.52
+    interval: epoch
+
+
+

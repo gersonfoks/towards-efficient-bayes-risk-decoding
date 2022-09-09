@@ -1,8 +1,11 @@
 # Code and inspiration taken from: https://github.com/Roxot/mbr-nmt/blob/a419775b638c4b09e962acad71c4468269b0197a/mbr_nmt/utility.py#L250
 from typing import List
 
+import evaluate
+import sacrebleu
 from comet import download_model, load_from_checkpoint
 from nltk.util import ngrams
+from torchmetrics import CHRFScore
 
 from utilities.misc import load_nmt_model
 from utilities.wrappers.CometWrapper import CometWrapper
@@ -62,6 +65,9 @@ def load_utility(utility, nmt_model=None, tokenizer=None):
         model.eval()
         wrapped_model = CometWrapper(model)
         return CometUtility(wrapped_model, )
+
+    elif utility == 'chrf':
+        return ChrF()
 
     else:
         raise ValueError("utility: {} not found!".format(utility))
@@ -134,3 +140,40 @@ class NGramF(Utility):
         for s, h, r in zip(sources, hypotheses, refs):
             scores.append(self.call_batched_fast(s, [h], r))
         return scores
+
+
+class ChrF(Utility):
+
+    def __init__(self):
+        Utility.__init__(self)
+        self.n_word_order = 2
+
+
+
+    def __call__(self, source: str, hyp: str, ref: str):
+        """
+        :param hyp: string, system hypothesis, tokens separated by spaces
+        :param ref: string, single reference, tokens separated by spaces
+        """
+        return sacrebleu.sentence_chrf(hyp, [ref], word_order=2).score
+
+
+
+    def call_batched_fast(self, source: str, hypotheses: List[str], refs: List[str]):
+        scores = []
+
+        for hyp in hypotheses:
+            scores_for_hyp = [sacrebleu.sentence_chrf(hyp, [ref], word_order=2).score/100 for ref in refs]
+
+            scores.append(scores_for_hyp)
+        return scores
+
+
+
+    def call_batched(self, sources: List[str], hypotheses: List[str], refs: List[List[str]]):
+
+        scores = []
+        for s, h, r in zip(sources, hypotheses, refs):
+            scores.append(self.call_batched_fast(s, [h], r))
+        return scores
+
