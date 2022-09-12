@@ -9,9 +9,9 @@ dataset:
 #
 model_name: token_statistics_lstm
 
-log_dir: './logs/unigram-f1/token_statistics_model/'
-save_model_path: './saved_models/unigram-f1/token_statistics_model/'
-utility: 'unigram-f1'
+log_dir: './logs/chrf/token_statistics_model/'
+save_model_path: './saved_models/chrf/token_statistics_model/'
+utility: 'chrf'
 
 
 # Training

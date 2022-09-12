@@ -10,9 +10,9 @@ dataset:
 #
 model_name: last_hidden_state_lstm
 
-log_dir: './logs/unigram-f1/last_hidden_state_model/'
-save_model_path: './saved_models/unigram-f1/last_hidden_state_model/'
-utility: 'unigram-f1'
+log_dir: './logs/chrf/last_hidden_state_model/'
+save_model_path: './saved_models/chrf/last_hidden_state_model/'
+utility: 'chrf'
 
 
 # Describes how to preprocess, can use predefined preprocessing functions

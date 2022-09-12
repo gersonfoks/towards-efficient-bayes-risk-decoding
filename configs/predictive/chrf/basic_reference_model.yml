@@ -7,9 +7,9 @@ dataset:
 
 #
 model_name: basic_reference_model
-log_dir: './logs/unigram-f1/basic_reference_model/'
-save_model_path: './saved_models/unigram-f1/basic_reference_model/'
-utility: 'unigram-f1'
+log_dir: './logs/chrf/basic_reference_model/'
+save_model_path: './saved_models/chrf/basic_reference_model/'
+utility: 'chrf'
 # Training
 batch_size: 64
 accumulate_grad_batches: 4 # Effective batch size of 128

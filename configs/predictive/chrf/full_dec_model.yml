@@ -7,9 +7,9 @@ dataset:
 
 #
 model_name: full_dec_lstm_model
-log_dir: './logs/unigram-f1/full_dec_model/'
-save_model_path: './saved_models/unigram-f1/full_dec_model/'
-utility: 'unigram-f1'
+log_dir: './logs/chrf/full_dec_model/'
+save_model_path: './saved_models/chrf/full_dec_model/'
+utility: 'chrf'
 # Training
 batch_size: 64
 accumulate_grad_batches: 4 # Effective batch size of 128
