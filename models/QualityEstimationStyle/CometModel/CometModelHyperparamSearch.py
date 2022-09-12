@@ -50,7 +50,7 @@ class CometModelHyperparamSearch:
 
     def objective(self, trial: optuna.trial.Trial) -> float:
 
-        max_epochs = 5 if self.smoke_test else 200  # More than enough, early stopping takes care that we stop on time
+        max_epochs = 5 if self.smoke_test else 20  # More than enough, early stopping takes care that we stop on time
 
         # Create the configuration
         config = self.get_config(trial)
@@ -73,7 +73,7 @@ class CometModelHyperparamSearch:
             max_epochs=max_epochs,
             gpus=1,
             progress_bar_refresh_rate=1,
-            callbacks=[EarlyStopping(monitor="val_loss", patience=5, verbose=True, divergence_threshold=3.0),
+            callbacks=[EarlyStopping(monitor="val_loss", patience=3, verbose=True, divergence_threshold=1.0),
                        LearningRateMonitor(logging_interval="epoch"),
                        PyTorchLightningPruningCallback(trial, monitor="val_loss"),
                        save_callback
