@@ -12,8 +12,8 @@ save_model_path: './saved_models/comet_model/'
 
 # Training
 batch_size: 64
-accumulate_grad_batches: 4 # Effective batch size of 256
-gradient_clip_val: 3.6
+accumulate_grad_batches: 8 # Effective batch size of 256
+gradient_clip_val: 4.0
 max_epochs: 150
 
 
@@ -28,15 +28,14 @@ model:
     checkpoint: './saved_models/NMT/de-en-model/'
     type: 'MarianMT'
 
-  lr: 1.6e-4 #1.4815897489348615e-05
-  weight_decay: 4.0e-9 #5.0e-07
-  dropout: 0.18 #0.5 #0.6712665889822903
+  lr: 1.7e-4 #1.4815897489348615e-05
+  weight_decay: 5.6e-7 #5.0e-07
+  dropout: 0.26 #0.5 #0.6712665889822903
 
   feed_forward_layers:
     dims:
       - 4096 # 1024 * 4
-      - 2048 # 8 * 2 * 128
-      - 128
+      - 256
       - 1
     activation_function: 'relu'
     activation_function_last_layer: 'tanh'
