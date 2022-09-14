@@ -10,6 +10,8 @@ from tqdm import tqdm
 from scipy.stats import kendalltau
 import seaborn as sns
 from comet import download_model, load_from_checkpoint
+
+from utilities.Utility import NGramF, ChrF
 from utilities.wrappers.CometWrapper import CometWrapper
 
 def get_mse(val_df):
@@ -222,6 +224,47 @@ def evaluate_predictions(val_df, model_name, pretty_name, utility="comet"):
         summary["best_comet_mean"] = np.mean(best_predictions_comet_scores)
         summary["best_comet_median"] = np.median(best_predictions_comet_scores)
         summary["best_comet_std"] = np.std(best_predictions_comet_scores)
+
+    elif utility == 'unigram-f1':
+        # Load the comet model
+
+
+        # Get the comet score
+        utility = NGramF(n=1)
+
+        top_10_comet_scores = utility.evaluate(sources, top_10_percent_prediction, targets)
+
+        # sns.histplot(top_10_comet_scores)
+
+        summary["top_10_unigram_f1_mean"] = np.mean(top_10_comet_scores)
+        summary["top_10_unigram_f1_median"] = np.median(top_10_comet_scores)
+        summary["top_10_unigram_f1_std"] = np.std(top_10_comet_scores)
+
+        best_predictions_comet_scores = utility.evaluate(sources, best_predictions, targets)
+
+        summary["best_unigram_f1_mean"] = np.mean(best_predictions_comet_scores)
+        summary["best_unigram_f1_median"] = np.median(best_predictions_comet_scores)
+        summary["best_unigram_f1_std"] = np.std(best_predictions_comet_scores)
+    elif utility == 'chrf':
+        # Load the comet model
+
+
+        # Get the comet score
+        utility = ChrF(n=1)
+
+        top_10_comet_scores = utility.evaluate(sources, top_10_percent_prediction, targets)
+
+        # sns.histplot(top_10_comet_scores)
+
+        summary["top_10_chrf_mean"] = np.mean(top_10_comet_scores)
+        summary["top_10_chrf_median"] = np.median(top_10_comet_scores)
+        summary["top_10_chrf_std"] = np.std(top_10_comet_scores)
+
+        best_predictions_comet_scores = utility.evaluate(sources, best_predictions, targets)
+
+        summary["best_chrf_mean"] = np.mean(best_predictions_comet_scores)
+        summary["best_chrf_median"] = np.median(best_predictions_comet_scores)
+        summary["best_chrf_std"] = np.std(best_predictions_comet_scores)
 
 
     else:

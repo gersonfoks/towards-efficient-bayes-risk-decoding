@@ -141,6 +141,15 @@ class NGramF(Utility):
         # scores = Parallel(n_jobs=8)(delayed(self.call_batched_fast(s, [h], r)) for s, h, r in zip(sources, hypotheses, refs))
         return scores
 
+    def evaluate(self,  sources: List[str], hypotheses: List[str], targets: List[str]):
+        scores = []
+        for s, h, t in zip(sources, hypotheses, targets):
+
+            scores.append(self(s,h,t))
+
+
+        return scores
+
 
 class ChrF(Utility):
 
@@ -192,4 +201,14 @@ class ChrF(Utility):
             scores.append(self.call_batched_fast(s, [h], r))
         # scores = Parallel(n_jobs=8)(
         #     delayed(self.call_batched_fast(s, [h], r)) for s, h, r in zip(sources, hypotheses, refs))
+        return scores
+
+
+    def evaluate(self,  sources: List[str], hypotheses: List[str], targets: List[str]):
+        scores = []
+        for s, h, t in zip(sources, hypotheses, targets):
+
+            scores.append(sacrebleu.sentence_chrf(h, [t], word_order=2).score / 100)
+
+
         return scores

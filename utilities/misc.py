@@ -2,6 +2,7 @@ import math
 
 import pandas as pd
 import transformers
+from tqdm import tqdm
 from transformers import MarianTokenizer, MarianMTModel
 from typing import List
 import numpy as np
@@ -154,5 +155,40 @@ def map_to_utility(x):
 
     return all_utilities
 
+
+def translate(model, tokenizer, source_texts, batch_size=32, method="ancestral"):
+    translations = []
+    total = math.ceil(len(source_texts) /batch_size)
+    for lines in tqdm(batch(source_texts, n=batch_size), total=total):
+        samples = sample_model(model, tokenizer, lines, method=method)
+        decoded_samples = tokenizer.batch_decode(samples, skip_special_tokens=True)
+
+        translations += decoded_samples
+    return translations
+
+
+def sample_model(model, tokenizer, source_texts, method="ancestral",):
+    sample = None
+
+    tokenized = tokenizer(source_texts, return_tensors="pt", padding=True, ).to("cuda")
+    if method == "ancestral":
+        sample = model.generate(
+            **tokenized,
+            do_sample=True,
+            num_beams=1,
+            top_k=0,
+        )
+    elif method == "beam":
+        sample = model.generate(
+            **tokenized,
+            do_sample=True,
+            num_beams=5,
+            early_stopping=True
+        )
+
+    else:
+        raise(ValueError("Method not implemented: {}".format(method)))
+
+    return sample
 
 

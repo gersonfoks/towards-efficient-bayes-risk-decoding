@@ -44,7 +44,6 @@ def main():
     np.random.seed(args.seed)
     pytorch_lightning.seed_everything(args.seed)
 
-    smoke_test = args.smoke_test
     utility = args.utility
 
 
@@ -57,7 +56,6 @@ def main():
                                         1000,
                                         'test',
                                         seed=args.seed,
-                                        smoke_test=smoke_test,
                                         utility=utility
                                         )
 
@@ -66,21 +64,12 @@ def main():
 
 
     # Map utilities to mean utilities:
-
-
-
-
     test_df["utility"] = test_df[["utilities", 'references_count']].apply(map_to_utility, axis=1)
 
     test_df["predictions"] = predictions_df["predictions"]
 
 
     evaluate_predictions(test_df, args.model_name, pretty_names[args.model_name], args.utility)
-
-
-    # Start predicting the Kendal Tau statistics
-
-
 
 
 

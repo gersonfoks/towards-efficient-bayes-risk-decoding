@@ -2,8 +2,8 @@ import json
 
 from utilities.constants import PRETTY_NAMES
 
-utility = 'comet'
-base = './results/{}/'.format(utility)
+utility = 'unigram_f1'
+base = './results/{}/'.format(utility.replace('_', '-'))
 
 
 models = [
@@ -11,7 +11,7 @@ models = [
     'last_hidden_state_model',
     'token_statistics_model',
     'full_dec_model',
-    'full_dec_no_stats_model',
+    'full_dec_no_stat_model',
 ]
 
 
@@ -20,8 +20,8 @@ statistics = [
    'MSE',
     'median_kendall_taus',
     'mean_kendall_taus',
-    'top_10_comet_mean',
-    'best_comet_mean',
+    'top_10_{}_mean'.format(utility),
+    'best_comet_mean'.format(utility),
 ]
 
 
@@ -56,11 +56,15 @@ def print_as_table(results,models, statistics ):
 
     print(table_entries)
 
+print("Kendall taus")
 print_as_table(results, models, ["median_kendall_taus", "mean_kendall_taus"])
 
+print("MSE")
 print_as_table(results, models, ["MSE"])
 
-print_as_table(results, models, ["best_comet_mean", "top_10_comet_mean", ])
+
+print("Scores")
+print_as_table(results, models, ["best_{}_mean".format(utility), "top_10_{}_mean".format(utility), ])
 
 
 
