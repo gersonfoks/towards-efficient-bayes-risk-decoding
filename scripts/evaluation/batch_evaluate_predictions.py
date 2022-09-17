@@ -2,7 +2,8 @@ import os
 
 utilities = [
     #"comet"
-    "unigram-f1"
+    #"unigram-f1",
+    "chrf",
 ]
 
 

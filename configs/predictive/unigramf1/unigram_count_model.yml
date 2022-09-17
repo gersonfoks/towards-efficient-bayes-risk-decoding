@@ -1,8 +1,8 @@
 # Information about the dataset
 dataset:
   sampling_method: 'ancestral'
-  n_hypotheses: 100
-  n_references: 1000
+  n_hypotheses: 10
+  n_references: 100
 
 
 #

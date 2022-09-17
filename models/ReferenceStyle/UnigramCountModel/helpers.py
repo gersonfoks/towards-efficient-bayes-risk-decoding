@@ -25,7 +25,7 @@ def prepare_dataframe(df, tokenizer):
     dataset = dataset.map(source_tokenize, batched=True)
 
     df = dataset.to_pandas()
-
+    df.reset_index(inplace=True)
     df = df.explode(column=['hypotheses', 'utilities', ])
     df.reset_index(drop=True, inplace=True)
     df.rename({"hypotheses": "hypothesis"}, inplace=True, axis=1)
@@ -59,17 +59,28 @@ def load_data(config, nmt_model, tokenizer, seed=0, smoke_test=False, utility='u
                                          utility=utility
                                          )
     # We need to add the references back
-    references_file = './data/samples/{}_{}_train_predictive_{}'.format(
-        config["dataset"]["sampling_method"],
-        config["dataset"]["n_references"],
-        seed
-    )
+    references_file = './data/{}/{}_{}_train_predictive_{}_references'.format(utility,
+                                                                   config["dataset"]["sampling_method"],
+                                                                   config["dataset"]["n_references"],
+                                                                   seed
+                                                                   )
     if smoke_test:
         references_file += '_smoke_test'
     references_file += '.parquet'
     train_df_references = pd.read_parquet(references_file)
 
-    train_df["references"] = train_df_references["samples"]
+
+    # Construct the table
+
+    train_ref_table = {
+        r["index"]: {
+            "references_count": r["references_count"],
+            "utilities": r["utilities"][0],
+            "references": r["references"],
+        } for _, r in train_df_references.iterrows()
+    }
+
+
 
     val_df = load_bayes_risk_dataframe(config["dataset"]["sampling_method"],
                                        config["dataset"]["n_hypotheses"],
@@ -80,32 +91,39 @@ def load_data(config, nmt_model, tokenizer, seed=0, smoke_test=False, utility='u
                                        utility=utility
                                        )
 
-    references_file = './data/samples/{}_{}_validation_predictive_{}'.format(
-        config["dataset"]["sampling_method"],
-        config["dataset"]["n_references"],
-        seed
-    )
+    references_file = './data/{}/{}_{}_validation_predictive_{}_references'.format(utility,
+                                                                        config["dataset"]["sampling_method"],
+                                                                        config["dataset"]["n_references"],
+                                                                        seed
+                                                                        )
     if smoke_test:
         references_file += '_smoke_test'
     references_file += '.parquet'
     val_df_references = pd.read_parquet(references_file)
-    val_df["references"] = val_df_references["samples"]
+    val_ref_table = {
+        r["index"]: {
+            "references_count": r["references_count"],
+            "utilities": r["utilities"][0],
+            "references": r["references"],
+        } for _, r in val_df_references.iterrows()
+    }
+
+
     # We need to add the references back
-
     train_df = prepare_dataframe(train_df, tokenizer)
-
     val_df = prepare_dataframe(val_df, tokenizer)
 
     train_dataset = BayesRiskDataset(train_df)
     val_dataset = BayesRiskDataset(val_df)
 
-    collator = UnigramCountCollator(tokenizer, n_model_references=n_model_references)
+    train_collator = UnigramCountCollator(train_ref_table, tokenizer, n_model_references=n_model_references)
+    val_collator = UnigramCountCollator(val_ref_table, tokenizer, n_model_references=n_model_references)
 
     train_dataloader = DataLoader(train_dataset,
-                                  collate_fn=collator,
+                                  collate_fn=train_collator,
                                   batch_size=config["batch_size"], shuffle=True, )
     val_dataloader = DataLoader(val_dataset,
-                                collate_fn=collator,
+                                collate_fn=val_collator,
                                 batch_size=config["batch_size"], shuffle=False, )
 
     return train_dataloader, val_dataloader
