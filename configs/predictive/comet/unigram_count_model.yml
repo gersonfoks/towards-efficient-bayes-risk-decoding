@@ -7,9 +7,9 @@ dataset:
 
 #
 model_name: unigram_count_model
-log_dir: './logs/unigram-f1/unigram_count_model/'
-save_model_path: './saved_models/unigram-f1/unigram_count_model/'
-utility: 'unigram-f1'
+log_dir: './logs/comet/unigram_count_model/'
+save_model_path: './saved_models/comet/unigram_count_model/'
+utility: 'comet'
 
 
 # Training
