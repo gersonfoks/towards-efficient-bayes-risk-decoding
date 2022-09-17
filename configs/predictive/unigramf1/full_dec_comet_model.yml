@@ -8,7 +8,7 @@ dataset:
 #
 model_name: full_dec_comet_model
 log_dir: './logs/full_dec_comet_model/'
-save_model_path: './saved_models/comet/full_dec_comet_model/'
+save_model_path: './saved_models/unigram-f1/full_dec_comet_model/'
 
 # Training
 batch_size: 64
@@ -54,8 +54,8 @@ model:
       - 128
       - 1
     activation_function: 'relu'
-    activation_function_last_layer: 'tanh'
-    last_layer_scale: 2.5
+    activation_function_last_layer: 'sigmoid'
+    last_layer_scale: none
 
   optimizer:
     type: adam_with_lr_decay
