@@ -250,7 +250,7 @@ def evaluate_predictions(val_df, model_name, pretty_name, utility="comet"):
 
 
         # Get the comet score
-        utility = ChrF(n=1)
+        utility = ChrF()
 
         top_10_comet_scores = utility.evaluate(sources, top_10_percent_prediction, targets)
 
