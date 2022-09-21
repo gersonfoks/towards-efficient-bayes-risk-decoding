@@ -59,6 +59,6 @@ class BasicReferenceModel(BaseModel):
 
 
         if self.min_value != None and self.max_value != None:
-            self.final_score = torch.clamp(final_score, min=self.min_value, max=self.max_value)
+            final_score = torch.clamp(final_score, min=self.min_value, max=self.max_value)
 
         return final_score

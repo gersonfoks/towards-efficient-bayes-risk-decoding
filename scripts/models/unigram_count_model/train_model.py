@@ -24,7 +24,7 @@ def main():
     parser = argparse.ArgumentParser(
         description='Train a model according with parameters specified in the config file ')
     parser.add_argument('--config', type=str,
-                        default='./configs/predictive/unigramf1/unigram_count_model.yml',
+                        default='./configs/predictive/comet/unigram_count_model.yml',
                         help='config to load model from')
 
     parser.add_argument('--smoke-test', dest='smoke_test', action="store_true",
@@ -33,7 +33,7 @@ def main():
                         help="seed number (when we need different samples, also used for identification)")
 
     parser.add_argument('--utility', type=str,
-                        default='unigram-f1',
+                        default='comet',
                         help='Utility function used')
 
     parser.add_argument('--n-model-references', type=int,

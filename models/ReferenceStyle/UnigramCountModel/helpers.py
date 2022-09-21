@@ -17,25 +17,11 @@ def prepare_dataframe(df, tokenizer):
     :param tokenizer: tokenizer used to tokenize the source and hypothesis
     :return:
     '''
-    dataset = Dataset.from_pandas(df)
-    # 1) Tokenize the dataset
 
-    source_tokenize = SourceTokenizer(tokenizer)
-
-    dataset = dataset.map(source_tokenize, batched=True)
-
-    df = dataset.to_pandas()
     df.reset_index(inplace=True)
     df = df.explode(column=['hypotheses', 'utilities', ])
     df.reset_index(drop=True, inplace=True)
     df.rename({"hypotheses": "hypothesis"}, inplace=True, axis=1)
-
-    dataset = Dataset.from_pandas(df)
-
-    target_tokenize = TargetTokenizer(tokenizer)
-
-    dataset = dataset.map(target_tokenize, batched=True)
-    df = dataset.to_pandas()
 
     df["utility"] = df[["utilities", 'references_count']].apply(lambda x: np.sum(
         np.array(x["utilities"]) * np.array(x["references_count"]) / np.sum(np.array(x["references_count"]))), axis=1)
@@ -75,7 +61,7 @@ def load_data(config, nmt_model, tokenizer, seed=0, smoke_test=False, utility='u
     train_ref_table = {
         r["index"]: {
             "references_count": r["references_count"],
-            "utilities": r["utilities"][0],
+
             "references": r["references"],
         } for _, r in train_df_references.iterrows()
     }
@@ -103,7 +89,7 @@ def load_data(config, nmt_model, tokenizer, seed=0, smoke_test=False, utility='u
     val_ref_table = {
         r["index"]: {
             "references_count": r["references_count"],
-            "utilities": r["utilities"][0],
+
             "references": r["references"],
         } for _, r in val_df_references.iterrows()
     }

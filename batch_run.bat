@@ -1,6 +1,11 @@
 
-python -m scripts.models.common.time_model --model-name=full_dec_model --model-path=./saved_models/comet/full_dec_model/best/
-python -m scripts.models.common.time_model --model-name=full_dec_no_stat_model --model-path=./saved_models/comet/full_dec_no_stat_model/best/
-python -m scripts.models.common.time_model --model-name=last_hidden_state_model --model-path=./saved_models/comet/last_hidden_state_model/best/
-python -m scripts.models.common.time_model --model-name=token_statistics_model --model-path=./saved_models/comet/token_statistics_model/best/
 
+python -m scripts.models.basic_reference_model.train_model --utility=chrf --config=./configs/predictive/chrf/basic_reference_model.yml --n-references=1
+python -m scripts.models.basic_reference_model.train_model --utility=chrf --config=./configs/predictive/chrf/basic_reference_model.yml --n-references=2
+python -m scripts.models.basic_reference_model.train_model --utility=chrf --config=./configs/predictive/chrf/basic_reference_model.yml --n-references=3
+python -m scripts.models.basic_reference_model.train_model --utility=chrf --config=./configs/predictive/chrf/basic_reference_model.yml --n-references=4
+python -m scripts.models.basic_reference_model.train_model --utility=chrf --config=./configs/predictive/chrf/basic_reference_model.yml --n-references=5
+python -m scripts.models.basic_reference_model.train_model --utility=chrf --config=./configs/predictive/chrf/basic_reference_model.yml --n-references=10
+python -m scripts.models.basic_reference_model.train_model --utility=chrf --config=./configs/predictive/chrf/basic_reference_model.yml --n-references=25
+python -m scripts.models.basic_reference_model.train_model --utility=chrf --config=./configs/predictive/chrf/basic_reference_model.yml --n-references=50
+python -m scripts.models.basic_reference_model.train_model --utility=chrf --config=./configs/predictive/chrf/basic_reference_model.yml --n-references=100

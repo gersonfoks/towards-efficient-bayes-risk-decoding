@@ -51,11 +51,12 @@ class UnigramCountModel(BaseModel):
         final_features = torch.concat([att_out, features['mean_utilities'].unsqueeze(dim=-1)], dim=-1)
         predicted_scores_features = self.final_layers(final_features)
 
+
         # Learn to alter the predicted scores
         final_score = features['mean_utilities'].unsqueeze(dim=-1).float() + predicted_scores_features
 
         if self.min_value != None and self.max_value != None:
-            self.final_score = torch.clamp(final_score, min=self.min_value, max=self.max_value)
+            final_score = torch.clamp(final_score, min=self.min_value, max=self.max_value)
 
 
         return final_score

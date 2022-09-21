@@ -66,6 +66,7 @@ class GlobalMeanPooling(nn.Module):
         :return:
         '''
         padding = ~padding.unsqueeze(-1)
+
         if padding != None:
 
             x = x * padding

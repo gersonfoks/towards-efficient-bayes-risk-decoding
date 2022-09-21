@@ -19,7 +19,7 @@ gradient_clip_val: 3.4
 max_epochs: 200
 
 # patience for early stopping
-patience: 5
+patience: 3
 
 # Model information
 model:
