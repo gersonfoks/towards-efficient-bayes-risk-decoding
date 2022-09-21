@@ -153,16 +153,16 @@ class NGramF(Utility):
 
 class ChrF(Utility):
 
-    def __init__(self):
+    def __init__(self, n_word_order=2):
         Utility.__init__(self)
-        self.n_word_order = 2
+        self.n_word_order = n_word_order
 
     def __call__(self, source: str, hyp: str, ref: str):
         """
         :param hyp: string, system hypothesis, tokens separated by spaces
         :param ref: string, single reference, tokens separated by spaces
         """
-        return sacrebleu.sentence_chrf(hyp, [ref], word_order=2).score
+        return sacrebleu.sentence_chrf(hyp, [ref], word_order=self.n_word_order).score
 
     def call_batched_fast(self, source: str, hypotheses: List[str], refs: List[str]):
         # scores = []
@@ -185,7 +185,7 @@ class ChrF(Utility):
         #     scores.append(scores_for_hyp)
 
         def get_score(hyp):
-            return [sacrebleu.sentence_chrf(hyp, [ref], word_order=2).score / 100 for ref in refs]
+            return [sacrebleu.sentence_chrf(hyp, [ref], word_order=self.n_word_order).score / 100 for ref in refs]
 
         scores =  Parallel(n_jobs=8)(
                     delayed(get_score)(hyp) for hyp in hypotheses)
@@ -208,7 +208,7 @@ class ChrF(Utility):
         scores = []
         for s, h, t in zip(sources, hypotheses, targets):
 
-            scores.append(sacrebleu.sentence_chrf(h, [t], word_order=2).score / 100)
+            scores.append(sacrebleu.sentence_chrf(h, [t], word_order=self.n_word_order).score / 100)
 
 
         return scores
