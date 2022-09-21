@@ -20,7 +20,7 @@ def main():
                         default='beam',
                         help='config to load model from')
     args = parser.parse_args()
-    df = pd.read_parquet('./model_predictions/nmt_outputs/{}_translations.parquet'.format(args.sampling_method))
+    df = pd.read_parquet('./model_predictions/nmt_outputs/{}_nmt_validation_translations.parquet'.format(args.sampling_method))
 
 
     results = {
@@ -31,17 +31,17 @@ def main():
     translations = df["translations"].to_list()
     targets = df["target"].to_list()
 
-    model_path = download_model("wmt20-comet-da")
-    model = load_from_checkpoint(model_path)
-
-    model.to("cuda")
-    model.eval()
-    wrapped_model = CometWrapper(model)
-
-    comet_scores = wrapped_model.batch_predict(sources, translations, targets)
-
-    results["comet_mean"] = np.mean(comet_scores)
-    results["comet_std"] = np.std(comet_scores)
+    # model_path = download_model("wmt20-comet-da")
+    # model = load_from_checkpoint(model_path)
+    #
+    # model.to("cuda")
+    # model.eval()
+    # wrapped_model = CometWrapper(model)
+    #
+    # comet_scores = wrapped_model.batch_predict(sources, translations, targets)
+    #
+    # results["comet_mean"] = np.mean(comet_scores)
+    # results["comet_std"] = np.std(comet_scores)
 
     utility = NGramF(n=1)
 
@@ -54,12 +54,21 @@ def main():
 
     utility = ChrF()
 
-    unigram_f1_scores = utility.evaluate(sources, translations, targets)
+    chrf_scores = utility.evaluate(sources, translations, targets)
 
-    results["chrf_mean"] = np.mean(unigram_f1_scores)
-    results["chrf_std"] = np.std(unigram_f1_scores)
+    results["chrf_mean"] = np.mean(chrf_scores)
+    results["chrf_std"] = np.std(chrf_scores)
 
-    result_ref = './results/{}/'.format(args.sampling_method)
+    utility = ChrF(n_word_order=0)
+
+    chrf = utility.evaluate(sources, translations, targets)
+    print(np.mean(chrf))
+
+
+
+
+
+    result_ref = './results/{}_evaluation_nmt/'.format(args.sampling_method)
 
     Path(result_ref).mkdir(parents=True, exist_ok=True)
     summary_ref = result_ref + 'summary.json'

@@ -1,4 +1,5 @@
 import argparse
+import json
 
 import numpy as np
 import pandas as pd
@@ -10,7 +11,7 @@ from utilities.misc import load_bayes_risk_dataframe, map_to_utility
 class GetMcEstimate:
 
     def __init__(self, n_references):
-        print(n_references)
+
         self.n_references = n_references
 
     def __call__(self, x):
@@ -70,13 +71,19 @@ def main():
     for m in ms:
         results.append(get_m_mc_error(df, m))
 
+
     print(results)
+
+    save_location = './results/{}/m_mc_estimates.json'.format(args.utility)
+
+    with open(save_location, "w") as f:
+        json.dump(results, f)
 
     result_table = ''
 
-    for m, r in zip(ms, results):
-        result_table += '{} & {:.1e} \\\\\n'.format(m, r)
-    print(result_table)
+    # for m, r in zip(ms, results):
+    #     result_table += '{} & {:.1e} \\\\\n'.format(m, r)
+    # print(result_table)
 
 
 if __name__ == '__main__':
