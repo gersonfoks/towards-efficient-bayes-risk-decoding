@@ -63,13 +63,18 @@ def main():
     predictions_df = pd.read_parquet(args.predictions_ref)
 
 
+
     # Map utilities to mean utilities:
     test_df["utility"] = test_df[["utilities", 'references_count']].apply(map_to_utility, axis=1)
-
     test_df["predictions"] = predictions_df["predictions"]
 
 
-    evaluate_predictions(test_df, args.model_name, pretty_names[args.model_name], args.utility)
+    if not 'basic_reference_model' in args.model_name and not 'unigram_count_model' in args.model_name:
+        pretty_name = pretty_names[args.model_name]
+    else:
+        pretty_name = args.model_name
+
+    evaluate_predictions(test_df, args.model_name, pretty_name, args.utility)
 
 
 

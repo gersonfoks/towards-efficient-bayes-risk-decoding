@@ -1,7 +1,5 @@
 
+python -m scripts.preperation.create_reference_lookup_table --split=test --utility=comet
+python -m scripts.preperation.create_reference_lookup_table --split=test --utility=chrf
+python -m scripts.preperation.create_reference_lookup_table --split=test --utility=unigram-f1
 
-python -m scripts.evaluation.get_m_mc_estimate
-
-python -m scripts.evaluation.get_m_mc_estimate --utility=unigram-f1
-
-python -m scripts.evaluation.get_m_mc_estimate --utility=chrf

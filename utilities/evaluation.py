@@ -119,18 +119,25 @@ def get_kendall_taus(val_df):
 
     true_values_lists = val_df["utility"].to_list()
 
+
     one_hyp_count = 0
     kendall_taus = []
     lenghts = []
     for predictions, true_values in tqdm(zip(predictions_lists, true_values_lists), total=len(predictions_lists)):
+
 
         if len(predictions) == 1:
             one_hyp_count += 1
         else:
 
             kendall_tau = kendalltau(predictions, true_values).correlation
-            kendall_taus.append(kendall_tau)
-            lenghts.append(len(predictions))
+            if not math.isnan(kendall_tau):
+                kendall_taus.append(kendall_tau)
+                lenghts.append(len(predictions))
+            else:
+                # If nan then there is no correlation (predictions all have the same value) so set to 0
+                kendall_taus.append(0)
+                lenghts.append(len(predictions))
     return kendall_taus, lenghts, one_hyp_count
 
 
@@ -184,6 +191,8 @@ def evaluate_predictions(val_df, model_name, pretty_name, utility="comet"):
     plot_rank_vs_predicted_util(val_df, save_location=result_ref, n_plots=5)
 
     kendall_taus, lengths, one_hyp_count = plot_kendall_taus(val_df, result_ref, pretty_name)
+
+
     summary["mean_kendall_taus"] = np.mean(kendall_taus)
     summary["median_kendall_taus"] = np.median(kendall_taus)
     summary["std_kendall_taus"] = np.std(kendall_taus)

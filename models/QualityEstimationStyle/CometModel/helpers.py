@@ -68,3 +68,30 @@ def load_data(config, tokenizer, seed=0, smoke_test=False, utility='comet'):
                                 batch_size=config["batch_size"], shuffle=False, )
 
     return train_dataloader, val_dataloader
+
+def load_test_data(nmt_model, tokenizer, utility="comet", seed=0, smoke_test=False):
+    print("Preparing the data")
+    test_df = load_bayes_risk_dataframe("ancestral",
+                                         100,
+                                         1000,
+                                         'test',
+                                         seed=seed,
+                                         smoke_test=smoke_test,
+                                            utility=utility
+                                         )
+
+
+    test_df = test_df.reset_index()
+    test_df["source_index"] = test_df["index"]
+    # Add the index
+    temp = prepare_dataframe(test_df)
+
+    test_dataset = BayesRiskDataset(temp)
+
+    collator = CometModelCollator(include_source_id=True)
+
+    test_dataloader = DataLoader(test_dataset,
+                                collate_fn=collator,
+                                batch_size=32, shuffle=False, )
+
+    return test_df, test_dataloader

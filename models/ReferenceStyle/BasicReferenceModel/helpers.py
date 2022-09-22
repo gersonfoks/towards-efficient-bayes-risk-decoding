@@ -70,7 +70,7 @@ def load_data(config, nmt_model, tokenizer, seed=0, smoke_test=False, utility='c
 
 
 def load_test_data(nmt_model, tokenizer, utility="comet", seed=0, smoke_test=False, n_references=5):
-    print("Preparing the data")
+
     test_df = load_bayes_risk_dataframe("ancestral",
                                         100,
                                         1000,

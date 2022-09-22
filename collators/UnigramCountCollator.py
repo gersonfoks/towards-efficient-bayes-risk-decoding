@@ -62,13 +62,14 @@ class UnigramCountCollator:
 
         for refs in references:
 
-            refs_ids = self.tokenizer(refs, truncation=True, padding=True, max_length=self.max_seq_length, return_tensors='pt').input_ids
+            refs_ids = self.tokenizer(refs, truncation=True, padding=True, max_length=self.max_seq_length, return_tensors='pt').input_ids.to("cuda")
 
             references_ids.append(refs_ids)
 
 
+
         features = {
-            "hypothesis_ids": hypothesis_ids,
+            "hypothesis_ids": hypothesis_ids.to("cuda"),
             'references_ids': references_ids,
             "mean_utilities": ref_utilities,
 

@@ -27,7 +27,10 @@ class UnigramCountModel(BaseModel):
         self.min_value = min_value
         self.max_value = max_value
 
+        self.name="unigram_count_model"
+
     def forward(self, sources, hypotheses, features):
+
         hypotheses_embedding = self.unigram_count_embedding(features["hypothesis_ids"])
 
         references_embeddings = []

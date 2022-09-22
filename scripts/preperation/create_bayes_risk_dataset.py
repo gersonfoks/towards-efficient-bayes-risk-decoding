@@ -26,11 +26,11 @@ def main():
 
     parser.add_argument('--utility', type=str, default="comet", help='which utility function to use')
 
-    parser.add_argument('--n-hypotheses', type=int, default=10, help='Number of hypothesis to use')
+    parser.add_argument('--n-hypotheses', type=int, default=100, help='Number of hypothesis to use')
 
 
 
-    parser.add_argument('--n-references', type=int, default=100, help='Number of references for each hypothesis')
+    parser.add_argument('--n-references', type=int, default=1000, help='Number of references for each hypothesis')
 
     parser.add_argument('--split', type=str, default="train_predictive",
                         help="Which split to generate samples for (train_predictive, validation_predictive or test")

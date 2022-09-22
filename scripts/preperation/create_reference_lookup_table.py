@@ -19,7 +19,7 @@ from utilities.misc import load_bayes_risk_dataframe, batch
 
 def main():
     # Training settings
-    parser = argparse.ArgumentParser(description='Give the COMET scores for hypothesis given a reference set')
+    parser = argparse.ArgumentParser(description='create a reference file for later')
     parser.add_argument('--smoke-test', dest='smoke_test', action="store_true",
                         help='If true uses the develop set (with 100 sources) for fast development')
 

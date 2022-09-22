@@ -57,8 +57,7 @@ class BasicReferenceModel(BaseModel):
         # Learn to alter the predicted scores
         final_score = features['mean_utilities'].unsqueeze(dim=-1).float() + predicted_scores_features
 
-
         if self.min_value != None and self.max_value != None:
-            final_score = torch.clamp(final_score, min=self.min_value, max=self.max_value)
+            self.final_score = torch.clamp(final_score, min=self.min_value, max=self.max_value)
 
         return final_score

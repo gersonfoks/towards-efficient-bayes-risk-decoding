@@ -178,7 +178,7 @@ class UnigramCountEmbedding(nn.Module):
 
     def __init__(self, embedding, padding_id=-100):
         super().__init__()
-        self.embedding = embedding
+        self.embedding = embedding.to("cuda")
         self.padding_id = padding_id
         self.mean_pooling = GlobalMeanPooling()
 

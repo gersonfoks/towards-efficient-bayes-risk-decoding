@@ -1,12 +1,10 @@
-from datasets import Dataset
+
 from torch.utils.data import DataLoader
 
-from collators.BasicCollator import BasicCollator
-from collators.CometModelCollator import CometModelCollator
 from collators.NMTCollator import NMTCollator
 from custom_datasets.BayesRiskDataset import BayesRiskDataset
 from utilities.misc import load_bayes_risk_dataframe
-from utilities.preprocessing import SourceTokenizer, TargetTokenizer
+
 import numpy as np
 
 def prepare_dataframe(df):
@@ -52,8 +50,6 @@ def load_data(config, nmt_model, tokenizer, seed=0, smoke_test=False, utility='c
                                        utility=utility
                                        )
 
-    print(train_df)
-
     train_df = prepare_dataframe(train_df)
 
     val_df = prepare_dataframe(val_df)
@@ -71,3 +67,31 @@ def load_data(config, nmt_model, tokenizer, seed=0, smoke_test=False, utility='c
                                 batch_size=config["batch_size"], shuffle=False, )
 
     return train_dataloader, val_dataloader
+
+
+def load_test_data(nmt_model, tokenizer, utility="comet", seed=0, smoke_test=False):
+    print("Preparing the data")
+    test_df = load_bayes_risk_dataframe("ancestral",
+                                         100,
+                                         1000,
+                                         'test',
+                                         seed=seed,
+                                         smoke_test=smoke_test,
+                                            utility=utility
+                                         )
+
+
+    test_df = test_df.reset_index()
+    test_df["source_index"] = test_df["index"]
+    # Add the index
+    temp = prepare_dataframe(test_df)
+
+    test_dataset = BayesRiskDataset(temp)
+
+    collator = NMTCollator(nmt_model, tokenizer, include_source_id=True)
+
+    test_dataloader = DataLoader(test_dataset,
+                                collate_fn=collator,
+                                batch_size=32, shuffle=False, )
+
+    return test_df, test_dataloader

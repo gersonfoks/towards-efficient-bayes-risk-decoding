@@ -28,7 +28,7 @@ def main():
     parser.add_argument('--seed', type=int, default=0,
                         help="seed number (when we need different samples, also used for identification)")
 
-    parser.add_argument('--n_references', type=int, default=5,
+    parser.add_argument('--n-references', type=int, default=5,
                         help="number of references to use")
 
     parser.add_argument('--utility', type=str,
@@ -52,7 +52,7 @@ def main():
     utility = args.utility
 
     # Load the dataset
-    test_df, test_dataloader = load_test_data(model_manager.nmt_model, model_manager.tokenizer, utility, smoke_test=args.smoke_test, seed=args.seed )
+    test_df, test_dataloader = load_test_data(model_manager.nmt_model, model_manager.tokenizer, utility, smoke_test=args.smoke_test, seed=args.seed, n_references=args.n_references)
 
 
 
