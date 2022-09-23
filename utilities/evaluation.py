@@ -13,7 +13,7 @@ from comet import download_model, load_from_checkpoint
 
 from utilities.Utility import NGramF, ChrF
 from utilities.wrappers.CometWrapper import CometWrapper
-
+from evaluate import load
 def get_mse(val_df):
     temp = val_df["predictions"].to_list()
     all_predictions = []
@@ -204,9 +204,31 @@ def evaluate_predictions(val_df, model_name, pretty_name, utility="comet"):
 
     best_predictions = get_highest_scoring_predictions(val_df)
 
-    # Evaluate the comet scores
+    # Evaluate the scores
     targets = val_df["target"].to_list()
     sources = val_df["source"].to_list()
+
+
+
+    # First calculate the berstscores:
+
+
+
+
+    bert_metric = load("bertscore")
+
+    bert_scores_best = bert_metric.compute(best_predictions, targets)["f1"]
+
+    summary["best_bertscore_mean"] = np.mean(bert_scores_best)
+    summary["best_bertscore_median"] = np.median(bert_scores_best)
+    summary["best_bertscore_std"] = np.std(bert_scores_best)
+
+    top_10_bert_scores = bert_metric.compute(top_10_percent_prediction, targets)["f1"]
+
+    summary["top_10_bertscore_mean"] = np.mean(top_10_bert_scores)
+    summary["top_10_bertscore_median"] = np.median(top_10_bert_scores)
+    summary["top_10_bertscore_std"] = np.std(top_10_bert_scores)
+
 
     if utility == 'comet':
         # Load the comet model
