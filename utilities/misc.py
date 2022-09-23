@@ -106,11 +106,12 @@ def batch_sample(model, tokenizer, texts, n_samples=96, batch_size=32, sampling_
     return samples
 
 
-def batch(iterable, n=1):
+def batch(iterable, n=1, l=None):
     '''
     Batches an iterable
     '''
-    l = len(iterable)
+    if not l:
+        l = len(iterable)
     for ndx in range(0, l, n):
         yield iterable[ndx:min(ndx + n, l)]
 

@@ -7,9 +7,9 @@ dataset:
 
 
 #
-model_name: basic_lstm
-log_dir: './logs/unigram-f1/basic_lstm/'
-save_model_path: './saved_models/unigram-f1/basic_lstm/'
+model_name: basic_model
+log_dir: './logs/unigram-f1/basic_model/'
+save_model_path: './saved_models/unigram-f1/basic_model/'
 utility: 'unigram-f1'
 
 

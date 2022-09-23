@@ -118,7 +118,7 @@ class LastHiddenStateLstmHyperparamSearch:
         accumulate_grad_batches = trial.suggest_categorical("accumulate_grad_batches", [2, 4, 8])
 
         config = {
-            "model_name": 'basic_lstm',
+            "model_name": 'basic_model',
             'accumulate_grad_batches': accumulate_grad_batches,
             "gradient_clip_val": trial.suggest_float("gradient clip val", 1.5, 5.0),
             "model": model_config,

@@ -11,7 +11,7 @@ from scipy.stats import kendalltau
 import seaborn as sns
 from comet import download_model, load_from_checkpoint
 
-from utilities.Utility import NGramF, ChrF
+from utilities.Utility import NGramF, ChrF, BleurtUtility
 from utilities.wrappers.CometWrapper import CometWrapper
 from evaluate import load
 def get_mse(val_df):
@@ -215,19 +215,20 @@ def evaluate_predictions(val_df, model_name, pretty_name, utility="comet"):
 
 
 
-    bert_metric = load("bertscore")
+    bleurt_metric = BleurtUtility()
 
-    bert_scores_best = bert_metric.compute(best_predictions, targets)["f1"]
+    bert_scores_best = bleurt_metric.evaluate(sources, best_predictions.to_list(), targets)
 
-    summary["best_bertscore_mean"] = np.mean(bert_scores_best)
-    summary["best_bertscore_median"] = np.median(bert_scores_best)
-    summary["best_bertscore_std"] = np.std(bert_scores_best)
+    summary["best_bleurt_mean"] = np.mean(bert_scores_best)
+    summary["best_bleurt_median"] = np.median(bert_scores_best)
+    summary["best_bleurt_std"] = np.std(bert_scores_best)
 
-    top_10_bert_scores = bert_metric.compute(top_10_percent_prediction, targets)["f1"]
+    top_10_bert_scores = bleurt_metric.evaluate(sources, top_10_percent_prediction, targets)
 
-    summary["top_10_bertscore_mean"] = np.mean(top_10_bert_scores)
-    summary["top_10_bertscore_median"] = np.median(top_10_bert_scores)
-    summary["top_10_bertscore_std"] = np.std(top_10_bert_scores)
+    summary["top_10_bleurt_mean"] = np.mean(top_10_bert_scores)
+    summary["top_10_bleurt_median"] = np.median(top_10_bert_scores)
+    summary["top_10_bleurt_std"] = np.std(top_10_bert_scores)
+
 
 
     if utility == 'comet':

@@ -1,11 +1,15 @@
 # Code and inspiration taken from: https://github.com/Roxot/mbr-nmt/blob/a419775b638c4b09e962acad71c4468269b0197a/mbr_nmt/utility.py#L250
+import math
 from typing import List
 
 import sacrebleu
+import torch
 from comet import download_model, load_from_checkpoint
 from nltk.util import ngrams
+from tqdm import tqdm
+from transformers import AutoTokenizer, AutoModelForSequenceClassification
 
-from utilities.misc import load_nmt_model
+from utilities.misc import load_nmt_model, batch
 from utilities.wrappers.CometWrapper import CometWrapper
 
 
@@ -212,3 +216,30 @@ class ChrF(Utility):
 
 
         return scores
+
+
+class BleurtUtility(Utility):
+
+    def __init__(self, batch_size= 32):
+        self.tokenizer = AutoTokenizer.from_pretrained("Elron/bleurt-base-512")
+        self.model = AutoModelForSequenceClassification.from_pretrained("Elron/bleurt-base-512").to('cuda')
+
+        self.batch_size = batch_size
+
+
+    def evaluate(self, sources: [str], hypotheses: List[str], refs: List[str]):
+
+
+        #x = [(h, r) for h, r in zip(sources, hypotheses)]
+        results = []
+        for h, r in tqdm(zip(batch( hypotheses, n=self.batch_size),batch( refs, n=self.batch_size)), total=math.ceil(len(hypotheses)/32)):
+            with torch.no_grad():
+                scores = self.model(**self.tokenizer(r, h, return_tensors='pt', padding=True).to('cuda'))[0].squeeze().cpu().tolist()
+                results += scores
+
+        return results
+
+
+
+
+
