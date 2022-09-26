@@ -71,7 +71,7 @@ def batch_sample(model, tokenizer, texts, n_samples=96, batch_size=32, sampling_
     n_loops = math.ceil(n_samples/batch_size)
 
     last_batch_size = n_samples % batch_size
-    for i in range(math.ceil(n_samples/batch_size)):
+    for i in range(n_loops):
         # Make sure we generate enough samples by dynamic allocating
         n = batch_size
         if i == n_loops- 1:
@@ -81,7 +81,6 @@ def batch_sample(model, tokenizer, texts, n_samples=96, batch_size=32, sampling_
         tokenized = tokenizer(texts, return_tensors="pt", padding=True, ).to("cuda")
 
         if sampling_method == 'ancestral':
-
             sample = model.generate(
                     **tokenized,
                     do_sample=True,
@@ -103,6 +102,7 @@ def batch_sample(model, tokenizer, texts, n_samples=96, batch_size=32, sampling_
 
         decoded_samples = tokenizer.batch_decode(sample, skip_special_tokens=True)
         samples += decoded_samples
+
     return samples
 
 

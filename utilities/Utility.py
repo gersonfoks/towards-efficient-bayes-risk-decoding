@@ -42,7 +42,7 @@ class Utility:
         raise NotImplementedError()
 
 
-def load_utility(utility, nmt_model=None, tokenizer=None):
+def load_utility(utility, nmt_model=None, tokenizer=None, chrf_parallel=True):
     '''
     Loads the utility function
     '''
@@ -69,7 +69,7 @@ def load_utility(utility, nmt_model=None, tokenizer=None):
         return CometUtility(wrapped_model, )
 
     elif utility == 'chrf':
-        return ChrF()
+        return ChrF(parallel=chrf_parallel)
 
     else:
         raise ValueError("utility: {} not found!".format(utility))
@@ -157,9 +157,11 @@ class NGramF(Utility):
 
 class ChrF(Utility):
 
-    def __init__(self, n_word_order=2):
+    def __init__(self, n_word_order=2, parallel=True):
         Utility.__init__(self)
         self.n_word_order = n_word_order
+
+        self.parallel = parallel
 
     def __call__(self, source: str, hyp: str, ref: str):
         """
@@ -191,10 +193,11 @@ class ChrF(Utility):
         def get_score(hyp):
             return [sacrebleu.sentence_chrf(hyp, [ref], word_order=self.n_word_order).score / 100 for ref in refs]
 
-        scores =  Parallel(n_jobs=8)(
+        if self.parallel:
+            scores =  Parallel(n_jobs=8)(
                     delayed(get_score)(hyp) for hyp in hypotheses)
-        #
-
+        else:
+            scores = [get_score(hyp) for hyp in hypotheses]
 
         return scores
 

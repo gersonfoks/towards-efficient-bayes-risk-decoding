@@ -95,3 +95,30 @@ def load_test_data(nmt_model, tokenizer, utility="comet", seed=0, smoke_test=Fal
                                  batch_size=32, shuffle=False, )
 
     return test_df, test_dataloader
+
+
+
+def load_data_for_timing(nmt_model, tokenizer, seed=0, smoke_test=False, n_references=1, n_sources=100):
+    print("Preparing the data")
+    test_df = load_bayes_risk_dataframe("ancestral",
+                                         100,
+                                         1000,
+                                         'test',
+                                         seed=seed,
+                                         smoke_test=smoke_test,
+                                         )[:n_sources]
+
+
+
+    test_df = prepare_dataframe(test_df)
+
+    test_dataset = BayesRiskDataset(test_df)
+
+    collator = BasicReferenceCollator(nmt_model, tokenizer, include_source_id=True, n_references=n_references)
+
+    test_dataloader = DataLoader(test_dataset,
+                                  collate_fn=collator,
+                                  batch_size=1, shuffle=False, )
+
+
+    return test_dataloader

@@ -7,21 +7,39 @@ import pandas as pd
 from comet import download_model, load_from_checkpoint
 
 from utilities.Utility import NGramF, ChrF, BleurtUtility
+from utilities.misc import map_to_utility
 
 from utilities.wrappers.CometWrapper import CometWrapper
+
+
+def get_best_translation(x):
+
+
+
+    max_idx = np.argmax(x["utility"])
+
+    return x["hypotheses"][max_idx]
+
+
 
 
 def main():
     # Training settings
     parser = argparse.ArgumentParser(
         description='Train a model according with parameters specified in the config file ')
-    parser.add_argument('--sampling-method', type=str,
-
-                        default='beam',
-                        help='config to load model from')
+    parser.add_argument('--utility', type=str,
+                        default='unigram-f1',
+                        help='utility to use')
     args = parser.parse_args()
-    df = pd.read_parquet('./model_predictions/nmt_outputs/{}_test_translations.parquet'.format(args.sampling_method))
+    df = pd.read_parquet('./data/{}/ancestral_100_1000_test_0.parquet'.format(args.utility))
 
+
+
+    print(df)
+
+    print(list(df.columns))
+    df["utility"] = df[["utilities", 'references_count']].apply(map_to_utility, axis=1)
+    df["translations"] = df[['hypotheses', 'utility']].apply(get_best_translation, axis=1)
 
     results = {
 
@@ -66,13 +84,12 @@ def main():
 
     results["bleurt_mean"] = np.mean(bleurt_scores)
 
-    print(results)
 
 
-    result_ref = './results/{}/'.format(args.sampling_method)
+    result_ref = './results/{}/'.format(args.utility)
 
     Path(result_ref).mkdir(parents=True, exist_ok=True)
-    summary_ref = result_ref + 'summary.json'
+    summary_ref = result_ref + '1000_mc_summary.json'
 
     with open(summary_ref, 'w') as fp:
         json.dump(results, fp)

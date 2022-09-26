@@ -1,5 +1,5 @@
+python -m scripts.evaluation.time_m_mc_estimation --utility=unigram-f1
+python -m scripts.evaluation.time_m_mc_estimation --utility=comet
+python -m scripts.evaluation.time_m_mc_estimation --utility=chrf
 
-python -m scripts.preperation.create_reference_lookup_table --split=test --utility=comet
-python -m scripts.preperation.create_reference_lookup_table --split=test --utility=chrf
-python -m scripts.preperation.create_reference_lookup_table --split=test --utility=unigram-f1
 
