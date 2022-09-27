@@ -6,8 +6,8 @@ import numpy as np
 import pandas as pd
 from comet import download_model, load_from_checkpoint
 
-from utilities.Utility import NGramF, ChrF
-from utilities.misc import load_nmt_model, translate
+from utilities.Utility import NGramF, ChrF, BleurtUtility
+
 from utilities.wrappers.CometWrapper import CometWrapper
 
 
@@ -20,7 +20,7 @@ def main():
                         default='beam',
                         help='config to load model from')
     args = parser.parse_args()
-    df = pd.read_parquet('./model_predictions/nmt_outputs/{}_nmt_validation_translations.parquet'.format(args.sampling_method))
+    df = pd.read_parquet('./model_predictions/nmt_outputs/{}_test_translations.parquet'.format(args.sampling_method))
 
 
     results = {
@@ -31,17 +31,17 @@ def main():
     translations = df["translations"].to_list()
     targets = df["target"].to_list()
 
-    # model_path = download_model("wmt20-comet-da")
-    # model = load_from_checkpoint(model_path)
-    #
-    # model.to("cuda")
-    # model.eval()
-    # wrapped_model = CometWrapper(model)
-    #
-    # comet_scores = wrapped_model.batch_predict(sources, translations, targets)
-    #
-    # results["comet_mean"] = np.mean(comet_scores)
-    # results["comet_std"] = np.std(comet_scores)
+    model_path = download_model("wmt20-comet-da")
+    model = load_from_checkpoint(model_path)
+
+    model.to("cuda")
+    model.eval()
+    wrapped_model = CometWrapper(model)
+
+    comet_scores = wrapped_model.batch_predict(sources, translations, targets)
+
+    results["comet_mean"] = np.mean(comet_scores)
+    results["comet_std"] = np.std(comet_scores)
 
     utility = NGramF(n=1)
 
@@ -59,16 +59,17 @@ def main():
     results["chrf_mean"] = np.mean(chrf_scores)
     results["chrf_std"] = np.std(chrf_scores)
 
-    utility = ChrF(n_word_order=0)
+    bleurt_metric = BleurtUtility()
 
-    chrf = utility.evaluate(sources, translations, targets)
-    print(np.mean(chrf))
-
+    bleurt_scores = bleurt_metric.evaluate(sources, translations, targets)
 
 
+    results["bleurt_mean"] = np.mean(bleurt_scores)
+
+    print(results)
 
 
-    result_ref = './results/{}_evaluation_nmt/'.format(args.sampling_method)
+    result_ref = './results/{}/'.format(args.sampling_method)
 
     Path(result_ref).mkdir(parents=True, exist_ok=True)
     summary_ref = result_ref + 'summary.json'

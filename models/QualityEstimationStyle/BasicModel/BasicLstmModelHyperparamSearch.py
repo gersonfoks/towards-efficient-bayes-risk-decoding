@@ -121,7 +121,7 @@ class BasicLstmModelHyperparamSearch:
         model_config = self.get_model_config(trial)
         gradient_clip_val = trial.suggest_float("gradient_clip_val", 1, 5)
         config = {
-            "model_name": 'basic_lstm',
+            "model_name": 'basic_model',
             'gradient_clip_val': gradient_clip_val,
             "model": model_config,
             "dataset": dataset_config,

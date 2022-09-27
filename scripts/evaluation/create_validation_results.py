@@ -10,7 +10,7 @@ utilities = [
 
 
 models = [
-    'basic_lstm',
+    'basic_model',
     'last_hidden_state_model',
     'token_statistics_model',
     'full_dec_model',

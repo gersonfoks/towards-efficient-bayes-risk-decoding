@@ -92,77 +92,7 @@ def main():
 
         evaluate_predictions(df, model_name, pretty_name, args.utility)
 
-    # base_ref = './results/'
-    # for m in ms:
-    #     summary = {
-    #
-    #     }
-    #     name = '{}_mc_estimate'.format(m)
-    #     pretty_name = '{}-MC Estimate'.format(m)
-    #     save_location = base_ref + name + '/'
-    #     Path(save_location).mkdir(parents=True, exist_ok=True)
-    #     df["predictions"] = df[name]
-    #
-    #     plot_rank_vs_predicted_util(df, save_location)
-    #
-    #     kendall_taus, lengths, one_hyp_count = plot_kendall_taus(df, save_location, pretty_name)
-    #
-    #     summary["mean_kendall_taus"] = np.mean(kendall_taus)
-    #     summary["median_kendall_taus"] = np.median(kendall_taus)
-    #     summary["std_kendall_taus"] = np.std(kendall_taus)
-    #
-    #     targets = df["target"].to_list()
-    #     sources = df["source"].to_list()
-    #
-    #     best_predictions = get_highest_scoring_predictions(df)
-    #     top_10_percent_prediction = get_top_p_predictions(df, 0.1)
-    #
-    #     top_10_comet_scores = wrapped_model.batch_predict(sources, top_10_percent_prediction, targets)
-    #
-    #     # sns.histplot(top_10_comet_scores)
-    #
-    #     summary["top_10_comet_mean"] = np.mean(top_10_comet_scores)
-    #     summary["top_10_comet_median"] = np.median(top_10_comet_scores)
-    #     summary["top_10_comet_std"] = np.std(top_10_comet_scores)
-    #
-    #     best_predictions_comet_scores = wrapped_model.batch_predict(sources, best_predictions, targets)
-    #
-    #     summary["best_comet_mean"] = np.mean(best_predictions_comet_scores)
-    #     summary["best_comet_median"] = np.median(best_predictions_comet_scores)
-    #     summary["best_comet_std"] = np.std(best_predictions_comet_scores)
-    #
-    #     # Save the summary
-    #     summary_ref = save_location + 'summary.json'
-    #
-    #     with open(summary_ref, 'w') as fp:
-    #         json.dump(summary, fp)
 
-    # mse = [get_m_mc_error(df, m) for m in ms]
-    #
-    # kendall_tau = [get_kendall_tau(df, m) for m in ms]
-    #
-    #
-    # summary = {
-    #     "mse": mse
-    #     "kendall_tau": kendall_tau,
-    #
-    # }
-    #
-    #
-    #
-    # save_location = './results/{}/m_mc_estimates.json'.format(args.utility)
-    #
-    # with open(save_location, "w") as f:
-    #     json.dump(summary, f)
-
-
-    # Next create kendall tau statistics
-
-    result_table = ''
-
-    # for m, r in zip(ms, results):
-    #     result_table += '{} & {:.1e} \\\\\n'.format(m, r)
-    # print(result_table)
 
 
 if __name__ == '__main__':

@@ -23,7 +23,7 @@ def main():
     }
 
 
-    df = pd.read_parquet('./data/tatoeba_splits/validation_NMT.parquet')
+    df = pd.read_parquet('./data/tatoeba_splits/test.parquet')
 
     args = parser.parse_args()
 
@@ -44,7 +44,7 @@ def main():
 
     base_dir = "./model_predictions/nmt_outputs/"
     Path(base_dir).mkdir(parents=True, exist_ok=True)
-    df.to_parquet(base_dir + '{}_nmt_validation_translations.parquet'.format(args.sampling_method))
+    df.to_parquet(base_dir + '{}_test_translations.parquet'.format(args.sampling_method))
 
 
 

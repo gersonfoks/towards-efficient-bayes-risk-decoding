@@ -1,11 +1,15 @@
 # Code and inspiration taken from: https://github.com/Roxot/mbr-nmt/blob/a419775b638c4b09e962acad71c4468269b0197a/mbr_nmt/utility.py#L250
+import math
 from typing import List
 
 import sacrebleu
+import torch
 from comet import download_model, load_from_checkpoint
 from nltk.util import ngrams
+from tqdm import tqdm
+from transformers import AutoTokenizer, AutoModelForSequenceClassification
 
-from utilities.misc import load_nmt_model
+from utilities.misc import load_nmt_model, batch
 from utilities.wrappers.CometWrapper import CometWrapper
 
 
@@ -38,7 +42,7 @@ class Utility:
         raise NotImplementedError()
 
 
-def load_utility(utility, nmt_model=None, tokenizer=None):
+def load_utility(utility, nmt_model=None, tokenizer=None, chrf_parallel=True):
     '''
     Loads the utility function
     '''
@@ -65,7 +69,7 @@ def load_utility(utility, nmt_model=None, tokenizer=None):
         return CometUtility(wrapped_model, )
 
     elif utility == 'chrf':
-        return ChrF()
+        return ChrF(parallel=chrf_parallel)
 
     else:
         raise ValueError("utility: {} not found!".format(utility))
@@ -153,9 +157,11 @@ class NGramF(Utility):
 
 class ChrF(Utility):
 
-    def __init__(self, n_word_order=2):
+    def __init__(self, n_word_order=2, parallel=True):
         Utility.__init__(self)
         self.n_word_order = n_word_order
+
+        self.parallel = parallel
 
     def __call__(self, source: str, hyp: str, ref: str):
         """
@@ -187,10 +193,11 @@ class ChrF(Utility):
         def get_score(hyp):
             return [sacrebleu.sentence_chrf(hyp, [ref], word_order=self.n_word_order).score / 100 for ref in refs]
 
-        scores =  Parallel(n_jobs=8)(
+        if self.parallel:
+            scores =  Parallel(n_jobs=8)(
                     delayed(get_score)(hyp) for hyp in hypotheses)
-        #
-
+        else:
+            scores = [get_score(hyp) for hyp in hypotheses]
 
         return scores
 
@@ -212,3 +219,30 @@ class ChrF(Utility):
 
 
         return scores
+
+
+class BleurtUtility(Utility):
+
+    def __init__(self, batch_size= 32):
+        self.tokenizer = AutoTokenizer.from_pretrained("Elron/bleurt-base-512")
+        self.model = AutoModelForSequenceClassification.from_pretrained("Elron/bleurt-base-512").to('cuda')
+
+        self.batch_size = batch_size
+
+
+    def evaluate(self, sources: [str], hypotheses: List[str], refs: List[str]):
+
+
+        #x = [(h, r) for h, r in zip(sources, hypotheses)]
+        results = []
+        for h, r in tqdm(zip(batch( hypotheses, n=self.batch_size),batch( refs, n=self.batch_size)), total=math.ceil(len(hypotheses)/32)):
+            with torch.no_grad():
+                scores = self.model(**self.tokenizer(r, h, return_tensors='pt', padding=True).to('cuda'))[0].squeeze().cpu().tolist()
+                results += scores
+
+        return results
+
+
+
+
+

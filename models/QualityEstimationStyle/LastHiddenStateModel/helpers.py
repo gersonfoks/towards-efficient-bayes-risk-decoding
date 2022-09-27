@@ -106,7 +106,7 @@ def load_test_data(nmt_model, tokenizer, utility="comet", seed=0, smoke_test=Fal
     return test_df, test_dataloader
 
 
-def load_data_for_timing(nmt_model, tokenizer, utility="comet", seed=0, smoke_test=False):
+def load_data_for_timing(nmt_model, tokenizer, utility="comet", seed=0, smoke_test=False, n_sources=100):
     print("Preparing the data")
     test_df = load_bayes_risk_dataframe("ancestral",
                                          100,
@@ -115,7 +115,7 @@ def load_data_for_timing(nmt_model, tokenizer, utility="comet", seed=0, smoke_te
                                          seed=seed,
                                          smoke_test=smoke_test,
                                             utility=utility
-                                         )[:100]
+                                         )[:n_sources]
 
 
 

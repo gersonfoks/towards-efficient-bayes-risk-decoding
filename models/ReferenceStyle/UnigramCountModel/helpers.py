@@ -1,12 +1,9 @@
 import pandas as pd
-from datasets import Dataset
 from torch.utils.data import DataLoader
-
-from collators.BasicReferenceCollator import BasicReferenceCollator
 from collators.UnigramCountCollator import UnigramCountCollator
 from custom_datasets.BayesRiskDataset import BayesRiskDataset
 from utilities.misc import load_bayes_risk_dataframe
-from utilities.preprocessing import SourceTokenizer, TargetTokenizer
+
 import numpy as np
 
 
@@ -161,3 +158,51 @@ def load_test_data(nmt_model, tokenizer, utility="comet", seed=0, smoke_test=Fal
                                  batch_size=32, shuffle=False, )
 
     return test_df, test_dataloader
+
+
+def load_data_for_timing(nmt_model, tokenizer, seed=0, smoke_test=False, n_model_references=1, n_sources=100):
+    print("Preparing the data")
+    test_df = load_bayes_risk_dataframe("ancestral",
+                                         100,
+                                         1000,
+                                         'test',
+                                         seed=seed,
+                                         smoke_test=smoke_test,
+                                        utility='comet'
+                                         )[:n_sources]
+
+    references_file = './data/{}/{}_{}_test_{}_references'.format('comet',
+                                                                  'ancestral',
+                                                                  1000,
+                                                                  seed
+                                                                  )
+    if smoke_test:
+        references_file += '_smoke_test'
+    references_file += '.parquet'
+    test_df_references = pd.read_parquet(references_file)[:n_sources]
+
+    # Construct the table
+
+    test_ref_table = {
+        r["index"]: {
+            "references_count": r["references_count"],
+
+            "references": r["references"],
+        } for _, r in test_df_references.iterrows()
+    }
+
+    test_df = test_df.reset_index()
+    test_df["source_index"] = test_df["index"]
+
+    test_df = prepare_dataframe(test_df)
+
+    test_dataset = BayesRiskDataset(test_df)
+
+    collator = UnigramCountCollator(test_ref_table, tokenizer, n_model_references=100, include_source_id=True)
+
+    test_dataloader = DataLoader(test_dataset,
+                                  collate_fn=collator,
+                                  batch_size=1, shuffle=False, )
+
+
+    return test_dataloader

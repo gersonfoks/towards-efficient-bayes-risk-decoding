@@ -7,9 +7,9 @@ dataset:
 
 
 #
-model_name: basic_lstm
-log_dir: './logs/basic_lstm/'
-save_model_path: './saved_models/basic_lstm/'
+model_name: basic_model
+log_dir: './logs/basic_model/'
+save_model_path: './saved_models/basic_model/'
 
 # Training
 batch_size: 128

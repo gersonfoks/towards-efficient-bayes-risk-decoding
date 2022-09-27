@@ -81,7 +81,7 @@ def load_data(config, tokenizer, seed=0, smoke_test=False, utility='comet'):
     return train_dataloader, val_dataloader
 
 
-def load_data_for_timing(tokenizer, seed=0, smoke_test=False):
+def load_data_for_timing(tokenizer, seed=0, smoke_test=False, n_sources=100):
     print("Preparing the data")
     test_df = load_bayes_risk_dataframe("ancestral",
                                          100,
@@ -89,7 +89,7 @@ def load_data_for_timing(tokenizer, seed=0, smoke_test=False):
                                          'test',
                                          seed=seed,
                                          smoke_test=smoke_test,
-                                         )[:100]
+                                         )[:n_sources]
 
 
 

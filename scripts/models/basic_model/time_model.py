@@ -2,6 +2,8 @@
 File to train the basic model
 '''
 import argparse
+import json
+from pathlib import Path
 
 import numpy as np
 import pytorch_lightning
@@ -68,6 +70,14 @@ def main():
 
     print("mean time:", np.mean(timings))
     print("std time:", np.std(timings))
+
+
+    base_dir = "./results/basic_model/"
+    Path(base_dir).mkdir(parents=True, exist_ok=True)
+    f_ref = './results/basic_model/timing_result.json'
+
+    with open(f_ref, 'w') as f:
+        json.dump({"mean_time": np.mean(timings)}, f)
 
 if __name__ == '__main__':
     main()

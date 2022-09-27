@@ -5,7 +5,7 @@ from collators.BasicCollator import BasicCollator
 from collators.CometModelCollator import CometModelCollator
 from custom_datasets.BayesRiskDataset import BayesRiskDataset
 from utilities.misc import load_bayes_risk_dataframe
-from utilities.preprocessing import SourceTokenizer, TargetTokenizer
+
 import numpy as np
 
 def prepare_dataframe(df):
@@ -95,3 +95,30 @@ def load_test_data(nmt_model, tokenizer, utility="comet", seed=0, smoke_test=Fal
                                 batch_size=32, shuffle=False, )
 
     return test_df, test_dataloader
+
+
+
+def load_data_for_timing(seed=0, smoke_test=False, n_sources=100):
+    print("Preparing the data")
+    test_df = load_bayes_risk_dataframe("ancestral",
+                                         100,
+                                         1000,
+                                         'test',
+                                         seed=seed,
+                                         smoke_test=smoke_test,
+                                         )[:n_sources]
+
+
+
+    test_df = prepare_dataframe(test_df)
+
+    test_dataset = BayesRiskDataset(test_df)
+
+    collator = CometModelCollator()
+
+    test_dataloader = DataLoader(test_dataset,
+                                  collate_fn=collator,
+                                  batch_size=1, shuffle=False, )
+
+
+    return test_dataloader

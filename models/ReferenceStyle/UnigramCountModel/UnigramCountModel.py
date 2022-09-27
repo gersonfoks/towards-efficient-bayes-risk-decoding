@@ -31,6 +31,9 @@ class UnigramCountModel(BaseModel):
 
     def forward(self, sources, hypotheses, features):
 
+
+
+
         hypotheses_embedding = self.unigram_count_embedding(features["hypothesis_ids"])
 
         references_embeddings = []
@@ -41,8 +44,6 @@ class UnigramCountModel(BaseModel):
 
         # Transform the reference embeddings
         references_embeddings = torch.stack(references_embeddings)
-
-
 
         hypotheses_embedding = hypotheses_embedding.unsqueeze(dim=1)
 
