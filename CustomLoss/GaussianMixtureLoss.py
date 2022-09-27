@@ -15,10 +15,6 @@ class GaussianMixtureLoss(nn.Module):
     def forward(self, loc, scale, weights, utilities):
         scale = scale + self.eps
 
-        print(utilities.shape)
-        print(scale[0])
-
-
         components = self.make_components(loc, scale, utilities.shape[-1])
 
         mixture = td.MixtureSameFamily(td.Categorical(logits=weights), components)

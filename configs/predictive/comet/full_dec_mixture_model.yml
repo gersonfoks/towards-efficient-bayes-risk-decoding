@@ -24,8 +24,8 @@ patience: 3
 model:
   type: full_dec_mixture_model
 
-  distribution: 'gaussian'
-  n_components: 1
+  distribution: 'student-t'
+  n_components: 3
 
   nmt_model:
     name: 'Helsinki-NLP/opus-mt-de-en'
@@ -51,7 +51,7 @@ model:
     dims:
       - 2048 # 8 * 2 * 128
       - 128
-      - 3
+      - 12
     activation_function: 'relu'
     activation_function_last_layer: 'tanh'
     last_layer_scale: 2.5

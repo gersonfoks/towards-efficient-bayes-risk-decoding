@@ -10,7 +10,7 @@ class StudentTMixtureLoss(nn.Module):
     def __init__(self):
         super().__init__()
 
-    def forward(self, df, loc, utilities, scale, logits):
+    def forward(self, df, loc, scale, logits, utilities):
         components = self.make_components(df, loc, scale, utilities.shape[-1])
 
         mixture = td.MixtureSameFamily(td.Categorical(logits=logits), components)

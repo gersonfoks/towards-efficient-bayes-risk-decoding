@@ -1,7 +1,7 @@
 import numpy as np
 
-from models.QualityEstimationStyle.FullDecModel.FullDecModelManager import FullDecModelManager
-from models.QualityEstimationStyle.LastHiddenStateModel.helpers import load_data
+from models.MixtureModels.FullDecMixtureModelManager import FullDecMixtureModelManager
+from models.MixtureModels.helpers import load_data
 from utilities.callbacks import CustomSaveCallback
 
 from argparse import Namespace
@@ -16,28 +16,23 @@ from pytorch_lightning import loggers as pl_loggers
 import pytorch_lightning as pl
 
 
-class FullDecModelHyperparamSearch:
+class FullDecMixtureModelHyperparamSearch:
 
     def __init__(self, smoke_test, utility='comet', seed=0):
 
         self.smoke_test = smoke_test
         self.utility = utility
 
-        self.study_name = "full_dec_model_study"
+        self.study_name = "full_dec_mixture_model_study"
 
         self.log_dir = './logs/{}/'.format(self.study_name)
         self.save_location = './saved_models/{}/'.format(self.study_name)
 
-        self.n_warmup_steps = 10
-        self.n_trials = 30
+        self.n_warmup_steps = 5
+        self.n_trials = 15
 
-        self.model_type = "full_dec_model"
+        self.model_type = "full_dec_mixture_model"
 
-        self.possible_dims = {
-            "small": [0, 128, 1],
-            "medium": [0, 256, 128, 1],
-            "large": [0, 512, 256, 128, 1],
-        }
 
         self.seed = seed
         np.random.seed(seed)
@@ -51,7 +46,7 @@ class FullDecModelHyperparamSearch:
         config = self.get_config(trial)
 
         # Create the trainer
-        model_manager = FullDecModelManager(config["model"])
+        model_manager = FullDecMixtureModelManager(config["model"])
 
         model = model_manager.create_model()
 
@@ -131,17 +126,16 @@ class FullDecModelHyperparamSearch:
 
         batch_size = 64
 
-        feed_forward_size = trial.suggest_categorical("feed_forward_size", ["small", "medium", "large"])
-
-        dims = self.possible_dims[feed_forward_size]
+        dims = [
+            2048,
+            12,
+            9
+        ]
 
         hidden_state_size = 128
         token_statistics_embedding_size = 128
 
-        full_dec_hidden_state_size = trial.suggest_categorical("full_dec_hidden_state_size", [64, 128, 256, 512])
-
-        dims[
-            0] = full_dec_hidden_state_size * 2 * 7 + 2 * hidden_state_size  # Times 2 Because of the bidirectional part.
+        full_dec_hidden_state_size = 128
 
         return {
 
@@ -151,6 +145,9 @@ class FullDecModelHyperparamSearch:
             "weight_decay": trial.suggest_float("weight_decay", 1.0e-9, 1.0e-5, log=True),
             "dropout": trial.suggest_float("dropout", 0.01, 0.9, ),
             "token_statistics_embedding_size": token_statistics_embedding_size,
+
+            'distribution': 'gaussian',
+            'n_components': 3,
 
             "token_pooling": {
                 "name": "lstm",
@@ -167,11 +164,9 @@ class FullDecModelHyperparamSearch:
                 "dims": dims,
                 "activation_function": "relu",
                 "activation_function_last_layer": "tanh",
-                "last_layer_scale": 2.5,
             },
 
             "nmt_model": {
-
                 "name": 'Helsinki-NLP/opus-mt-de-en',
                 "checkpoint": './saved_models/NMT/de-en-model/',
                 "type": 'MarianMT'

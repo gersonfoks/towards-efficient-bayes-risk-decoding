@@ -25,6 +25,7 @@ class FullDecMixtureModel(pl.LightningModule):
         if distribution == 'gaussian':
             self.criterion = GaussianMixtureLoss()
         elif distribution == 'student-t':
+            print('using student-t distribution')
             self.criterion = StudentTMixtureLoss()
         else:
             raise ValueError('No distribution named: {}'.format(distribution))
@@ -61,25 +62,47 @@ class FullDecMixtureModel(pl.LightningModule):
         final_features = torch.concat(all_pooled_layers, dim=-1)
         out = self.final_layers(final_features)
 
+        if self.distribution == 'gaussian':
+            locs = self.locs_activation_function(out[:, :self.n_components])
+            scales = self.softplus(out[:, self.n_components:self.n_components * 2])
 
-        locs = out[:, :self.n_components]
-        scales = self.softplus(out[:, self.n_components:self.n_components * 2])
+            logit_weights = out[:, 2 * self.n_components: 3 * self.n_components]
 
-        logit_weights = out[:, 2 * self.n_components: 3 * self.n_components]
+            return {
+                'locs': locs,
+                'scales': scales,
+                'logit_weights': logit_weights,
+            }
+        elif self.distribution == 'student-t':
+            locs = self.locs_activation_function(out[:, :self.n_components])
+            scales = self.softplus(out[:, self.n_components:self.n_components * 2])
 
+            logit_weights = out[:, 2 * self.n_components: 3 * self.n_components]
+
+            degrees_of_freedom = self.softplus(out[:, 3 * self.n_components: 4 * self.n_components])
+
+            return {
+                'locs': locs,
+                'degrees_of_freedom': degrees_of_freedom,
+                'scales': scales,
+                'logit_weights': logit_weights,
+            }
         #print(torch.softmax(logit_weights, dim=-1))
-        return locs, scales, logit_weights
+
 
 
     def batch_to_out(self, batch):
 
         sources, hypotheses, features, utilities = batch
-        locs, scales, logit_weights = self.forward(sources, hypotheses, features)
+        out = self.forward(sources, hypotheses, features)
 
+        loss = 0
+        if self.distribution == 'gaussian':
+            loss = self.criterion(out['locs'], out['scales'], out['logit_weights'], utilities.to(self.device))
+        elif self.distribution == 'student-t':
+            loss = self.criterion(out['degrees_of_freedom'], out['locs'], out['scales'], out['logit_weights'], utilities.to(self.device))
 
-        loss = self.criterion(locs, scales, logit_weights, utilities.to(self.device))
-
-        return {"loss": loss, "locs": locs, "scales": scales, 'weights': logit_weights}
+        return {"loss": loss, **out}
 
     def training_step(self, batch, batch_idx):
 

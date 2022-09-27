@@ -69,5 +69,5 @@ class FullDecMixtureModelManager(BaseManager):
 
         self.model = FullDecMixtureModel(embedding_layer, full_dec_pooling_layers,
                                          token_statistics_pooling, final_layers, initialize_optimizer,
-                                         locs_activation_function, n_components=config["n_components"])
+                                         locs_activation_function, n_components=config["n_components"], distribution=config["distribution"])
         return self.model
