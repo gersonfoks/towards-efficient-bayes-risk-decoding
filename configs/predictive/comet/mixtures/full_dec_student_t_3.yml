@@ -1,0 +1,65 @@
+# Information about the dataset
+dataset:
+  sampling_method: 'ancestral'
+  n_hypotheses: 100
+  n_references: 1000
+
+
+#
+model_name: full_dec_mixture_student_t_3_model
+log_dir: './logs/comet/full_dec_mixture_student_t_3_model/'
+save_model_path: './saved_models/comet/full_dec_mixture_student_t_3_model/'
+
+# Training
+batch_size: 64
+accumulate_grad_batches: 2 # Effective batch size of 128
+gradient_clip_val: 2.47
+max_epochs: 150
+
+
+# patience for early stopping
+patience: 3
+
+# Model information
+model:
+  type: full_dec_mixture_model
+
+  distribution: 'student-t'
+  n_components: 3
+
+  nmt_model:
+    name: 'Helsinki-NLP/opus-mt-de-en'
+    checkpoint: './saved_models/NMT/de-en-model/'
+    type: 'MarianMT'
+
+  lr: 1.6e-3 #1.4815897489348615e-05
+  weight_decay: 1.8e-9 #5.0e-07
+  dropout: 0.2 #0.5 #0.6712665889822903
+
+  dec_pooling:
+    name: lstm
+    embedding_size: 512
+    hidden_state_size: 128
+
+  n_statistics: 7
+  token_statistics_embedding_size: 128
+  token_pooling:
+    name: lstm
+    embedding_size: 128
+    hidden_state_size: 128
+  feed_forward_layers:
+    dims:
+      - 2048 # 8 * 2 * 128
+      - 128
+      - 12
+    activation_function: 'relu'
+    activation_function_last_layer: 'tanh'
+
+  optimizer:
+    type: adam_with_lr_decay
+    step_size: 1
+    gamma: 0.87
+    interval: epoch
+
+
+

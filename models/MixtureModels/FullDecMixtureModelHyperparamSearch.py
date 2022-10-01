@@ -33,7 +33,6 @@ class FullDecMixtureModelHyperparamSearch:
 
         self.model_type = "full_dec_mixture_model"
 
-
         self.seed = seed
         np.random.seed(seed)
         pl.seed_everything(seed)
@@ -63,7 +62,7 @@ class FullDecMixtureModelHyperparamSearch:
             max_epochs=max_epochs,
             gpus=1,
             progress_bar_refresh_rate=1,
-            callbacks=[EarlyStopping(monitor="val_loss", patience=5, verbose=True, divergence_threshold=3.0),
+            callbacks=[EarlyStopping(monitor="val_loss", patience=3, verbose=True, divergence_threshold=3.0),
                        LearningRateMonitor(logging_interval="epoch"),
                        PyTorchLightningPruningCallback(trial, monitor="val_loss"),
                        save_callback
@@ -128,7 +127,7 @@ class FullDecMixtureModelHyperparamSearch:
 
         dims = [
             2048,
-            12,
+            128,
             9
         ]
 

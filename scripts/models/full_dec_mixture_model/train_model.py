@@ -22,7 +22,7 @@ def main():
     parser = argparse.ArgumentParser(
         description='Train a model according with parameters specified in the config file ')
     parser.add_argument('--config', type=str,
-                        default='./configs/predictive/comet/full_dec_mixture_model.yml',
+                        default='./configs/predictive/comet/full_dec_gaussian_2.yml',
                         help='config to load model from')
 
     parser.add_argument('--smoke-test', dest='smoke_test', action="store_true",
@@ -46,7 +46,7 @@ def main():
 
     smoke_test = args.smoke_test
 
-    # We first load the model as the model also has the tokenizer that we want to use
+
 
     model_manager = FullDecMixtureModelManager(config["model"])
 
