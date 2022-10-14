@@ -3,9 +3,8 @@ File to train the basic model
 '''
 import argparse
 
-from models.MixtureModels.FullDecMixtureModel.FullDecMixtureModelHyperparamSearch import FullDecMixtureModelHyperparamSearch
-
-
+from models.MixtureModels.FullDecCometMixtureModel.FullDecCometMixtureModelHyperparamSearch import \
+    FullDecCometMixtureModelHyperparamSearch
 
 def main():
     # Training settings
@@ -25,7 +24,7 @@ def main():
 
     args = parser.parse_args()
 
-    hyperparamsearch = FullDecMixtureModelHyperparamSearch(args.smoke_test, args.utility, args.seed)
+    hyperparamsearch = FullDecCometMixtureModelHyperparamSearch(args.smoke_test, args.utility, args.seed)
     hyperparamsearch()
 
 

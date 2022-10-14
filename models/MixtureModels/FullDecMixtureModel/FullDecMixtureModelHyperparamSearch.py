@@ -1,7 +1,7 @@
 import numpy as np
 
-from models.MixtureModels.FullDecMixtureModelManager import FullDecMixtureModelManager
-from models.MixtureModels.helpers import load_data
+from models.MixtureModels.FullDecMixtureModel.FullDecMixtureModelManager import FullDecMixtureModelManager
+from models.MixtureModels.FullDecMixtureModel.helpers import load_data
 from utilities.callbacks import CustomSaveCallback
 
 from argparse import Namespace

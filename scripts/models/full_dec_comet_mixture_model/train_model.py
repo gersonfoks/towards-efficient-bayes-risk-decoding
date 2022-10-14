@@ -9,7 +9,9 @@ import yaml
 
 from pytorch_lightning.callbacks import LearningRateMonitor, EarlyStopping
 
-from models.MixtureModels.FullDecMixtureModel.FullDecMixtureModelManager import FullDecMixtureModelManager
+from models.MixtureModels.FullDecCometMixtureModel.FullDecCometMixtureModelManager import \
+    FullDecCometMixtureModelManager
+
 from models.MixtureModels.FullDecMixtureModel.helpers import load_data
 
 from utilities.callbacks import CustomSaveCallback
@@ -22,7 +24,7 @@ def main():
     parser = argparse.ArgumentParser(
         description='Train a model according with parameters specified in the config file ')
     parser.add_argument('--config', type=str,
-                        default='./configs/predictive/comet/full_dec_gaussian_2.yml',
+                        default='./configs/predictive/comet/mixtures/dec_comet_gaussian_2.yml',
                         help='config to load model from')
 
     parser.add_argument('--smoke-test', dest='smoke_test', action="store_true",
@@ -48,7 +50,7 @@ def main():
 
 
 
-    model_manager = FullDecMixtureModelManager(config["model"])
+    model_manager = FullDecCometMixtureModelManager(config["model"])
 
     model = model_manager.create_model()
 

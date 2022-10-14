@@ -6,14 +6,14 @@ dataset:
 
 
 #
-model_name: full_dec_mixture_gaussian_2_model
-log_dir: './logs/comet/full_dec_mixture_gaussian_2_model/'
-save_model_path: './saved_models/comet/full_dec_mixture_gaussian_2_model/'
+model_name: full_dec_comet_mixture_model
+log_dir: './logs/full_dec_comet_model_gaussian_3/'
+save_model_path: './saved_models/comet/full_dec_comet_model_gaussian_3/'
 
 # Training
 batch_size: 64
-accumulate_grad_batches: 2 # Effective batch size of 128
-gradient_clip_val: 2.5
+accumulate_grad_batches: 2 # Effective batch size of 256
+gradient_clip_val: 3.4
 max_epochs: 150
 
 
@@ -22,24 +22,25 @@ patience: 3
 
 # Model information
 model:
-  type: full_dec_mixture_model
+  type: full_dec_comet_mixture_model
 
   distribution: 'gaussian'
-  n_components: 2
+  n_components: 3
 
   nmt_model:
     name: 'Helsinki-NLP/opus-mt-de-en'
     checkpoint: './saved_models/NMT/de-en-model/'
     type: 'MarianMT'
 
-  lr: 1.6e-3 #1.4815897489348615e-05
-  weight_decay: 1.8e-9 #5.0e-07
-  dropout: 0.2 #0.5 #0.6712665889822903
+  lr: 5.9e-4 #1.4815897489348615e-05
+  weight_decay: 1.1e-9 #5.0e-07
+  dropout: 0.08 #0.5 #0.6712665889822903
 
   dec_pooling:
     name: lstm
     embedding_size: 512
     hidden_state_size: 128
+
 
   n_statistics: 7
   token_statistics_embedding_size: 128
@@ -47,18 +48,23 @@ model:
     name: lstm
     embedding_size: 128
     hidden_state_size: 128
+
   feed_forward_layers:
     dims:
-      - 2048 # 8 * 2 * 128
+      - 6144 # 1024 * 4 + 2048
+      - 1024
+      - 512
+      - 256
       - 128
-      - 6
+      - 9
     activation_function: 'relu'
     activation_function_last_layer: 'tanh'
+
 
   optimizer:
     type: adam_with_lr_decay
     step_size: 1
-    gamma: 0.87
+    gamma: 0.78
     interval: epoch
 
 

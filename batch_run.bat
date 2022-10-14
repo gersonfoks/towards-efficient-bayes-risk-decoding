@@ -1,11 +1,9 @@
 
 
-python -m scripts.models.basic_reference_model.train_model --utility=chrf --config=./configs/predictive/chrf/basic_reference_model.yml --n-references=1
-python -m scripts.models.basic_reference_model.train_model --utility=chrf --config=./configs/predictive/chrf/basic_reference_model.yml --n-references=2
-python -m scripts.models.basic_reference_model.train_model --utility=chrf --config=./configs/predictive/chrf/basic_reference_model.yml --n-references=3
-python -m scripts.models.basic_reference_model.train_model --utility=chrf --config=./configs/predictive/chrf/basic_reference_model.yml --n-references=4
-python -m scripts.models.basic_reference_model.train_model --utility=chrf --config=./configs/predictive/chrf/basic_reference_model.yml --n-references=5
-python -m scripts.models.basic_reference_model.train_model --utility=chrf --config=./configs/predictive/chrf/basic_reference_model.yml --n-references=10
-python -m scripts.models.basic_reference_model.train_model --utility=chrf --config=./configs/predictive/chrf/basic_reference_model.yml --n-references=25
-python -m scripts.models.basic_reference_model.train_model --utility=chrf --config=./configs/predictive/chrf/basic_reference_model.yml --n-references=50
-python -m scripts.models.basic_reference_model.train_model --utility=chrf --config=./configs/predictive/chrf/basic_reference_model.yml --n-references=100
+python -m scripts.models.full_dec_comet_mixture_model.train_model
+
+python -m scripts.models.full_dec_comet_mixture_model.train_model --config=./configs/predictive/comet/mixtures/dec_comet_gaussian_3.yml
+
+python -m scripts.models.full_dec_comet_mixture_model.train_model --config=./configs/predictive/comet/mixtures/dec_comet_student_2.yml
+
+python -m scripts.models.full_dec_comet_mixture_model.train_model --config=./configs/predictive/comet/mixtures/dec_comet_student_3.yml
