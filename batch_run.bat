@@ -1,9 +1,6 @@
 
+python -m scripts.evaluation.evaluate_predictions --predictions-ref=./model_predictions/comet/full_dec_comet_mixture_model_student-t_2_predictions.parquet --model-name=student-2
 
-python -m scripts.models.full_dec_comet_mixture_model.train_model
 
-python -m scripts.models.full_dec_comet_mixture_model.train_model --config=./configs/predictive/comet/mixtures/dec_comet_gaussian_3.yml
+python -m scripts.evaluation.evaluate_predictions --predictions-ref=./model_predictions/comet/full_dec_comet_mixture_model_student-t_3_predictions.parquet --model-name=student-3
 
-python -m scripts.models.full_dec_comet_mixture_model.train_model --config=./configs/predictive/comet/mixtures/dec_comet_student_2.yml
-
-python -m scripts.models.full_dec_comet_mixture_model.train_model --config=./configs/predictive/comet/mixtures/dec_comet_student_3.yml

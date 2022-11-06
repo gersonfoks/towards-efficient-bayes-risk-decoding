@@ -69,7 +69,7 @@ def main():
     test_df["predictions"] = predictions_df["predictions"]
 
 
-    if not 'basic_reference_model' in args.model_name and not 'unigram_count_model' in args.model_name:
+    if not 'basic_reference_model' in args.model_name and not 'unigram_count_model' in args.model_name and not 'gaussian' in args.model_name and not 'student' in args.model_name:
         pretty_name = pretty_names[args.model_name]
     else:
         pretty_name = args.model_name

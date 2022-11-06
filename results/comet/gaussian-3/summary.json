@@ -1,0 +1,18 @@
+{
+  "mean_kendall_taus": 0.8000290725051586,
+  "median_kendall_taus": 0.8181818181818183,
+  "std_kendall_taus": 0.1427875741260655,
+  "MSE": 0.031058056131893337,
+  "best_bleurt_mean": 0.6188465486615896,
+  "best_bleurt_median": 0.8513651490211487,
+  "best_bleurt_std": 0.5987855431911383,
+  "top_10_bleurt_mean": 0.5815481185346841,
+  "top_10_bleurt_median": 0.8334000706672668,
+  "top_10_bleurt_std": 0.6416284238402188,
+  "top_10_comet_mean": 0.7430669022818602,
+  "top_10_comet_median": 0.9271612167358398,
+  "top_10_comet_std": 0.571861440013452,
+  "best_comet_mean": 0.7635877247038051,
+  "best_comet_median": 0.941535621881485,
+  "best_comet_std": 0.5479975618467309
+}

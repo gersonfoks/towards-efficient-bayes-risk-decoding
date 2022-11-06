@@ -81,7 +81,7 @@ class FullDecCometMixtureModel(pl.LightningModule):
 
             return {
                 'locs': locs,
-                'scales': scales,
+                'scales': scales + 1e-6,
                 'logit_weights': logit_weights,
             }
         elif self.distribution == 'student-t':
@@ -90,12 +90,12 @@ class FullDecCometMixtureModel(pl.LightningModule):
 
             logit_weights = out[:, 2 * self.n_components: 3 * self.n_components]
 
-            degrees_of_freedom = self.softplus(out[:, 3 * self.n_components: 4 * self.n_components]) + 0.0001 # Add a small amount to make sure we don't get NaNs
+            degrees_of_freedom = self.softplus(out[:, 3 * self.n_components: 4 * self.n_components]) + 2.1  # Has to be higher than 1 as otherwise the mean is undefined and has to be higher than 2 as otherwise the variance is infinite, leading to sampling problems.
 
             return {
                 'locs': locs,
-                'degrees_of_freedom': degrees_of_freedom,
-                'scales': scales,
+                'degrees_of_freedom': degrees_of_freedom ,
+                'scales': scales + 1e-6,
                 'logit_weights': logit_weights,
             }
         #print(torch.softmax(logit_weights, dim=-1))

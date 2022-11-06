@@ -8,7 +8,7 @@ dataset:
 #
 model_name: full_dec_comet_mixture_model
 log_dir: './logs/full_dec_comet_model_student_2/'
-save_model_path: './saved_models/comet/full_dec_comet_model_student_2'
+save_model_path: './saved_models/comet/full_dec_comet_model_student_2/'
 
 # Training
 batch_size: 64

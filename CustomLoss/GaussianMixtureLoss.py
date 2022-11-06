@@ -9,11 +9,10 @@ class GaussianMixtureLoss(nn.Module):
 
     def __init__(self):
         super().__init__()
-        # We add a small number to make sure that the scale is never zero
-        self.eps = 1e-6
+
 
     def forward(self, loc, scale, weights, utilities):
-        scale = scale + self.eps
+
 
         components = self.make_components(loc, scale, utilities.shape[-1])
 

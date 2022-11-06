@@ -17,7 +17,7 @@ def main():
     parser = argparse.ArgumentParser(
         description='Get the predictions of a basic lstm model ')
     parser.add_argument('--model-path', type=str,
-                        default='./saved_models/comet/full_dec_comet_model_gaussian_2/best/',
+                        default='./saved_models/comet/full_dec_comet_model_student_3/best/',
                         help='config to load model from')
 
     parser.add_argument('--smoke-test', dest='smoke_test', action="store_true",
@@ -79,7 +79,7 @@ def main():
         outputs["scales"] += batch_out["scales"].cpu().numpy().tolist()
         outputs["logit_weights"] += batch_out["logit_weights"].cpu().numpy().tolist()
         if model.distribution == 'student-t':
-            outputs["degrees_of_freedom"] += batch_out["outputs"].cpu().numpy().tolist()
+            outputs["degrees_of_freedom"] += batch_out["degrees_of_freedom"].cpu().numpy().tolist()
     #
     results = pd.DataFrame({
         "source": all_sources,
