@@ -123,7 +123,7 @@ def main():
     result_df["references_count"] = references_df["sample_count"]
 
     results = {}
-    ms = [1,2,3,4,5,10,25,100, 1000]
+    ms = [1,2,3,4,5,10,25, 50, 100]
     for m in ms:
         mean_time = time_m_mc_estimate(m, args.utility, result_df)
         results[m] = mean_time
