@@ -1,10 +1,9 @@
 # Towards Efficient bayes risk decoding
 
-This project contains the code for "Towards Efficient Bayes Risk Decoding".
+This project contains the code for  the thesis "Towards Efficient Bayes Risk Decoding".
 
-To reduce the cost of reproducibilty
-The models and data used can be found at:
-...
+**Important**: 
+Due to time limitations the code is not well documented. If there are any questions, don't hesitate to contact me.
 
 If you want to reproduce from scratch, follow these steps:
 
@@ -12,7 +11,7 @@ If you want to reproduce from scratch, follow these steps:
 
 1. Create a split of the data by running: `python -m scripts.preperation.split_data`
 2. Train the NMT model by running: `python -m scripts.preperation.train_nmt_model` (WARNING: training this model costs
-   about 5 days, it is adviced to use the one provided)
+   about 5 days.)
 
 #### Generating the data for the predictive model
 
